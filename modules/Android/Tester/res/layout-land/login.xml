@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:gravity="center_horizontal" android:padding="0dp"
+	android:orientation="vertical">
+
+	<LinearLayout android:layout_width="fill_parent"
+		android:layout_height="fill_parent" android:orientation="horizontal"
+		android:gravity="center_vertical" android:layout_weight="1">
+
+		<ImageView android:id="@+id/logo" android:layout_height="wrap_content"
+			android:layout_width="wrap_content" android:src="@drawable/logo"
+			android:layout_marginLeft="20dp" android:layout_marginRight="20dp"></ImageView>
+
+		<LinearLayout android:layout_width="fill_parent"
+			android:layout_height="fill_parent" android:layout_weight="1">
+
+			<LinearLayout android:id="@+id/loading_ll"
+				android:layout_width="fill_parent" android:layout_height="fill_parent"
+				android:orientation="vertical" android:layout_weight="1"
+				android:visibility="gone">
+
+				<TextView android:layout_width="fill_parent"
+					android:layout_height="wrap_content" android:text="@string/loading_label"
+					style="@style/Label" />
+			</LinearLayout>
+
+			<ScrollView android:layout_height="fill_parent"
+				android:layout_width="fill_parent" android:layout_weight="1">
+
+				<LinearLayout android:layout_width="fill_parent"
+					android:layout_height="fill_parent" android:orientation="vertical"
+					android:padding="0dp" android:layout_marginRight="20dp"
+					android:layout_weight="1">
+
+					<TextView android:layout_width="fill_parent"
+						android:layout_height="wrap_content" android:text="@string/login_label"
+						style="@style/Label" />
+
+					<EditText android:id="@+id/login_et" android:layout_width="fill_parent"
+						android:layout_height="wrap_content" android:singleLine="true"
+						android:inputType="textEmailAddress" />
+
+					<TextView android:layout_width="fill_parent"
+						android:layout_height="wrap_content" android:text="@string/password_label"
+						style="@style/Label" android:layout_marginTop="11dp" />
+
+					<EditText android:id="@+id/password_et" android:layout_width="fill_parent"
+						android:layout_height="wrap_content" android:singleLine="true"
+						android:password="true" />
+
+					<Button android:id="@+id/sign_in_btn" android:layout_width="fill_parent"
+						android:layout_height="wrap_content" android:text="@string/sign_in_btn"
+						android:layout_marginTop="22dp" android:onClick="signIn" />
+				</LinearLayout>
+
+			</ScrollView>
+
+		</LinearLayout>
+
+	</LinearLayout>
+
+	<TextView android:layout_width="fill_parent" android:gravity="center_horizontal"
+		android:layout_height="wrap_content" android:text="@string/rights"
+		style="@style/Rights" android:layout_marginBottom="22dp" />
+
+</LinearLayout>

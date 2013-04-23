@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>io.appery.tester</groupId>
+		<artifactId>tester-parent</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+    
+	<artifactId>android</artifactId>
+	<packaging>apk</packaging>
+	<name>Appery.io Tester</name>
+
+	<properties>
+		<apk.final.name>appery.io-tester</apk.final.name>
+		<keystore.location>${user.home}/.keystore/appery.io/appery-io-key.keystore</keystore.location>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>android</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	
+		<dependency>
+			<groupId>com</groupId>
+			<artifactId>cordova</artifactId>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>jivesoftware.smack.osgi</groupId>
+			<artifactId>smack</artifactId>
+			<version>2.2.1.appery</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>phonegap.plugins</groupId>
+			<artifactId>BarcodeScanner</artifactId>
+			<version>2.2.0</version>
+			<type>apklib</type>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<finalName>${project.name}-${project.version}</finalName>
+
+		<plugins>
+			<plugin>
+				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+				<artifactId>android-maven-plugin</artifactId>
+				<configuration>
+					<androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
+					<assetsDirectory>${project.basedir}/assets</assetsDirectory>
+					<resourceDirectory>${project.basedir}/res</resourceDirectory>
+					<sdk>
+						<platform>${android.platform}</platform>
+					</sdk>
+					<deleteConflictingFiles>true</deleteConflictingFiles>
+					<undeployBeforeDeploy>true</undeployBeforeDeploy>
+					<sign>
+						<debug>${debug}</debug>
+					</sign>
+				</configuration>
+				<extensions>true</extensions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jarsigner-plugin</artifactId>
+				<version>1.2</version>
+				<executions>
+					<execution>
+						<id>signing</id>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+						<phase>package</phase>
+						<inherited>true</inherited>
+						<configuration>
+							<archiveDirectory></archiveDirectory>
+							<includes>
+								<include>target/*.apk</include>
+							</includes>
+							<keystore>${keystore.location}</keystore>
+							<storepass>${keystore.password}</storepass>
+							<keypass>${keystore.keypass}</keypass>
+							<alias>${keystore.alias}</alias>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.1.1</version>
+				<executions>
+					<execution>
+						<id>zipalign</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<executable>${ANDROID_HOME}/tools/zipalign</executable>
+							<arguments>
+								<argument>-f</argument>
+								<argument>4</argument>
+								<argument>target/${project.build.finalName}.apk</argument>
+								<argument>target/${apk.final.name}.apk</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+		<repository>
+			<id>local-repository</id>
+			<url>file://${basedir}/../../repo</url>
+		</repository>
+	</repositories>
+
+</project>
