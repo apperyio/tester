@@ -1,5 +1,8 @@
 package io.appery.tester;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import io.appery.tester.net.RestManager;
 import io.appery.tester.net.api.Logout;
 import io.appery.tester.utils.Constants;
@@ -11,14 +14,13 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+
 import android.widget.Toast;
 
 /**
  * @author Daniel Lukashevich
  */
-public abstract class BaseActivity extends Activity {
+public abstract class BaseActivity extends SherlockActivity {
 
     // Toasts
     public void showToast(String message) {
@@ -61,7 +63,7 @@ public abstract class BaseActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
+      //  getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 

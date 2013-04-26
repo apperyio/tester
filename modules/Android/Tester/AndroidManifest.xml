@@ -59,12 +59,17 @@
         android:name="io.appery.tester.TesterApplication"
         android:icon="@drawable/icon"
         android:label="@string/application_name"
-        android:theme="@style/ProjectListTheme" >
+        android:theme="@style/ProjectListThemeABS"
+        >
+       <!-- android:theme="@style/ProjectListTheme"         -->
+
         <activity
             android:name=".LoginActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/application_name"
-            android:launchMode="singleTask" >
+            android:launchMode="singleTask"
+
+               >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -73,8 +78,10 @@
         </activity>
         <activity
             android:name=".ProjectListActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:label="@string/application_name" >
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/application_name"
+
+            >
         </activity>
         <activity
             android:name="io.appery.tester.ApperyActivity"
@@ -111,6 +118,6 @@
         </activity>
     </application>
 
-    <uses-sdk android:minSdkVersion="10" />
+    <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="17"/>
 
 </manifest>

@@ -1,5 +1,7 @@
 package io.appery.tester;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import io.appery.tester.net.api.BaseResponse;
 import io.appery.tester.net.api.GetUserId;
 import io.appery.tester.net.api.Login;
@@ -14,8 +16,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
@@ -38,6 +39,7 @@ public class LoginActivity extends BaseActivity implements LoginCallback, UserId
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         ((TesterApplication) getApplication()).setBaseURL(getServerURL());
+
     }
 
     private String getServerURL() {
@@ -57,6 +59,7 @@ public class LoginActivity extends BaseActivity implements LoginCallback, UserId
             }
         }
         return getPreferenceAsString(Constants.PREFERENCES.BASE_URL, "");
+
     }
 
     @Override

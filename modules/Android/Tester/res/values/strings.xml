@@ -31,13 +31,14 @@
     <string name="project_action_cancel">Cancel</string>
     <string name="sort_order">Sort order</string>
     <string name="sort_by_name">Sort by name</string>
-    <string name="sort_by_date">Sort by date</string>
-    
+    <string name="sort_by_createdate">Sort by create date</string>
+    <string name="sort_by_modifydate">Sort by edit date</string>
     <!-- MENU ITEMS -->
     <string name="logout_mi">Logout</string>
     <string name="preferences_mi">Preferences</string>
     <string name="refresh_mi">Refresh</string>
     <string name="sort_mi">Sort</string>
+    <string name="folders">Folders</string>
 
 	<!-- TOASTS -->
     <string name="autorized_toast">Authorized</string>

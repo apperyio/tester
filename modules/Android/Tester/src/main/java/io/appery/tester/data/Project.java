@@ -26,6 +26,12 @@ public class Project implements Serializable {
 
     private Date lastEditDate = null;
 
+
+
+    private String owner="<noname>";
+
+    private Date createdDate = null;
+
     private String link;
 
     private String resourcesLink;
@@ -65,8 +71,17 @@ public class Project implements Serializable {
                     /* do nothing. */
                 }
             }
+            if (json.has("created")) {
+                try {
+                    createdDate = new Date(json.getLong("created"));
+                } catch (Exception e) {
+                    /* do nothing. */
+                }
+            }
+            if (json.has("owner")){
+                owner = json.getString("owner");
+            }
         }
-
         Log.d("Project", toString());
     }
 
@@ -117,7 +132,13 @@ public class Project implements Serializable {
     public void setLastEditor(String lastEditor) {
         this.lastEditor = lastEditor;
     }
+    public Date getCreatedDate() {
+        return createdDate;
+    }
 
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
     /**
      * @return the lastEditDate
      */
@@ -131,6 +152,10 @@ public class Project implements Serializable {
      */
     public void setLastEditDate(Date lastEditDate) {
         this.lastEditDate = lastEditDate;
+    }
+
+    public String getOwner() {
+        return owner;
     }
 
 }

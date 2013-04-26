@@ -37,6 +37,11 @@ public interface Constants {
         public static final int SORT = 3;
 
         public static final int FILTER = 4;
+
+        public static final int SORT_BY_NAME =5 ;
+        public static final int SORT_BY_CREATE =6 ;
+        public static final int SORT_BY_EDIT =7 ;
+        public static final int SELECT_FOLDER =8 ;
     }
 
     public interface PREFERENCES {

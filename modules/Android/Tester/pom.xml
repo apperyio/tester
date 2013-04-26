@@ -24,7 +24,20 @@
 			<artifactId>android</artifactId>
 			<scope>provided</scope>
 		</dependency>
-	
+
+        <dependency>
+            <groupId>com.actionbarsherlock</groupId>
+            <artifactId>actionbarsherlock</artifactId>
+            <version>4.2.0</version>
+            <type>apklib</type>
+
+        </dependency>
+        <dependency>
+            <groupId>slidingmenu</groupId>
+            <artifactId>slidingmenu</artifactId>
+            <version>1.0</version>
+        </dependency>
+
 		<dependency>
 			<groupId>com</groupId>
 			<artifactId>cordova</artifactId>

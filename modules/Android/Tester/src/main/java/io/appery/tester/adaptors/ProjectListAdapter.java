@@ -23,6 +23,9 @@ public class ProjectListAdapter extends BaseAdapter {
 
     private List<Project> mProjectList = new ArrayList<Project>();
 
+    public void setmProjectList(List<Project> mProjectList) {
+        this.mProjectList = mProjectList;
+    }
     public ProjectListAdapter(Context context, List<Project> projects) {
         this.mContext = context;
         this.mProjectList = projects;
@@ -30,6 +33,7 @@ public class ProjectListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
+        if (mProjectList==null) return 0;
         return mProjectList.size();
     }
 

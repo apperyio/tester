@@ -1,5 +1,6 @@
 package io.appery.tester;
 
+import android.view.Window;
 import io.appery.tester.preferences.ButtonPreference;
 import io.appery.tester.utils.Constants;
 import android.content.SharedPreferences;
@@ -15,7 +16,9 @@ import android.util.Log;
 public class PreferencesActivity extends PreferenceActivity implements OnPreferenceChangeListener {
 
     public void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
+
         addPreferencesFromResource(R.xml.preferences);
 
         initPreference(Constants.PREFERENCES.BASE_URL);

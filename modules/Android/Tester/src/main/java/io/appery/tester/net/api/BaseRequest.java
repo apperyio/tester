@@ -33,7 +33,8 @@ public abstract class BaseRequest implements RequestCallback {
      * @throws ClientProtocolException
      * @throws IOException
      */
-    /* package */abstract HttpResponse doRequest() throws ClientProtocolException, IOException, Exception;
+    /* package */
+    abstract HttpResponse doRequest() throws ClientProtocolException, IOException, Exception;
 
     /**
      * Execute API.

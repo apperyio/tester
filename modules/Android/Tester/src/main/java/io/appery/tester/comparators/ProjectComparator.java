@@ -12,7 +12,9 @@ public class ProjectComparator implements Comparator<Project> {
 
     public static final int BY_NAME = 1;
 
-    public static final int BY_DATE = 2;
+    public static final int BY_EDIT_DATE = 2;
+
+    public static final int BY_CREATE_DATE = 3;
 
     private int sortBy = BY_NAME;
 
@@ -49,7 +51,7 @@ public class ProjectComparator implements Comparator<Project> {
 
             return p1.getName().compareToIgnoreCase(p2.getName());
 
-        } else if (sortBy == BY_DATE) {
+        } else if (sortBy == BY_EDIT_DATE) {      // edited
 
             if ((p1.getLastEditDate() == null) && (p2.getLastEditDate() == null)) {
                 return 0;
@@ -59,10 +61,28 @@ public class ProjectComparator implements Comparator<Project> {
                 return -1;
             }
 
+            if (p2.getLastEditDate() == null) {
+                return 1;
+            }
+
             return p1.getLastEditDate().compareTo(p2.getLastEditDate());
 
-        }
+        } else if (sortBy == BY_CREATE_DATE) {      // created
 
+            if ((p1.getCreatedDate() == null) && (p2.getCreatedDate() == null)) {
+                return 0;
+            }
+
+            if (p1.getCreatedDate() == null) {
+                return -1;
+            }
+
+            if (p2.getCreatedDate() == null) {
+                return 1;
+            }
+
+            return p1.getCreatedDate().compareTo(p2.getCreatedDate());
+        }
         return 0;
     }
 

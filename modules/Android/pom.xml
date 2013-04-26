@@ -10,12 +10,15 @@
     <modules>
         <module>BarcodeScanner</module>
         <module>Tester</module>
+        <module>actionbarsherlock</module>
+        <module>SlidingMenu</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <android.platform>15</android.platform>
+        <android.platform>16</android.platform>
         <android.version>4.1.1.4</android.version>
+        <android-support.version>r7</android-support.version>
         <debug>false</debug>
     </properties>
 
@@ -25,6 +28,11 @@
                 <groupId>com.google.android</groupId>
                 <artifactId>android</artifactId>
                 <version>${android.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.android</groupId>
+                <artifactId>support-v4</artifactId>
+                <version>${android-support.version}</version>
             </dependency>
 
             <dependency>
