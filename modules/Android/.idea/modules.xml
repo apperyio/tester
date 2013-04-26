@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/BarcodeScanner/BarcodeScanner.iml" filepath="$PROJECT_DIR$/BarcodeScanner/BarcodeScanner.iml" />
+      <module fileurl="file://$PROJECT_DIR$/actionbarsherlock/actionbarsherlock.iml" filepath="$PROJECT_DIR$/actionbarsherlock/actionbarsherlock.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Tester/android.iml" filepath="$PROJECT_DIR$/Tester/android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SlidingMenu/slidingmenu.iml" filepath="$PROJECT_DIR$/SlidingMenu/slidingmenu.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tester-parent.iml" filepath="$PROJECT_DIR$/tester-parent.iml" />
+    </modules>
+  </component>
+</project>
+
