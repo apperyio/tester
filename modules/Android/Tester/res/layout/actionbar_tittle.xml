@@ -10,7 +10,7 @@
         android:id="@+id/im_indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/indicator_selector"
+        android:src="@drawable/icon_menu_closed_unpressed"
         android:paddingRight="3dp"
     />
 

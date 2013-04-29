@@ -182,13 +182,13 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         menu.setOnOpenListener(new SlidingMenu.OnOpenListener() {
             @Override
             public void onOpen() {
-                mIndicatorView.setImageResource(R.drawable.indicator_selector2);
+                mIndicatorView.setImageResource(R.drawable.icon_menu_open_unpressed);
             }
         });
         menu.setOnClosedListener(new SlidingMenu.OnClosedListener() {
             @Override
             public void onClosed() {
-                mIndicatorView.setImageResource(R.drawable.indicator_selector);
+                mIndicatorView.setImageResource(R.drawable.icon_menu_closed_unpressed);
             }
         });
         return menu;
