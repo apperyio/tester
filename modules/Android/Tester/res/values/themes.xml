@@ -25,4 +25,9 @@
         <item name="android:displayOptions" >showCustom</item>
         <item name="displayOptions" >showCustom</item>
     </style>
+
+    <style name="LoginActionBar"  parent="ProjectListThemeABS" >
+        <item name="windowContentOverlay">@null</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
 </resources>

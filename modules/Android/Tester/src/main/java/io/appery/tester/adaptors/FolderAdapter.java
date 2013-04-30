@@ -24,7 +24,7 @@ import java.util.Set;
  * class used for display , select folders
  */
 public class FolderAdapter extends BaseAdapter {
-    public int selected=0;
+    public int selected=-1;
     private View selectedView=null;
     private int mSelectedColor;
     private int mDefaultFolderID=0;
@@ -82,7 +82,7 @@ public class FolderAdapter extends BaseAdapter {
         ViewHolder holder = (ViewHolder)view.getTag();
         holder.tvFolder.setText(mFolders.get(i));
 
-        if (i==0)
+        if (i==selected)
             view.setBackgroundColor(mSelectedColor);
         else
             view.setBackgroundColor(R.color.transparent);

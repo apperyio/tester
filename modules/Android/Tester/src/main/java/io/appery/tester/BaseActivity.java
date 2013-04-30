@@ -1,5 +1,6 @@
 package io.appery.tester;
 
+import android.content.DialogInterface;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -41,6 +42,7 @@ public abstract class BaseActivity extends SherlockActivity {
             ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog.setCancelable(false);
             progressDialog.setMessage(getString(R.string.please_wait));
+
             return progressDialog;
 
         default:
@@ -48,6 +50,8 @@ public abstract class BaseActivity extends SherlockActivity {
         }
         return super.onCreateDialog(id);
     }
+
+
 
     @Override
     protected void onPrepareDialog(int id, Dialog dialog) {

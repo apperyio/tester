@@ -37,6 +37,7 @@ public class ApperyActivity extends org.apache.cordova.DroidGap {
 
         String indexPath = "file://" + getStartFileName();
 
+
         loadUrlTimeoutValue = 60000;
         clearCache();
         loadUrl(indexPath);

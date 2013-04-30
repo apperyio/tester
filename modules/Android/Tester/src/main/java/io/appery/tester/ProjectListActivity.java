@@ -266,6 +266,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
             mFolderAdapter.setSelected(i,view);
             updateProjectsList(sortBy);
+            mSlidingMenu.toggle();
         }
     };
     View.OnClickListener onRefreshClick = new View.OnClickListener() {
@@ -415,6 +416,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
 
                 }
             });
+
             return builder.create();
         case Constants.DIALOGS.SORT:
             builder = new AlertDialog.Builder(this);
@@ -428,12 +430,14 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
                             updateProjectsList(which);
                         }
                     });
+
             return builder.create();
         default:
             break;
         }
         return super.onCreateDialog(id);
     }
+
 
     @Override
     protected void onPrepareDialog(int id, Dialog dialog) {
@@ -454,6 +458,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
             Toast.makeText(this, getString(R.string.file_download_error_toast), Toast.LENGTH_LONG).show();
             return;
         }
+
 
         //  TODO - Check filename and do what you need
         // apk file - install
@@ -590,5 +595,6 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         }
         return res;
     }
+
 
 }
