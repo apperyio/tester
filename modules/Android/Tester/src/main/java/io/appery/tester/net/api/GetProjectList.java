@@ -20,7 +20,7 @@ import org.apache.http.client.ClientProtocolException;
  * 
  * @author Daniel Lukashevich
  */
-public class GetProjectList extends BaseRequest {
+    public class GetProjectList extends BaseRequest {
 
     protected static final String TAG = "BaseRequest";
 

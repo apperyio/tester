@@ -494,7 +494,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         subMenu.add(0, Constants.MENU_OPTIONS.SORT_BY_NAME, Menu.NONE, R.string.sort_by_name);
         subMenu.add(0, Constants.MENU_OPTIONS.SORT_BY_CREATE,Menu.NONE, R.string.sort_by_createdate);
         subMenu.add(0, Constants.MENU_OPTIONS.SORT_BY_EDIT,Menu.NONE, R.string.sort_by_modifydate);
-
+        subMenu.add(0, Constants.MENU_OPTIONS.LOGOUT,Menu.NONE, R.string.logout_mi);
 
         MenuItem subMenu1Item = subMenu.getItem();
         subMenu1Item.setIcon(R.drawable.abs__ic_menu_moreoverflow_normal_holo_light);
@@ -526,6 +526,12 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         case  Constants.MENU_OPTIONS.SELECT_FOLDER:
             mSlidingMenu.showMenu(true);
             break;
+         case Constants.MENU_OPTIONS.LOGOUT :
+             // for action logout we simply go on login activity
+             // in login activity onresume there is action to perform logout
+            finish();
+            break;
+
         default:
             break;
         }
