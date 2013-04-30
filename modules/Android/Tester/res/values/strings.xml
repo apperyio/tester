@@ -42,6 +42,7 @@
 
 	<!-- TOASTS -->
     <string name="autorized_toast">Authorized</string>
+    <string name="launch_cancel">Launch was canceled</string>
     <string name="unautorized_toast">Incorrect username or password</string>
     <string name="file_download_error_toast">File could not be downloaded</string>
     <string name="application_download_error_toast">Error while downloading application</string>
