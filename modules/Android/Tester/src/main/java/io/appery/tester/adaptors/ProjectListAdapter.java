@@ -62,7 +62,7 @@ public class ProjectListAdapter extends BaseAdapter {
     private void fillView(View view, int pos) {
         Project project = mProjectList.get(pos);
         WidgetUtils.setText(view, R.id.title_tv, project.getName());
-        WidgetUtils.setText(view, R.id.lastEditor_tv, project.getLastEditor());
+        WidgetUtils.setText(view, R.id.lastEditor_tv, project.getOwner());
 
         String lastEditDate = "";
         if (project.getLastEditDate() != null) {
