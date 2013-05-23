@@ -26,7 +26,6 @@ import io.appery.tester.tasks.callback.DownloadFileCallback;
 import io.appery.tester.utils.Constants;
 import io.appery.tester.utils.FileUtils;
 import io.appery.tester.utils.IntentUtils;
-import io.appery.tester.utils.LogReader;
 import io.appery.tester.utils.ProjectStorageManager;
 
 import java.io.File;
@@ -37,15 +36,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-import org.jivesoftware.smack.XMPPException;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView.OnItemClickListener;
 
 /**
@@ -64,12 +60,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
     // User
     private Long userId = 0l;
 
-    // Log
-    private LogReader logReader = null;
-
     private String[] PROJECTS_ACTIONS;
-
-    private String DEBUG_PROJECT_ACTION;
 
     private String DEBUG_ON_SERVICE_PARAM = "debug=true";
 
@@ -124,7 +115,6 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         getProjectList.execute();
 
         // preparing project actions list
-        this.DEBUG_PROJECT_ACTION = getString(R.string.project_action_debug);
         this.RUN_PROJECT_ACTION = getString(R.string.project_action_run);
         String[] PROJECTS_ACTIONS = { this.RUN_PROJECT_ACTION, //this.DEBUG_PROJECT_ACTION,
                 getString(R.string.project_action_cancel) };
@@ -362,53 +352,8 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
                 public void onClick(DialogInterface dialog, int item) {
                     // Debug mode
                     removeDialog(Constants.DIALOGS.PROJECT_ACTION);
-                    if (PROJECTS_ACTIONS[item].equals(DEBUG_PROJECT_ACTION)) {
-                        if (logReader == null) {
-                            Log.e("MobileTester", "***Creating new LogReader***");
-                            logReader = new LogReader();
-                            try {
-                                // clear old log
-                                Runtime.getRuntime().exec(LogReader.LOGCAT_CLEAR_CMD);
-                                logReader.setXMPPConnection(
-                                        getPreferenceAsString(Constants.PREFERENCES.XMPP_SERVER, ""),
-                                        Integer.parseInt(getPreferenceAsString(Constants.PREFERENCES.XMPP_PORT, "0")),
-                                        userId, selectedProject.getId(),
-                                        getPreferenceAsString(Constants.PREFERENCES.USERNAME, "User"));
-
-                                logReader.start();
-
-                            } catch (NumberFormatException e) {
-
-                                Log.e("MobileTester", e.getMessage());
-
-                            } catch (XMPPException e) {
-
-                                Log.e("MobileTester", "Error setXMPPConnection" + e.getMessage());
-
-                            } catch (IOException e) {
-                                Log.e("MobileTester", "IOException" + e.getMessage());
-                            }
-
-                        }
-                        try {
-                            if (logReader.getSender().isJoined()) {
-                                logReader.getSender().leaveRoom();
-                            }
-                            logReader.getSender().joinToRoom(selectedProject.getId());
-
-                        } catch (XMPPException e) {
-
-                            Log.e("MobileTester", e.getMessage());
-                        }
-                        DownloadFileTask getApkTask = new DownloadFileTask(ProjectListActivity.this,
-                                Constants.FILENAME_ZIP, ProjectListActivity.this);
-                        getApkTask.execute(selectedProject.getResourcesLink() + "?" + DEBUG_ON_SERVICE_PARAM);
-                    }
                     // Run without debug
                     if (PROJECTS_ACTIONS[item].equals(RUN_PROJECT_ACTION)) {
-                        if (logReader != null) {
-                            logReader.stopCollect();
-                        }
                         DownloadFileTask getApkTask = new DownloadFileTask(ProjectListActivity.this,
                                 Constants.FILENAME_ZIP, ProjectListActivity.this);
                         getApkTask.execute(selectedProject.getResourcesLink() + "?" + DEBUG_OFF_SERVICE_PARAM);
@@ -544,9 +489,6 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         super.onDestroy();
         // The activity is about to be destroyed.
         Log.e("ProjectListActivity", "***onDestroy***");
-        if (logReader != null) {
-            logReader.stopCollect();
-        }
     }
 
     private void updateProjectsList(int orderBy) {

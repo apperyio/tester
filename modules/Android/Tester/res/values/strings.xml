@@ -27,7 +27,6 @@
     <string name="download_project_message">Would you like to download %1$s application?</string>
     <string name="run_preview_message">Would you like to run preview for %1$s application?</string>
     <string name="project_action_run">Run</string>
-    <string name="project_action_debug">Debug</string>
     <string name="project_action_cancel">Cancel</string>
     <string name="sort_order">Sort order</string>
     <string name="sort_by_name">Sort by name</string>

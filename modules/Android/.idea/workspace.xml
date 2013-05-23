@@ -17,7 +17,7 @@
         <option name="device" value="2.7in QVGA" />
         <option name="deviceConfiguration" value="Portrait" />
         <option name="localeLanguage" value="ru" />
-        <option name="targetHashString" value="android-15" />
+        <option name="targetHashString" value="android-17" />
         <option name="theme" value="LoginTheme" />
       </profile>
     </option>
@@ -49,23 +49,23 @@
     <ignored path="tester-parent.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/fragment.java" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366835252617" ignored="false" />
-    <file path="/a.dummy" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366714903518" ignored="false" />
+    <file path="/a.dummy" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1369288805562" ignored="false" />
     <file path="/Dummy.txt" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366974234443" ignored="false" />
     <file path="/projects.xml" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366878998804" ignored="false" />
     <file path="/ProjectListActivity.java" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1367228270327" ignored="false" />
     <file path="/strings.xml" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366884587742" ignored="false" />
     <file path="/pom.xml" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366882726958" ignored="false" />
     <file path="/themes.xml" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366875929024" ignored="false" />
-    <file path="$PROJECT_DIR$/../../../../qrcode/pom.xml" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366833954638" ignored="false" />
+    <file path="D:/../qrcode/pom.xml" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366833954638" ignored="false" />
     <file path="/LoginActivity.java" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366833083766" ignored="false" />
     <file path="/BaseActivity.java" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366833132439" ignored="false" />
-    <file path="$PROJECT_DIR$/../../../../qrcode/qrcode-application/pom.xml" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366833864375" ignored="false" />
+    <file path="D:/../qrcode/qrcode-application/pom.xml" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366833864375" ignored="false" />
     <file path="/AndroidManifest.xml" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366878402831" ignored="false" />
     <file path="$PROJECT_DIR$/Tester/target/generated-sources/r/io/appery/tester/BuildConfig.java" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1367224728464" ignored="false" />
-    <file path="$PROJECT_DIR$/../../../../ABSSAMPLES/project.properties" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366878353447" ignored="false" />
-    <file path="$PROJECT_DIR$/../../../../ABSSAMPLES/AndroidManifest.xml" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366875883728" ignored="false" />
-    <file path="$PROJECT_DIR$/../../../../ABSSAMPLES/pom.xml" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366875883728" ignored="false" />
-    <file path="$PROJECT_DIR$/../../../../qrcode/qrcode-application/src/main/java/com/exadel/tests/qrcode_scaner/AbstractCustomABSActivity.java" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366876935363" ignored="false" />
+    <file path="D:/../ABSSAMPLES/project.properties" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366878353447" ignored="false" />
+    <file path="D:/../ABSSAMPLES/AndroidManifest.xml" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366875883728" ignored="false" />
+    <file path="D:/../ABSSAMPLES/pom.xml" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366875883728" ignored="false" />
+    <file path="D:/../qrcode/qrcode-application/src/main/java/com/exadel/tests/qrcode_scaner/AbstractCustomABSActivity.java" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366876935363" ignored="false" />
     <file path="/AbstractCustomABSActivity.java" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366876243869" ignored="false" />
     <file path="$PROJECT_DIR$/Tester/target/generated-sources/r/io/appery/tester/R.java" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1367224790702" ignored="false" />
     <file path="/Constants.java" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366884539193" ignored="false" />
@@ -81,7 +81,8 @@
     <file path="/actionbar_tittle.xml" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1367228301624" ignored="false" />
     <file path="/indicator_selector.xml" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366972869969" ignored="false" />
     <file path="$PROJECT_DIR$/Tester/target/generated-sources/r/io/appery/tester/Manifest.java" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1367224789738" ignored="false" />
-    <file path="$PROJECT_DIR$/../../../../Appery-Tester-Android/modules/Android/Tester/project.properties" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366974241572" ignored="false" />
+    <file path="D:/../Appery-Tester-Android/modules/Android/Tester/project.properties" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1366974241572" ignored="false" />
+    <file path="/a.java" changelist="8d84fb05-ba76-4841-a19a-ec699e325c8d" time="1369254217049" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,6 +105,7 @@
         <option name="ENABLED" value="false" />
         <option name="LOG_ENABLED" value="false" />
         <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="REMOVE_AFTER_HIT" value="false" />
         <option name="SUSPEND_POLICY" value="SuspendAll" />
         <option name="SUSPEND" value="true" />
         <option name="COUNT_FILTER_ENABLED" value="false" />
@@ -120,6 +122,7 @@
         <option name="ENABLED" value="false" />
         <option name="LOG_ENABLED" value="false" />
         <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="REMOVE_AFTER_HIT" value="false" />
         <option name="SUSPEND_POLICY" value="SuspendAll" />
         <option name="SUSPEND" value="true" />
         <option name="COUNT_FILTER_ENABLED" value="false" />
@@ -143,28 +146,19 @@
       <file leaf-file-name="ProjectListActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Tester/src/main/java/io/appery/tester/ProjectListActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="188" column="50" selection-start="6891" selection-end="6891" vertical-scroll-proportion="0.0">
-              <folding />
+            <state line="37" column="0" selection-start="1391" selection-end="1391" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="e#6546#6753#0" expanded="true" />
+                <element signature="e#6742#6743#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="actionbar_tittle.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Tester/res/layout/actionbar_tittle.xml">
+      <file leaf-file-name="LoginActivity.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Tester/src/main/java/io/appery/tester/LoginActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="21" column="33" selection-start="669" selection-end="669" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-          <provider editor-type-id="android-designer">
-            <state />
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pom.xml" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Tester/pom.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="70" column="65" selection-start="2079" selection-end="2079" vertical-scroll-proportion="0.34">
+            <state line="57" column="66" selection-start="2188" selection-end="2188" vertical-scroll-proportion="-3.7937853">
               <folding />
             </state>
           </provider>
@@ -180,10 +174,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/Tester/pom.xml" />
-        <option value="$PROJECT_DIR$/Tester/src/main/java/io/appery/tester/utils/Constants.java" />
-        <option value="$PROJECT_DIR$/Tester/res/values/strings.xml" />
-        <option value="$PROJECT_DIR$/Tester/res/layout/slidingmenu.xml" />
         <option value="$PROJECT_DIR$/Tester/res/layout/folder_row.xml" />
         <option value="$PROJECT_DIR$/Tester/src/main/java/io/appery/tester/PreferencesActivity.java" />
         <option value="$PROJECT_DIR$/Tester/src/main/java/io/appery/tester/data/Project.java" />
@@ -194,8 +184,12 @@
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/Tester/res/drawable/indicator_selector.xml" />
         <option value="$PROJECT_DIR$/Tester/res/drawable/indicator_selector2.xml" />
-        <option value="$PROJECT_DIR$/Tester/src/main/java/io/appery/tester/ProjectListActivity.java" />
         <option value="$PROJECT_DIR$/Tester/res/layout/actionbar_tittle.xml" />
+        <option value="$PROJECT_DIR$/Tester/res/xml/preferences.xml" />
+        <option value="$PROJECT_DIR$/Tester/res/values/strings.xml" />
+        <option value="$PROJECT_DIR$/Tester/src/main/java/io/appery/tester/ProjectListActivity.java" />
+        <option value="$PROJECT_DIR$/Tester/src/main/java/io/appery/tester/utils/Constants.java" />
+        <option value="$PROJECT_DIR$/Tester/src/main/java/io/appery/tester/LoginActivity.java" />
       </list>
     </option>
   </component>
@@ -209,7 +203,7 @@
   <component name="ProjectFrameBounds">
     <option name="x" value="-9" />
     <option name="y" value="-9" />
-    <option name="width" value="1384" />
+    <option name="width" value="1382" />
     <option name="height" value="738" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
@@ -240,25 +234,20 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="Scope" />
       <pane id="ProjectPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tester-parent" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
+        <subPane />
       </pane>
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="GoToFile.includeJavaFiles" value="false" />
-    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.last.edited" value="Project" />
     <property name="OverrideImplement.combined" value="false" />
     <property name="project.structure.proportion" value="0.15" />
+    <property name="options.splitter.main.proportions" value="0.3" />
+    <property name="options.lastSelected" value="preferences.sourceCode.Java" />
     <property name="MemberChooser.sorted" value="false" />
     <property name="recentsLimit" value="5" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
@@ -269,7 +258,10 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="restartRequiresConfirmation" value="true" />
     <property name="MemberChooser.showClasses" value="true" />
+    <property name="FullScreen" value="false" />
     <property name="GoToClass.includeLibraries" value="false" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -296,6 +288,7 @@
       <option name="PACKAGE_NAME" value="" />
       <option name="TARGET_SELECTION_MODE" value="EMULATOR" />
       <option name="PREFERRED_AVD" value="" />
+      <option name="USE_COMMAND_LINE" value="true" />
       <option name="COMMAND_LINE" value="" />
       <option name="WIPE_USER_DATA" value="false" />
       <option name="DISABLE_BOOT_ANIMATION" value="false" />
@@ -396,6 +389,7 @@
       <option name="DEPLOY" value="true" />
       <option name="TARGET_SELECTION_MODE" value="EMULATOR" />
       <option name="PREFERRED_AVD" value="" />
+      <option name="USE_COMMAND_LINE" value="true" />
       <option name="COMMAND_LINE" value="" />
       <option name="WIPE_USER_DATA" value="false" />
       <option name="DISABLE_BOOT_ANIMATION" value="false" />
@@ -411,6 +405,7 @@
       <option name="DEPLOY" value="true" />
       <option name="TARGET_SELECTION_MODE" value="USB_DEVICE" />
       <option name="PREFERRED_AVD" value="" />
+      <option name="USE_COMMAND_LINE" value="true" />
       <option name="COMMAND_LINE" value="" />
       <option name="WIPE_USER_DATA" value="false" />
       <option name="DISABLE_BOOT_ANIMATION" value="false" />
@@ -430,7 +425,7 @@
     </configuration>
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
-  <component name="SvnConfiguration" maxAnnotateRevisions="500" myUseAcceleration="nothing" myAutoUpdateAfterCommit="false" cleanupOnStartRun="false">
+  <component name="SvnConfiguration" maxAnnotateRevisions="500" myUseAcceleration="nothing" myAutoUpdateAfterCommit="false" cleanupOnStartRun="false" SSL_PROTOCOLS="all">
     <option name="USER" value="" />
     <option name="PASSWORD" value="" />
     <option name="mySSHConnectionTimeout" value="30000" />
@@ -440,7 +435,6 @@
     <option name="MERGE_DIFF_USE_ANCESTRY" value="true" />
     <option name="UPDATE_LOCK_ON_DEMAND" value="false" />
     <option name="IGNORE_SPACES_IN_MERGE" value="false" />
-    <option name="DETECT_NESTED_COPIES" value="true" />
     <option name="CHECK_NESTED_FOR_QUICK_MERGE" value="false" />
     <option name="IGNORE_SPACES_IN_ANNOTATE" value="true" />
     <option name="SHOW_MERGE_SOURCES_IN_ANNOTATE" value="true" />
@@ -477,37 +471,38 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-9" y="-9" width="1384" height="738" extended-state="6" />
-    <editor active="false" />
+    <frame x="-9" y="-9" width="1382" height="738" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
+      <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32954547" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.34595525" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.18872267" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298731" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3717728" sideWeight="0.53939396" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.34595525" sideWeight="0.46060607" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.18760757" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32874355" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26666668" sideWeight="0.8954704" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.10452962" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.26666668" sideWeight="0.5697074" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.10452962" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Thumbnails" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32874355" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.14810282" sideWeight="0.7404844" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23255815" sideWeight="0.7404844" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32954547" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.34700856" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.61149824" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -536,7 +531,7 @@
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="true" />
     <option name="CHECK_COMMIT_MESSAGE_SPELLING" value="true" />
     <option name="DEFAULT_PATCH_EXTENSION" value="patch" />
-    <option name="SHORT_DIFF_HORISONTALLY" value="true" />
+    <option name="SHORT_DIFF_HORIZONTALLY" value="true" />
     <option name="SHORT_DIFF_EXTRA_LINES" value="2" />
     <option name="SOFT_WRAPS_IN_SHORT_DIFF" value="true" />
     <option name="INCLUDE_TEXT_INTO_PATCH" value="false" />
@@ -546,6 +541,10 @@
     <option name="SHOW_DIRTY_RECURSIVELY" value="false" />
     <option name="LIMIT_HISTORY" value="true" />
     <option name="MAXIMUM_HISTORY_ROWS" value="1000" />
+    <option name="UPDATE_FILTER_SCOPE_NAME" />
+    <option name="USE_COMMIT_MESSAGE_MARGIN" value="false" />
+    <option name="COMMIT_MESSAGE_MARGIN_SIZE" value="72" />
+    <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
     <option name="LAST_COMMIT_MESSAGE" />
@@ -559,6 +558,7 @@
     <option name="ACTIVE_VCS_NAME" />
     <option name="UPDATE_GROUP_BY_PACKAGES" value="false" />
     <option name="UPDATE_GROUP_BY_CHANGELIST" value="false" />
+    <option name="UPDATE_FILTER_BY_SCOPE" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
   </component>
@@ -570,55 +570,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Tester/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="57" column="32" selection-start="1675" selection-end="1691" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="28" selection-start="737" selection-end="737" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Tester/src/main/java/io/appery/tester/net/RestManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="13" selection-start="905" selection-end="905" vertical-scroll-proportion="-2.4" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Tester/res/layout/folder_row.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="7" selection-start="220" selection-end="220" vertical-scroll-proportion="-3.4" />
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Tester/src/main/java/io/appery/tester/adaptors/ProjectListAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="29" selection-start="848" selection-end="848" vertical-scroll-proportion="-0.37265417" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Tester/src/main/java/io/appery/tester/TesterApplication.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="13" selection-start="185" selection-end="185" vertical-scroll-proportion="0.4153439" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Tester/src/main/java/io/appery/tester/BaseActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="22" selection-start="658" selection-end="658" vertical-scroll-proportion="-3.3280423" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Tester/AndroidManifest.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="80" column="35" selection-start="3368" selection-end="3405" vertical-scroll-proportion="0.65068495">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Tester/src/main/java/io/appery/tester/net/api/GetProjectList.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="41" column="8" selection-start="1253" selection-end="1253" vertical-scroll-proportion="0.58035713" />
@@ -634,31 +585,6 @@
         <state line="158" column="5" selection-start="3777" selection-end="3777" vertical-scroll-proportion="0.921875" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Tester/res/layout/slidingmenu.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Tester/src/main/java/io/appery/tester/ProjectListActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="188" column="50" selection-start="6891" selection-end="6891" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Tester/res/layout/actionbar_tittle.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="33" selection-start="669" selection-end="669" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state line="28" column="65" selection-start="1095" selection-end="1095" vertical-scroll-proportion="0.3831967">
@@ -666,9 +592,98 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/SlidingMenu/src/com/slidingmenu/lib/SlidingMenu.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="986" column="47" selection-start="27414" selection-end="27414" vertical-scroll-proportion="0.006849315">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Tester/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="70" column="65" selection-start="2079" selection-end="2079" vertical-scroll-proportion="0.34">
+        <state line="79" column="47" selection-start="2400" selection-end="2400" vertical-scroll-proportion="0.055737704">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tester/res/layout/actionbar_tittle.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="21" column="33" selection-start="669" selection-end="669" vertical-scroll-proportion="0.53333336">
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tester/res/layout/slidingmenu.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="9.18">
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tester/res/layout/projects.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="7.14">
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tester/res/xml/preferences.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="99" selection-start="407" selection-end="407" vertical-scroll-proportion="0.25660378">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tester/src/main/java/io/appery/tester/preferences/ButtonPreference.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="13" selection-start="416" selection-end="416" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tester/res/values/strings.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="28" column="50" selection-start="1383" selection-end="1383" vertical-scroll-proportion="-6.72">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tester/src/main/java/io/appery/tester/utils/Constants.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="74" column="78" selection-start="2114" selection-end="2114" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tester/src/main/java/io/appery/tester/TesterApplication.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="11" column="13" selection-start="185" selection-end="185" vertical-scroll-proportion="-0.7344262">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tester/src/main/java/io/appery/tester/ProjectListActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="37" column="0" selection-start="1391" selection-end="1391" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#6546#6753#0" expanded="true" />
+            <element signature="e#6742#6743#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tester/src/main/java/io/appery/tester/LoginActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="57" column="66" selection-start="2188" selection-end="2188" vertical-scroll-proportion="-3.7937853">
           <folding />
         </state>
       </provider>
@@ -713,7 +728,7 @@
       </state>
       <state key="JdkListConfigurable.UI">
         <settings>
-          <last-edited>1.7</last-edited>
+          <last-edited>Android 2.1 Platform</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>

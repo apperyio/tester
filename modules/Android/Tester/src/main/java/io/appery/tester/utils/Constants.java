@@ -52,10 +52,6 @@ public interface Constants {
 
         public static final String PASSWORD = "password";
 
-        public static final String XMPP_SERVER = "xmpp_server";
-
-        public static final String XMPP_PORT = "xmpp_port";
-
         public static final String FIX_VERSION = "fix_version";
 
     }
@@ -77,10 +73,6 @@ public interface Constants {
         public static final String OLD_APPERY_URL_HTTPS = "https://project.tiggzi.com";
 
         public static final String NEW_APPERY_URL_HTTPS = "https://appery.io";
-
-        public static final String OLD_APPERY_XMPP_URL = "xmpp.appery.io";
-
-        public static final String NEW_APPERY_XMPP_URL = "xmppnew.appery.io";
 
     }
 

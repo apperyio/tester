@@ -8,14 +8,6 @@
 			android:title="@string/url_label" android:enabled="true"
 			android:selectable="true" android:defaultValue="http://appery.io"></EditTextPreference>
 
-		<EditTextPreference android:key="xmpp_server"
-			android:title="@string/xmpp_server" android:enabled="true"
-			android:selectable="true" android:defaultValue="xmpp.appery.io"></EditTextPreference>	
-			
-		<EditTextPreference android:key="xmpp_port"
-			android:title="@string/xmpp_port" android:enabled="true"
-			android:selectable="true" android:defaultValue="5222"></EditTextPreference>
-
 		<io.appery.tester.preferences.ButtonPreference android:key="username"
 			android:selectable="true" android:title="@string/clear_credentials_label"
 			android:enabled="true"></io.appery.tester.preferences.ButtonPreference>

@@ -46,10 +46,6 @@ public class LoginActivity extends BaseActivity implements LoginCallback, UserId
         String fixVersion = getPreferenceAsString(Constants.PREFERENCES.FIX_VERSION, "-1");
         if (fixVersion.equals("-1") || fixVersion.equals("1")) {
             setPreference(Constants.PREFERENCES.FIX_VERSION, "2");
-            String serverXMPPURL = getPreferenceAsString(Constants.PREFERENCES.XMPP_SERVER, "");
-            if (serverXMPPURL.equals(Constants.SERVER_CONSTANTS.OLD_APPERY_XMPP_URL)) {
-                setPreference(Constants.PREFERENCES.XMPP_SERVER, Constants.SERVER_CONSTANTS.NEW_APPERY_XMPP_URL);
-            }
             String serverURL = getPreferenceAsString(Constants.PREFERENCES.BASE_URL, "");
             if (serverURL.equals(Constants.SERVER_CONSTANTS.OLD_APPERY_URL_HTTPS)
                     || serverURL.equals(Constants.SERVER_CONSTANTS.OLD_APPERY_URL_HTTP)) {

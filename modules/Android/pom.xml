@@ -19,7 +19,7 @@
         <android.platform>16</android.platform>
         <android.version>4.1.1.4</android.version>
         <android-support.version>r7</android-support.version>
-        <debug>false</debug>
+        <debug>true</debug>
     </properties>
 
     <dependencyManagement>
