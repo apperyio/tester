@@ -70,6 +70,10 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
 
     private String RUN_PROJECT_ACTION;
     public static  final String ALL_FOLDERS = "ALL";
+    public static  final String MY_FOLDER = "My folder";
+    public static  final int ALL_FOLDERS_POSITION = 0;
+    public static  final int MY_FOLDER_POSITION = 1;
+
 
     private ProjectListAdapter mProjectAdapter;
     private SlidingMenu mSlidingMenu;
@@ -508,7 +512,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
                 comparator = new ProjectComparator(ProjectComparator.BY_EDIT_DATE, ProjectComparator.DESC);
                 break;
         }
-        //TODO why new ??
+
         Collections.sort(projectList, comparator);
         mProjectAdapter.setmProjectList(getFilteredProjects());
         mProjectAdapter.notifyDataSetChanged();
@@ -525,7 +529,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         mFolders.clear();
 
         mFolders.add(ALL_FOLDERS);
-        mFolders.add(username);
+        mFolders.add(MY_FOLDER);
         mFolders.addAll(owners);
 
         mFolderAdapter.selected=0;
@@ -540,8 +544,12 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
      * @return
      */
     private List<Project> getFilteredProjects(){
-        if (mFolderAdapter.getSelected()==0) return projectList;
-        String owner = mFolders.get(mFolderAdapter.getSelected());
+        if (mFolderAdapter.getSelected()==ALL_FOLDERS_POSITION) return projectList;
+        String owner ;
+        if (mFolderAdapter.getSelected()==MY_FOLDER_POSITION)
+            owner = getPreferenceAsString(Constants.PREFERENCES.USERNAME,"");
+        else
+            owner = mFolders.get(mFolderAdapter.getSelected());
 
         List<Project> res = new ArrayList<Project>();
         for(Project p:projectList){
