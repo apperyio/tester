@@ -1,11 +1,13 @@
 package io.appery.tester;
 
 import android.annotation.TargetApi;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.widget.*;
@@ -514,13 +516,18 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
 
     private void updateFolders(List<Project> projects){
         List<String> owners = new ArrayList<String>();
+        String  username = getPreferenceAsString(Constants.PREFERENCES.USERNAME, "");
         for(Project pr : projects)
-            if (!owners.contains(pr.getOwner()))
+            if (!username.equals(pr.getOwner())&& !owners.contains(pr.getOwner()))
                 owners.add(pr.getOwner());
         Collections.sort(owners);
+
         mFolders.clear();
+
         mFolders.add(ALL_FOLDERS);
+        mFolders.add(username);
         mFolders.addAll(owners);
+
         mFolderAdapter.selected=0;
         mFolderAdapter.setFolders(mFolders);
         mFolderAdapter.notifyDataSetChanged();
@@ -543,6 +550,8 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         }
         return res;
     }
+
+
 
 
 }
