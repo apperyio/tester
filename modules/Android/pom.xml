@@ -28,11 +28,13 @@
                 <groupId>com.google.android</groupId>
                 <artifactId>android</artifactId>
                 <version>${android.version}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.google.android</groupId>
                 <artifactId>support-v4</artifactId>
                 <version>${android-support.version}</version>
+                <scope>provided</scope>
             </dependency>
 
             <dependency>
@@ -49,7 +51,7 @@
                 <plugin>
                     <groupId>com.jayway.maven.plugins.android.generation2</groupId>
                     <artifactId>android-maven-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.6.0</version>
                     <configuration>
                         <sdk>
                             <platform>${android.platform}</platform>

@@ -45,6 +45,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>support-v4</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>jivesoftware.smack.osgi</groupId>
 			<artifactId>smack</artifactId>
 			<version>2.2.1.appery</version>
@@ -111,6 +117,10 @@
 							<storepass>${keystore.password}</storepass>
 							<keypass>${keystore.keypass}</keypass>
 							<alias>${keystore.alias}</alias>
+							<arguments>
+								<argument>-sigalg</argument><argument>MD5withRSA</argument>
+								<argument>-digestalg</argument><argument>SHA1</argument>
+							</arguments>
 						</configuration>
 					</execution>
 				</executions>

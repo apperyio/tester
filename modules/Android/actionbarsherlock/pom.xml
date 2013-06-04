@@ -25,11 +25,8 @@
 		<dependency>
 			<groupId>com.google.android</groupId>
 			<artifactId>support-v4</artifactId>
-
+			<scope>provided</scope>
 		</dependency>
-
-
-
 	</dependencies>
 
     <build>
@@ -37,6 +34,13 @@
         <testSourceDirectory>test</testSourceDirectory>
 
         <plugins>
+            <plugin>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<configuration>
+			<source>1.6</source>
+			<target>1.6</target>
+		</configuration>
+	</plugin>
             <plugin>
                 <groupId>com.jayway.maven.plugins.android.generation2</groupId>
                 <artifactId>android-maven-plugin</artifactId>
@@ -98,5 +102,40 @@
                 </executions>
             </plugin>
         </plugins>
+        <pluginManagement>
+        	<plugins>
+        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        		<plugin>
+        			<groupId>org.eclipse.m2e</groupId>
+        			<artifactId>lifecycle-mapping</artifactId>
+        			<version>1.0.0</version>
+        			<configuration>
+        				<lifecycleMappingMetadata>
+        					<pluginExecutions>
+        						<pluginExecution>
+        							<pluginExecutionFilter>
+        								<groupId>
+        									com.google.code.maven-replacer-plugin
+        								</groupId>
+        								<artifactId>
+        									maven-replacer-plugin
+        								</artifactId>
+        								<versionRange>
+        									[1.4.0,)
+        								</versionRange>
+        								<goals>
+        									<goal>replace</goal>
+        								</goals>
+        							</pluginExecutionFilter>
+        							<action>
+        								<ignore></ignore>
+        							</action>
+        						</pluginExecution>
+        					</pluginExecutions>
+        				</lifecycleMappingMetadata>
+        			</configuration>
+        		</plugin>
+        	</plugins>
+        </pluginManagement>
     </build>
 </project>
