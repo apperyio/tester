@@ -164,12 +164,11 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
                 //boolean API_16 = Build.VERSION.SDK_INT == 16;
                 boolean API_17 = false;
                 boolean API_16 = Build.VERSION.SDK_INT >= 16;
+                boolean API_11 = Build.VERSION.SDK_INT >= 11;
 
-                if (API_16) {
-                    prepareLayerHack();
-                }
+                if (API_16) prepareLayerHack();
+                if (API_11) manageLayers(percentOpen);
 
-                manageLayers(percentOpen);
                 updateColorFilter(percentOpen);
                 updatePaint(API_17, API_16);
             }
