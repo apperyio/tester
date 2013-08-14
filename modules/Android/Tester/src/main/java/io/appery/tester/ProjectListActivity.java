@@ -73,6 +73,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
     public static  final String MY_FOLDER = "My folder";
     public static  final int ALL_FOLDERS_POSITION = 0;
     public static  final int MY_FOLDER_POSITION = 1;
+    private String CORDOVA_LIB_DIR = "/files/resources/lib/";
 
 
     private ProjectListAdapter mProjectAdapter;
@@ -427,6 +428,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
                 FileUtils.clearDirectory(dirPath);
 
                 FileUtils.unzip(ProjectStorageManager.getPROJECT_ZIP_FILE(), dirPath);
+                replaceCordovaResources(dirPath);
                 startActivity(ApperyActivity.class);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -434,6 +436,15 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
             }
         }
     }
+    
+	private void replaceCordovaResources(String dirPath) {
+		String path = dirPath + this.CORDOVA_LIB_DIR;
+		FileUtils.copyAsset(this, "cordova.js", path	+ "cordova.js");
+		FileUtils.copyAsset(this, "childbrowser.js", path	+ "childbrowser.js");
+		FileUtils.copyAsset(this, "barcodescanner.js", path + "barcodescanner.js");
+		FileUtils.copyAsset(this, "get_target_platform.js", path + "get_target_platform.js");
+		FileUtils.copyAsset(this, "PushNotification.js", path + "PushNotification.js");
+	}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

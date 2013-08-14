@@ -1,5 +1,5 @@
 /**
- * PhoneGap is available under *either* the terms of the modified BSD license *or* the
+ * cordova is available under *either* the terms of the modified BSD license *or* the
  * MIT License (2008). See http://opensource.org/licenses/alphabetical for full text.
  *
  * Copyright (c) Matt Kane 2010
@@ -33,7 +33,7 @@ BarcodeScanner.prototype.scan = function(successCallback, errorCallback) {
         return
     }
 
-    PhoneGap.exec(successCallback, errorCallback, 'BarcodeScanner', 'scan', []);
+    cordova.exec(successCallback, errorCallback, 'BarcodeScanner', 'scan', []);
 };
 
 //-------------------------------------------------------------------
@@ -50,10 +50,14 @@ BarcodeScanner.prototype.encode = function(type, data, successCallback, errorCal
         return
     }
 
-    PhoneGap.exec(successCallback, errorCallback, 'BarcodeScanner', 'encode', [{"type": type, "data": data, "options": options}]);
+    cordova.exec(successCallback, errorCallback, 'BarcodeScanner', 'encode', [{"type": type, "data": data, "options": options}]);
 };
 
 //-------------------------------------------------------------------
-PhoneGap.addConstructor(function() {
-    PhoneGap.addPlugin('barcodeScanner', new BarcodeScanner());
-});
+
+if(!window.plugins) {
+    window.plugins = {};
+}
+if (!window.plugins.barcodeScanner) {
+    window.plugins.barcodeScanner = new BarcodeScanner();
+}

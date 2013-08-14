@@ -27,6 +27,7 @@ public class BarcodeScanner extends Plugin {
     private static final String EMAIL_TYPE = "EMAIL_TYPE";
     private static final String PHONE_TYPE = "PHONE_TYPE";
     private static final String SMS_TYPE = "SMS_TYPE";
+    private static final String SCAN_INTENT = "io.appery.tester.barcodescanner.SCAN";
 
     public static final int REQUEST_CODE = 0x0ba7c0de;
 
@@ -85,7 +86,7 @@ public class BarcodeScanner extends Plugin {
      * Starts an intent to scan and decode a barcode.
      */
     public void scan() {
-        Intent intentScan = new Intent("com.phonegap.plugins.barcodescanner.SCAN");
+        Intent intentScan = new Intent(SCAN_INTENT);
         intentScan.addCategory(Intent.CATEGORY_DEFAULT);
 
         this.ctx.startActivityForResult((Plugin) this, intentScan, REQUEST_CODE);
