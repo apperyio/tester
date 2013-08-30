@@ -11,6 +11,8 @@ import java.io.IOException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 
+import android.util.Log;
+
 /**
  * This class provides functionality for Login API <BR/>
  * It used HTTP Base Authentification <BR/>

@@ -12,7 +12,7 @@ public interface Constants {
 
         public static final String GET_PROJECT_RESOURCE = "/app/rest/user/project/%1$d/" + FILENAME_ZIP;
 
-        public static final String LOGOUT = "/app/rest/user/logout";
+        public static final String LOGOUT = "/app/logout";
 
         public static final String GET_USER_ID = "/app/rest/user/user-id";
     }

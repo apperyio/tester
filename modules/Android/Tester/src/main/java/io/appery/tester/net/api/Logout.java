@@ -22,7 +22,7 @@ public class Logout extends BaseRequest {
 
     @Override
     HttpResponse doRequest() throws ClientProtocolException, IOException, Exception {
-        return getRestClient().execute(RequestMethod.DELETE);
+        return getRestClient().execute(RequestMethod.GET);
     }
 
     @Override

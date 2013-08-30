@@ -18,6 +18,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 
+import android.util.Log;
+
 /**
  * This is Rest client. For <code>NON UI THREAD</code> <BR/>
  * 
@@ -123,7 +125,9 @@ public class RestClient {
             return null; // TODO: Return error message
         }
 
-        HttpResponse httpResponse = httpClient.execute(httpRequest, httpContext);
+        Log.d("RestClient", "URL: " + httpRequest.getURI().toString());
+
+         HttpResponse httpResponse = httpClient.execute(httpRequest, httpContext);
         // httpResponse = httpClient.execute(httpRequest);
         return httpResponse;
 
