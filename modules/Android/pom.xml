@@ -36,11 +36,18 @@
 				<version>${android-support.version}</version>
 			</dependency>
 
-			<dependency>
-				<groupId>com</groupId>
-				<artifactId>cordova</artifactId>
-				<version>2.4.0</version>
-			</dependency>
+	<dependency>
+		<groupId>org.apache.cordova</groupId>
+		<artifactId>cordova</artifactId>
+		<version>3.0.0</version>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.apache.cordova</groupId>
+		<artifactId>cordova-core</artifactId>
+		<version>3.0</version>
+	</dependency>
+	
 		</dependencies>
 	</dependencyManagement>
 

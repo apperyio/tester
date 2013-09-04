@@ -11,6 +11,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.util.Log;
 
 /**
  * Use this class to work with files, directories and zip files.<BR/>
@@ -18,6 +20,8 @@ import android.content.Context;
  * @author Daniel Lukashevich
  */
 public class FileUtils {
+	
+	private final static String TAG = "FileUtils";
 
     /**
      * This method allow to unzip file from <code>zipPath</code> to <code>destPath</code>
@@ -124,13 +128,27 @@ public class FileUtils {
             }
             in.close();
             out.close();
-            System.out.println("File copied.");
+            Log.d(TAG,"File copied.");
         } catch (FileNotFoundException ex) {
-            System.err.println(ex.getMessage() + " in the specified directory.");
+        	Log.e(TAG,ex.getMessage() + " in the specified directory.");
             System.exit(0);
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
+    }
+    
+    public static final void removeFile(String path){
+    	File file = new File(path);
+    	if(file.exists()){
+    		if(!file.delete()){
+    			Log.e(TAG,"Can't delete file  "+path);
+    		}else{
+    			Log.d(TAG,"File  "+path+" was deleted successfully");
+    		}
+    	}else{
+    		Log.e(TAG,"File "+path+" doesn't exist");
+    	}
+    	
     }
 
 }

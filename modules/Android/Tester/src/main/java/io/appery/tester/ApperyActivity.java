@@ -12,7 +12,7 @@ import org.apache.cordova.CordovaChromeClient;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaWebViewClient;
 import org.apache.cordova.IceCreamCordovaWebViewClient;
-import org.apache.cordova.api.CordovaInterface;
+import org.apache.cordova.CordovaInterface;
 
 import android.content.Intent;
 import android.net.Uri;

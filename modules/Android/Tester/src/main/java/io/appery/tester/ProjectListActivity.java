@@ -437,13 +437,19 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         }
     }
     
-	private void replaceCordovaResources(String dirPath) {
+	private void replaceCordovaResources(String dirPath) {		
 		String path = dirPath + this.CORDOVA_LIB_DIR;
-		FileUtils.copyAsset(this, "cordova.js", path	+ "cordova.js");
-		FileUtils.copyAsset(this, "childbrowser.js", path	+ "childbrowser.js");
-		FileUtils.copyAsset(this, "barcodescanner.js", path + "barcodescanner.js");
-		FileUtils.copyAsset(this, "get_target_platform.js", path + "get_target_platform.js");
-		FileUtils.copyAsset(this, "PushNotification.js", path + "PushNotification.js");
+		String cordovaAssetArchiveFileName = "cordova_resources.zip";		
+		
+		FileUtils.copyAsset(this, cordovaAssetArchiveFileName, path	+ cordovaAssetArchiveFileName);
+		try{
+			FileUtils.unzip(path + cordovaAssetArchiveFileName, path);
+			FileUtils.removeFile(path + cordovaAssetArchiveFileName);
+		}catch (IOException e) {
+             e.printStackTrace();
+             showToast(getString(R.string.preview_error_toast));
+         }
+
 	}
 
     @Override

@@ -40,10 +40,16 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com</groupId>
+			<groupId>org.apache.cordova</groupId>
 			<artifactId>cordova</artifactId>
 			<scope>compile</scope>
 		</dependency>
+
+	<dependency>
+		<groupId>org.apache.cordova</groupId>
+		<artifactId>cordova-core</artifactId>
+		<scope>compile</scope>
+	</dependency>		
 
 		<dependency>
 			<groupId>jivesoftware.smack.osgi</groupId>
@@ -117,7 +123,7 @@
 								<argument>MD5withRSA</argument>
 								<argument>-digestalg</argument>
 								<argument>SHA1</argument>
-							</arguments>
+							</arguments>							
 						</configuration>
 					</execution>
 				</executions>

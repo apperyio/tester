@@ -10,8 +10,9 @@ package com.phonegap.plugins.childBrowser;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.cordova.api.Plugin;
-import org.apache.cordova.api.PluginResult;
+import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,13 +44,13 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-public class ChildBrowser extends Plugin {
+public class ChildBrowser extends CordovaPlugin{
 
     protected static final String LOG_TAG = "ChildBrowser";
     private static int CLOSE_EVENT = 0;
     private static int LOCATION_CHANGED_EVENT = 1;
 
-    private String browserCallbackId = null;
+    private CallbackContext browserCallbackContext = null;
 
     private Dialog dialog;
     private WebView webview;
@@ -58,39 +59,41 @@ public class ChildBrowser extends Plugin {
 
     /**
      * Executes the request and returns PluginResult.
-     * 
-     * @param action
-     *            The action to execute.
-     * @param args
-     *            JSONArry of arguments for the plugin.
-     * @param callbackId
-     *            The callback id used when calling back into JavaScript.
-     * @return A PluginResult object with a status and message.
+     *
+     * @param action        The action to execute.
+     * @param args          JSONArry of arguments for the plugin.
+     * @param callbackId    The callback id used when calling back into JavaScript.
+     * @return              A PluginResult object with a status and message.
      */
-    public PluginResult execute(String action, JSONArray args, String callbackId) {
+    @Override
+    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
         PluginResult.Status status = PluginResult.Status.OK;
         String result = "";
 
         try {
             if (action.equals("showWebPage")) {
-                this.browserCallbackId = callbackId;
+                this.browserCallbackContext = callbackContext;
 
                 // If the ChildBrowser is already open then throw an error
                 if (dialog != null && dialog.isShowing()) {
-                    return new PluginResult(PluginResult.Status.ERROR, "ChildBrowser is already open");
+                	browserCallbackContext.error("ChildBrowser is already open");
+                    return true;
                 }
 
                 result = this.showWebPage(args.getString(0), args.optJSONObject(1));
 
                 if (result.length() > 0) {
-                    status = PluginResult.Status.ERROR;
-                    return new PluginResult(status, result);
+                    status = PluginResult.Status.ERROR;                    
+                    browserCallbackContext.error(result);
+                    return true;
                 } else {
                     PluginResult pluginResult = new PluginResult(status, result);
                     pluginResult.setKeepCallback(true);
-                    return pluginResult;
+                    browserCallbackContext.sendPluginResult(pluginResult);
+                    return true;
                 }
-            } else if (action.equals("close")) {
+            }
+            else if (action.equals("close")) {
                 closeDialog();
 
                 JSONObject obj = new JSONObject();
@@ -98,29 +101,32 @@ public class ChildBrowser extends Plugin {
 
                 PluginResult pluginResult = new PluginResult(status, obj);
                 pluginResult.setKeepCallback(false);
-                return pluginResult;
-            } else if (action.equals("openExternal")) {
+                browserCallbackContext.sendPluginResult(pluginResult);
+                return true;
+            }
+            else if (action.equals("openExternal")) {
                 result = this.openExternal(args.getString(0), args.optBoolean(1));
                 if (result.length() > 0) {
                     status = PluginResult.Status.ERROR;
                 }
-            } else {
-                status = PluginResult.Status.INVALID_ACTION;
             }
-            return new PluginResult(status, result);
+            else {
+                status = PluginResult.Status.INVALID_ACTION;
+            }            
+            browserCallbackContext.sendPluginResult(new PluginResult(status, result));
+            return true;
         } catch (JSONException e) {
-            return new PluginResult(PluginResult.Status.JSON_EXCEPTION);
+            browserCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION));
+            return false;            
         }
     }
 
     /**
      * Display a new browser with the specified URL.
-     * 
-     * @param url
-     *            The url to load.
-     * @param usePhoneGap
-     *            Load url in PhoneGap webview
-     * @return "" if ok, or error message.
+     *
+     * @param url           The url to load.
+     * @param usePhoneGap   Load url in PhoneGap webview
+     * @return              "" if ok, or error message.
      */
     public String openExternal(String url, boolean usePhoneGap) {
         try {
@@ -134,16 +140,17 @@ public class ChildBrowser extends Plugin {
                 intent.putExtra("loadUrlTimeoutValue", 60000);
 
                 // These parameters can be configured if you want to show the loading dialog
-                intent.putExtra("loadingDialog", "Wait,Loading web page..."); // show loading dialog
-                intent.putExtra("hideLoadingDialogOnPageLoad", true); // hide it once page has completely loaded
-            } else {
+                intent.putExtra("loadingDialog", "Wait,Loading web page...");   // show loading dialog
+                intent.putExtra("hideLoadingDialogOnPageLoad", true);           // hide it once page has completely loaded
+            }
+            else {
                 intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(url));
             }
             this.cordova.getActivity().startActivity(intent);
             return "";
         } catch (android.content.ActivityNotFoundException e) {
-            Log.d(LOG_TAG, "ChildBrowser: Error loading url " + url + ":" + e.toString());
+            Log.d(LOG_TAG, "ChildBrowser: Error loading url "+url+":"+ e.toString());
             return e.toString();
         }
     }
@@ -177,13 +184,11 @@ public class ChildBrowser extends Plugin {
 
     /**
      * Navigate to the new page
-     * 
-     * @param url
-     *            to load
+     *
+     * @param url to load
      */
     private void navigate(String url) {
-        InputMethodManager imm = (InputMethodManager) this.cordova.getActivity().getSystemService(
-                Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager)this.cordova.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(edittext.getWindowToken(), 0);
 
         if (!url.startsWith("http") && !url.startsWith("file:")) {
@@ -194,9 +199,10 @@ public class ChildBrowser extends Plugin {
         this.webview.requestFocus();
     }
 
+
     /**
      * Should we show the location bar?
-     * 
+     *
      * @return boolean
      */
     private boolean getShowLocationBar() {
@@ -205,9 +211,8 @@ public class ChildBrowser extends Plugin {
 
     /**
      * Display a new browser with the specified URL.
-     * 
-     * @param url
-     *            The url to load.
+     *
+     * @param url           The url to load.
      * @param jsonObject
      */
     public String showWebPage(final String url, JSONObject options) {
@@ -220,12 +225,14 @@ public class ChildBrowser extends Plugin {
         Runnable runnable = new Runnable() {
             /**
              * Convert our DIP units to Pixels
-             * 
+             *
              * @return int
              */
             private int dpToPixels(int dipValue) {
-                int value = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (float) dipValue, cordova
-                        .getActivity().getResources().getDisplayMetrics());
+                int value = (int) TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP,
+                                                            (float) dipValue,
+                                                            cordova.getActivity().getResources().getDisplayMetrics()
+                );
 
                 return value;
             }
@@ -237,16 +244,16 @@ public class ChildBrowser extends Plugin {
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setCancelable(true);
                 dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    public void onDismiss(DialogInterface dialog) {
-                        try {
-                            JSONObject obj = new JSONObject();
-                            obj.put("type", CLOSE_EVENT);
+                        public void onDismiss(DialogInterface dialog) {
+                            try {
+                                JSONObject obj = new JSONObject();
+                                obj.put("type", CLOSE_EVENT);
 
-                            sendUpdate(obj, false);
-                        } catch (JSONException e) {
-                            Log.d(LOG_TAG, "Should never happen");
+                                sendUpdate(obj, false);
+                            } catch (JSONException e) {
+                                Log.d(LOG_TAG, "Should never happen");
+                            }
                         }
-                    }
                 });
 
                 // Main container layout
@@ -262,16 +269,14 @@ public class ChildBrowser extends Plugin {
 
                 // Action Button Container layout
                 RelativeLayout actionButtonContainer = new RelativeLayout(cordova.getActivity());
-                actionButtonContainer.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-                        LayoutParams.WRAP_CONTENT));
+                actionButtonContainer.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
                 actionButtonContainer.setHorizontalGravity(Gravity.LEFT);
                 actionButtonContainer.setVerticalGravity(Gravity.CENTER_VERTICAL);
                 actionButtonContainer.setId(1);
 
                 // Back button
                 ImageButton back = new ImageButton(cordova.getActivity());
-                RelativeLayout.LayoutParams backLayoutParams = new RelativeLayout.LayoutParams(
-                        LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT);
+                RelativeLayout.LayoutParams backLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT);
                 backLayoutParams.addRule(RelativeLayout.ALIGN_LEFT);
                 back.setLayoutParams(backLayoutParams);
                 back.setContentDescription("Back Button");
@@ -289,8 +294,7 @@ public class ChildBrowser extends Plugin {
 
                 // Forward button
                 ImageButton forward = new ImageButton(cordova.getActivity());
-                RelativeLayout.LayoutParams forwardLayoutParams = new RelativeLayout.LayoutParams(
-                        LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT);
+                RelativeLayout.LayoutParams forwardLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT);
                 forwardLayoutParams.addRule(RelativeLayout.RIGHT_OF, 2);
                 forward.setLayoutParams(forwardLayoutParams);
                 forward.setContentDescription("Forward Button");
@@ -308,8 +312,7 @@ public class ChildBrowser extends Plugin {
 
                 // Edit Text Box
                 edittext = new EditText(cordova.getActivity());
-                RelativeLayout.LayoutParams textLayoutParams = new RelativeLayout.LayoutParams(
-                        LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+                RelativeLayout.LayoutParams textLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
                 textLayoutParams.addRule(RelativeLayout.RIGHT_OF, 1);
                 textLayoutParams.addRule(RelativeLayout.LEFT_OF, 5);
                 edittext.setLayoutParams(textLayoutParams);
@@ -323,8 +326,8 @@ public class ChildBrowser extends Plugin {
                     public boolean onKey(View v, int keyCode, KeyEvent event) {
                         // If the event is a key-down event on the "enter" button
                         if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                            navigate(edittext.getText().toString());
-                            return true;
+                          navigate(edittext.getText().toString());
+                          return true;
                         }
                         return false;
                     }
@@ -332,8 +335,7 @@ public class ChildBrowser extends Plugin {
 
                 // Close button
                 ImageButton close = new ImageButton(cordova.getActivity());
-                RelativeLayout.LayoutParams closeLayoutParams = new RelativeLayout.LayoutParams(
-                        LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT);
+                RelativeLayout.LayoutParams closeLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT);
                 closeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                 close.setLayoutParams(closeLayoutParams);
                 forward.setContentDescription("Close Button");
@@ -351,8 +353,7 @@ public class ChildBrowser extends Plugin {
 
                 // WebView
                 webview = new WebView(cordova.getActivity());
-                webview.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT,
-                        LayoutParams.FILL_PARENT));
+                webview.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
                 webview.setWebChromeClient(new WebChromeClient());
                 WebViewClient client = new ChildBrowserClient(edittext);
                 webview.setWebViewClient(client);
@@ -397,10 +398,10 @@ public class ChildBrowser extends Plugin {
                 dialog.getWindow().setAttributes(lp);
             }
 
-            private Bitmap loadDrawable(String filename) throws java.io.IOException {
-                InputStream input = cordova.getActivity().getAssets().open(filename);
-                return BitmapFactory.decodeStream(input);
-            }
+          private Bitmap loadDrawable(String filename) throws java.io.IOException {
+              InputStream input = cordova.getActivity().getAssets().open(filename);
+              return BitmapFactory.decodeStream(input);
+          }
         };
         this.cordova.getActivity().runOnUiThread(runnable);
         return "";
@@ -408,15 +409,14 @@ public class ChildBrowser extends Plugin {
 
     /**
      * Create a new plugin result and send it back to JavaScript
-     * 
-     * @param obj
-     *            a JSONObject contain event payload information
+     *
+     * @param obj a JSONObject contain event payload information
      */
     private void sendUpdate(JSONObject obj, boolean keepCallback) {
-        if (this.browserCallbackId != null) {
+        if (this.browserCallbackContext != null) {
             PluginResult result = new PluginResult(PluginResult.Status.OK, obj);
-            result.setKeepCallback(keepCallback);
-            this.success(result, this.browserCallbackId);
+            result.setKeepCallback(keepCallback);            
+            this.browserCallbackContext.sendPluginResult(result);
         }
     }
 
@@ -428,7 +428,7 @@ public class ChildBrowser extends Plugin {
 
         /**
          * Constructor.
-         * 
+         *
          * @param mContext
          * @param edittext
          */
@@ -438,14 +438,12 @@ public class ChildBrowser extends Plugin {
 
         /**
          * Notify the host application that a page has started loading.
-         * 
-         * @param view
-         *            The webview initiating the callback.
-         * @param url
-         *            The url of the page.
+         *
+         * @param view          The webview initiating the callback.
+         * @param url           The url of the page.
          */
         @Override
-        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+        public void onPageStarted(WebView view, String url,  Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
             String newloc;
             if (url.startsWith("http:") || url.startsWith("https:") || url.startsWith("file:")) {
