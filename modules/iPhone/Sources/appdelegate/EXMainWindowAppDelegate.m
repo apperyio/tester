@@ -24,18 +24,17 @@
 NSString * const NSURLIsExcludedFromBackupKey = @"NSURLIsExcludedFromBackupKey";
 
 #pragma mark - Private interface declaration
-@interface EXMainWindowAppDelegate () {
-    EXApperyService *_apperyService;
-    EXUserSettingsStorage *_userSettingsStorage;
-    EXCredentialsManager *_credentialsManager;
-    UINavigationController *_rootNavigationController;
-}
+@interface EXMainWindowAppDelegate ()
+
+@property (nonatomic, strong) EXApperyService *apperyService;
+@property (nonatomic, strong) EXUserSettingsStorage *userSettingsStorage;
+@property (nonatomic, strong) EXCredentialsManager *credentialsManager;
+@property (nonatomic, strong) UINavigationController *rootNavigationController;
 @end
 
 @implementation EXMainWindowAppDelegate
 
 #pragma mark - Public properties synthesize
-@synthesize window = _window;
 
 #pragma mark - UIApplicationDelegate protocol
 #pragma mark - UIApplicationDelegate protocol - Monitoring Application State Changes
@@ -50,21 +49,19 @@ NSString * const NSURLIsExcludedFromBackupKey = @"NSURLIsExcludedFromBackupKey";
             [[EXLoginViewController_iPad alloc] initWithNibName: @"EXLoginViewController~iPad" bundle: nil] :
             [[EXLoginViewController alloc] initWithNibName: @"EXLoginViewController" bundle: nil];
     
-    loginViewController.apperyService = _apperyService;
-    loginViewController.userSettingsStorage = _userSettingsStorage;
-    loginViewController.credentialsManager = _credentialsManager;
+    loginViewController.apperyService = self.apperyService;
+    loginViewController.userSettingsStorage = self.userSettingsStorage;
+    loginViewController.credentialsManager = self.credentialsManager;
     
-    _rootNavigationController = [[UINavigationController alloc] initWithRootViewController: loginViewController];
+    self.rootNavigationController = [[UINavigationController alloc] initWithRootViewController: loginViewController];
     IIViewDeckController *viewDeckController =
-            [[IIViewDeckController alloc] initWithCenterViewController: _rootNavigationController];
+            [[IIViewDeckController alloc] initWithCenterViewController: self.rootNavigationController];
     viewDeckController.navigationControllerBehavior = IIViewDeckNavigationControllerContained;
     viewDeckController.elastic = NO;
     viewDeckController.sizeMode = IIViewDeckLedgeSizeMode;
     
-    self.window.rootViewController = [viewDeckController autorelease];
+    self.window.rootViewController = viewDeckController;
     [self.window makeKeyAndVisible];
-    
-    [loginViewController release];
     
     return YES;
 }
@@ -86,23 +83,23 @@ NSString * const NSURLIsExcludedFromBackupKey = @"NSURLIsExcludedFromBackupKey";
 
 #pragma mark - Private interface implementation
 - (void) createApperyService {
-    NSAssert(_apperyService == nil, @"_apperyService is already initialized");
-    _apperyService = [[[EXApperyService alloc] init] autorelease];
+    NSAssert(self.apperyService == nil, @"self.apperyService is already initialized");
+    self.apperyService = [[EXApperyService alloc] init];
 }
 
 - (void) configureApperyService {
-    _apperyService.baseUrl = [[NSUserDefaults standardUserDefaults] valueForKey: @"baseURL"];
-    DLog(@"Appery service base URL: %@", _apperyService.baseUrl);
+    self.apperyService.baseUrl = [[NSUserDefaults standardUserDefaults] valueForKey: @"baseURL"];
+    NSLog(@"Appery service base URL: %@", self.apperyService.baseUrl);
 }
 
 - (void) createAndConfigureUserSettingsStorage {
-    NSAssert(_userSettingsStorage == nil, @"_userSettingsStorage is already initialized");
-    _userSettingsStorage = [[[EXUserSettingsStorage alloc] init] autorelease];
+    NSAssert(self.userSettingsStorage == nil, @"self.userSettingsStorage is already initialized");
+    self.userSettingsStorage = [[EXUserSettingsStorage alloc] init];
 }
 
 - (void) createCredentialsManager {
-    NSAssert(_credentialsManager == nil, @"_credentialsManager is already initialized");
-    _credentialsManager = [[EXCredentialsManager alloc] init];
+    NSAssert(self.credentialsManager == nil, @"self.credentialsManager is already initialized");
+    self.credentialsManager = [[EXCredentialsManager alloc] init];
 }
 
 - (void) hideAllHuds {
@@ -110,7 +107,7 @@ NSString * const NSURLIsExcludedFromBackupKey = @"NSURLIsExcludedFromBackupKey";
 }
 
 - (void) navigateToStartPage {
-    [_rootNavigationController popToRootViewControllerAnimated: NO];
+    [self.rootNavigationController popToRootViewControllerAnimated: NO];
     IIViewDeckController *rootDeckViewController = (IIViewDeckController *)self.window.rootViewController;
     [rootDeckViewController closeLeftView];
     rootDeckViewController.leftController = nil;
@@ -119,9 +116,9 @@ NSString * const NSURLIsExcludedFromBackupKey = @"NSURLIsExcludedFromBackupKey";
 }
 
 - (void) cancelApperyServiceActivity {
-    [_apperyService cancelCurrentOperation];
-    if (_apperyService.isLoggedIn) {
-        [_apperyService quickLogout];
+    [self.apperyService cancelCurrentOperation];
+    if (self.apperyService.isLoggedIn) {
+        [self.apperyService quickLogout];
     }
 }
 

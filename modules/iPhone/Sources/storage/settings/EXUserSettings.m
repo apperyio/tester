@@ -43,11 +43,4 @@ static NSString *const kShouldRememberPassword = @"shouldRememberPassword";
     [encoder encodeBool: self.shouldRememberPassword forKey: kShouldRememberPassword];
 }
 
-#pragma mark - Life cycle
-
-- (void) dealloc {
-    self.userName = nil;
-    [super dealloc];
-}
-
 @end

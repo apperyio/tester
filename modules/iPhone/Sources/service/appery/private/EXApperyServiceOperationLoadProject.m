@@ -25,19 +25,6 @@ static NSString * const kDefaultStartPageName = @"index.html";
 
 @implementation EXApperyServiceOperationLoadProject
 
-#pragma mark - Public interface implementation
-#pragma mark - Properties synthesize
-@synthesize projectMetadata = _projectMetadata;
-@synthesize projectLocation = _projectLocation;
-@synthesize projectStartPageName = _projectStartPageName;
-
-#pragma mark - Lifecycle
-- (void) dealloc {
-    self.projectMetadata = nil;
-    self.projectLocation = nil;
-    self.projectStartPageName = nil;
-    [super dealloc];
-}
 
 #pragma mark - Protected interface implementation
 - (BOOL) processReceivedData: (NSData *)data {
@@ -55,11 +42,9 @@ static NSString * const kDefaultStartPageName = @"index.html";
         return NO;
     }
     
-    if ([self copyCordovaLibsToLocation: projectLocation error: &processError] == NO) {
-        return NO;
-    }
+    NSString *libsLocation = [projectLocation stringByAppendingPathComponent:@"files/resources/lib"];
     
-    if ([self copyCordovaMediaToLocation: projectLocation error: &processError] == NO) {
+    if ([self copyCordovaLibsToLocation: libsLocation error: &processError] == NO) {
         return NO;
     }
     
@@ -72,7 +57,7 @@ static NSString * const kDefaultStartPageName = @"index.html";
     if ([self preventCSSandJSCachingForProject: projectLocation error: &processError] == NO) {
         self.error = processError;
         // Not critical so just log it.
-        DLog(@"Cannot prevent CSS and JS caching due to error: %@", processError);
+        NSLog(@"Cannot prevent CSS and JS caching due to error: %@", processError);
     }
     
     self.projectLocation = projectLocation;
@@ -116,11 +101,11 @@ static NSString * const kDefaultStartPageName = @"index.html";
     
     // Save project zip archive to local folder
     if ([zippedProject writeToFile: zippedProjectFileFullPath atomically: YES] == NO) {
-        DLog(@"Error was occured during file saving to location: %@", location);
+        NSLog(@"Error was occured during file saving to location: %@", location);
         if (error) {
             NSString *errorDomain = NSLocalizedString(@"Error was occured during saving project file",
                                                       @"Saving file error");
-            *error = [[[NSError alloc] initWithDomain: errorDomain code: 0 userInfo: nil] autorelease];
+            *error = [[NSError alloc] initWithDomain: errorDomain code: 0 userInfo: nil];
         }
         return NO;
     }
@@ -129,39 +114,51 @@ static NSString * const kDefaultStartPageName = @"index.html";
     ZipArchive *archiver = [[ZipArchive alloc] init];
     if ([archiver UnzipOpenFile: zippedProjectFileFullPath]) {
         if ([archiver UnzipFileTo: location overWrite: YES] == NO) {
-            DLog(@"Error was occured during unzipping project file");
+            NSLog(@"Error was occured during unzipping project file");
             if (error) {
                 NSString *errorDomain = NSLocalizedString(@"Error was occured during unzipping project file",
                                                           @"Unzipping file error");
-                *error = [[[NSError alloc] initWithDomain: errorDomain code: 0 userInfo: nil] autorelease];
+                *error = [[NSError alloc] initWithDomain: errorDomain code: 0 userInfo: nil];
             }
             return NO;
         } 
         [archiver UnzipCloseFile];
     }
-    [archiver release];
     
     // Remove saved zip archive
     if ([fileManager removeItemAtPath: zippedProjectFileFullPath error: error] == NO) {
         // Not critical, it is possible to continue
-        DLog(@"Error was occured during zip archive deleting");
+        NSLog(@"Error was occured during zip archive deleting");
     }
     
     return YES;
 }
 
 - (BOOL) copyCordovaLibsToLocation: (NSString *)destination error: (NSError **)error {
-    DLog(@"Coping javascript resources...");
-
-    return [self replaceResource: @"cordova" ofType:@"js" atPath: destination error: error] &&
-            [self replaceResource: @"childbrowser" ofType:@"js" atPath: destination error: error] &&
-            [self replaceResource: @"barcodescanner" ofType:@"js" atPath: destination error: error];
+    NSLog(@"Coping www resources...");
+    
+    NSString *wwwResource = [[[NSBundle mainBundle] URLForResource:@"www" withExtension:@""] path];
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSArray *wwwContent = [fileManager contentsOfDirectoryAtPath:wwwResource error:error];
+    if (wwwContent == nil) {
+        return NO;
+    }
+    
+    for (NSString *entity in wwwContent) {
+        NSString *dst = [destination stringByAppendingPathComponent:entity];
+        if ([fileManager fileExistsAtPath:dst]) {
+            if ([fileManager removeItemAtPath:dst error:error] == NO) {
+                return NO;
+            }
+        }
+        NSString *src = [wwwResource stringByAppendingPathComponent:entity];
+        if ([fileManager copyItemAtPath:src toPath:dst error:error] == NO) {
+            return NO;
+        }
+    }
+    return YES;
 }
-
-- (BOOL) copyCordovaMediaToLocation: (NSString *) destination error: (NSError **) error {
-    return [self copyResource: @"beep" ofType: @"wav" toPath: destination error: error];
-}
-
 
 - (NSString *) retreiveStartPageNameFromLocation: (NSString *) projectLocation error: (NSError **) error {
     NSAssert(projectLocation != nil, @"projectLocation is undefined");
@@ -193,11 +190,13 @@ static NSString * const kDefaultStartPageName = @"index.html";
             
             htmlFileString = [htmlFileString
                     stringByReplacingOccurrencesOfString: @".css" 
-                    withString: [@".css" stringByAppendingFormat: @"?time=%@", [[NSDate date] description]]];
+                    withString: [@".css" stringByAppendingFormat: @"?version=%lu",
+                    (uLong)[[NSDate date] timeIntervalSince1970]]];
 
             htmlFileString = [htmlFileString
-                              stringByReplacingOccurrencesOfString: @".js" 
-                              withString: [@".js" stringByAppendingFormat: @"?time=%@", [[NSDate date] description]]];
+                    stringByReplacingOccurrencesOfString: @".js"
+                    withString: [@".js" stringByAppendingFormat: @"?version=%lu",
+                    (uLong)[[NSDate date] timeIntervalSince1970]]];
 
             
             [htmlFileString writeToFile: htmlFilePath atomically: YES

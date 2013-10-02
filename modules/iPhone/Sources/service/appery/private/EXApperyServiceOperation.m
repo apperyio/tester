@@ -9,28 +9,24 @@
 #import "EXApperyServiceOperation.h"
 
 #pragma mark - Private interface declaration
-@interface EXApperyServiceOperation () <NSURLConnectionDelegate> {
-@private    
-    /** Reference to connection */
-    NSURLConnection *_connection;
+@interface EXApperyServiceOperation () <NSURLConnectionDelegate>
 
-    /** Accumulator for received data from appery.io service */
-    NSMutableData *_receivedData;
+@property (nonatomic, assign, readwrite) BOOL isSuccessfull;
+
+/** Reference to connection */
+@property (nonatomic, strong) NSURLConnection *connection;
+
+/** Accumulator for received data from appery.io service */
+@property (nonatomic, strong) NSMutableData *receivedData;
     
-    /**
-     * Finished code block reference
-     */
-    void (^_completion)(EXApperyServiceOperation *);
-}
+/**
+ * Finished code block reference
+ */
+@property (nonatomic, copy) void(^completion)(EXApperyServiceOperation *);
+
 @end
 
 @implementation EXApperyServiceOperation
-
-@synthesize userName = _userName;
-@synthesize userPassword = _userPassword;
-
-@synthesize isSuccessfull = _isSuccessfull;
-@synthesize error = _error;
 
 #pragma mark - Life cycle
 
@@ -40,37 +36,26 @@
 
     self = [super init];
     if (self) {
-        _completion = [completion copy];
+        self.completion = [completion copy];
         NSURLRequest *operationRequest = [NSURLRequest requestWithURL: url
                                                           cachePolicy: NSURLRequestUseProtocolCachePolicy 
                                                       timeoutInterval: 20.0];
-        _connection = [[NSURLConnection alloc] initWithRequest: operationRequest delegate: self startImmediately: NO];
-        _receivedData = [[NSMutableData alloc] init];
+        self.connection = [[NSURLConnection alloc] initWithRequest: operationRequest delegate: self startImmediately: NO];
+        self.receivedData = [[NSMutableData alloc] init];
 
     }
     return self;
 }
 
-- (void) dealloc {
-    self.userPassword = nil;
-    self.userPassword = nil;
-    self.error = nil;
-    
-    if (_completion) {
-        [_completion release];
-        _completion = nil;
-    }
-    [super dealloc];
-}
 
 #pragma mark - Public interface implementation
 - (void) start {
-    NSAssert(_connection != nil, @"Connection was not initialized");
-    [_connection start];
+    NSAssert(self.connection != nil, @"Connection was not initialized");
+    [self.connection start];
 }
 
 - (void) cancel {
-    [_connection cancel];
+    [self.connection cancel];
 }
 
 #pragma mark - Protected interface
@@ -81,21 +66,21 @@
 
 #pragma mark - NSURLConnectionDelegate protocol implementation
 - (void) connection: (NSURLConnection *)connection didReceiveResponse: (NSURLResponse *)response {
-    NSAssert(_receivedData != nil, @"receivedData property was not initialized");
-    _receivedData.length = 0;
+    NSAssert(self.receivedData != nil, @"receivedData property was not initialized");
+    self.receivedData.length = 0;
 }
 
 - (void) connection: (NSURLConnection *)connection didReceiveData: (NSData *)data {
-    [_receivedData appendData: data];
+    [self.receivedData appendData: data];
 }
 
 - (void) connectionDidFinishLoading: (NSURLConnection *)connection {
-    [connection release];
+    self.connection = nil;
 
-    _isSuccessfull = [self processReceivedData: _receivedData];
+    self.isSuccessfull = [self processReceivedData: self.receivedData];
 
-    if(_completion) {
-        _completion(self);
+    if(self.completion) {
+        self.completion(self);
     }
 }
 
@@ -124,8 +109,9 @@
 }
 
 - (void) connection: (NSURLConnection *)connection didFailWithError: (NSError *)error {
-    [connection release];
-    _isSuccessfull = NO;
+    self.connection = nil;
+    
+    self.isSuccessfull = NO;
     
     if (error.code == kCFURLErrorUserCancelledAuthentication) {
         NSString *loginErrorDomain = NSLocalizedString(@"User name or password are incorrect",
@@ -135,8 +121,8 @@
     } else {
         self.error = error;
     }
-    if(_completion) {
-        _completion(self);
+    if(self.completion) {
+        self.completion(self);
     }
 }
 

@@ -70,25 +70,6 @@ static NSString *const kProjectIsDisabled = @"isDisabled";
     return self;
 }
 
-#pragma mark - Memory management
-
-- (void) dealloc  {
-    self.identifier = nil;
-    self.name = nil;
-    self.owner = nil;
-    self.featured = nil;
-    self.modifier = nil;
-    self.link = nil;
-    self.description = nil;
-    self.htmlBundle = nil;
-    self.showcaseLink = nil;
-    self.isDisabled = nil;
-    self.creationDate = nil;
-    self.modifyDate = nil;
-    self.submissionDate = nil;
-    [super dealloc];
-}
-
 #pragma mark - Getters
 
 - (NSString *) formattedCreationDate {
@@ -116,13 +97,8 @@ static NSString *const kProjectIsDisabled = @"isDisabled";
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:[milliseconds doubleValue] * 0.001];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     
-    @try {
-        [dateFormatter setDateFormat:@"yyyy-MM-dd kk:mm:ss"];
-        return [dateFormatter stringFromDate: date];
-    }
-    @finally {
-        [dateFormatter release];
-    }
+    [dateFormatter setDateFormat:@"yyyy-MM-dd kk:mm:ss"];
+    return [dateFormatter stringFromDate: date];
 }
 
 - (BOOL) isEmptyValue: (id)value {

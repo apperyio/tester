@@ -77,12 +77,12 @@
         if (self.shouldRememberPassword.on) {
             if ([self.credentialsManager addPassword: self.userPassword.text forUser: self.userName.text] == NO) {
                 // not critical
-                DLog(@"Can not add password: %@ for user: %@", self.userPassword.text, self.userName.text);
+                NSLog(@"Can not add password: %@ for user: %@", self.userPassword.text, self.userName.text);
             }
         } else {
             if ([self.credentialsManager removePasswordForUser: self.userName.text] == NO) {
                 // not critical
-                DLog(@"Can not remove password: %@ for user: %@", self.userPassword.text, self.userName.text);
+                NSLog(@"Can not remove password: %@ for user: %@", self.userPassword.text, self.userName.text);
             }
         }
     } else {
@@ -153,6 +153,8 @@
 
     self.projectViewController = [[EXProjectViewController alloc] initWithProjectMetadata: nil];
     self.projectViewController.apperyService = self.apperyService;
+    self.projectViewController.wwwFolderName = [[NSBundle mainBundle] pathForResource:@"www" ofType:@""];
+    self.projectViewController.startPage = @"index.html";
     
     EXProjectsMetadataViewController *projectsMetadataViewController = [[EXProjectsMetadataViewController alloc]
             initWithNibName:NSStringFromClass([EXProjectsMetadataViewController class]) bundle:nil];

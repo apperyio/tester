@@ -42,7 +42,7 @@ static NSString *const kLastUser = @"lastUser";
     [allSettings setValue: settings forKey: settings.userName];
     [allSettings setValue: settings forKey: kLastUser];
     if ([self storeAllSettingsPrivate: allSettings] == NO) {
-        DLog(@"Settings for user: %@ was not stored.", settings.userName);
+        NSLog(@"Settings for user: %@ was not stored.", settings.userName);
     }
 }
 

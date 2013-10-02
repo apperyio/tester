@@ -24,21 +24,24 @@
 @property (nonatomic, readwrite, strong) NSMutableDictionary* pluginsDict;
 @property (nonatomic, readwrite, strong) NSMutableDictionary* settings;
 @property (nonatomic, readwrite, strong) NSMutableArray* whitelistHosts;
+@property (nonatomic, readwrite, strong) NSMutableArray* startupPluginNames;
 @property (nonatomic, readwrite, strong) NSString* startPage;
 
 @end
 
 @implementation CDVConfigParser
 
-@synthesize pluginsDict, settings, whitelistHosts, startPage;
+@synthesize pluginsDict, settings, whitelistHosts, startPage, startupPluginNames;
 
 - (id)init
 {
     self = [super init];
     if (self != nil) {
-        self.pluginsDict = [[NSMutableDictionary alloc] initWithCapacity:4];
-        self.settings = [[NSMutableDictionary alloc] initWithCapacity:4];
-        self.whitelistHosts = [[NSMutableArray alloc] initWithCapacity:1];
+        self.pluginsDict = [[NSMutableDictionary alloc] initWithCapacity:30];
+        self.settings = [[NSMutableDictionary alloc] initWithCapacity:30];
+        self.whitelistHosts = [[NSMutableArray alloc] initWithCapacity:30];
+        self.startupPluginNames = [[NSMutableArray alloc] initWithCapacity:8];
+        featureName = nil;
     }
     return self;
 }
@@ -46,28 +49,37 @@
 - (void)parser:(NSXMLParser*)parser didStartElement:(NSString*)elementName namespaceURI:(NSString*)namespaceURI qualifiedName:(NSString*)qualifiedName attributes:(NSDictionary*)attributeDict
 {
     if ([elementName isEqualToString:@"preference"]) {
-        [settings setObject:[attributeDict objectForKey:@"value"] forKey:[attributeDict objectForKey:@"name"]];
-    } else if ([elementName isEqualToString:@"plugin"]) {
-        [pluginsDict setObject:[attributeDict objectForKey:@"value"] forKey:[attributeDict objectForKey:@"name"]];
+        settings[[attributeDict[@"name"] lowercaseString]] = attributeDict[@"value"];
+    } else if ([elementName isEqualToString:@"feature"]) { // store feature name to use with correct parameter set
+        featureName = [attributeDict[@"name"] lowercaseString];
+    } else if ((featureName != nil) && [elementName isEqualToString:@"param"]) {
+        NSString* paramName = [attributeDict[@"name"] lowercaseString];
+        id value = attributeDict[@"value"];
+        if ([paramName isEqualToString:@"ios-package"]) {
+            pluginsDict[featureName] = value;
+        }
+        BOOL paramIsOnload = ([paramName isEqualToString:@"onload"] && [@"true" isEqualToString : value]);
+        BOOL attribIsOnload = [@"true" isEqualToString : [attributeDict[@"onload"] lowercaseString]];
+        if (paramIsOnload || attribIsOnload) {
+            [self.startupPluginNames addObject:featureName];
+        }
     } else if ([elementName isEqualToString:@"access"]) {
-        [whitelistHosts addObject:[attributeDict objectForKey:@"origin"]];
+        [whitelistHosts addObject:attributeDict[@"origin"]];
     } else if ([elementName isEqualToString:@"content"]) {
-        self.startPage = [attributeDict objectForKey:@"src"];
+        self.startPage = attributeDict[@"src"];
+    }
+}
+
+- (void)parser:(NSXMLParser*)parser didEndElement:(NSString*)elementName namespaceURI:(NSString*)namespaceURI qualifiedName:(NSString*)qualifiedName
+{
+    if ([elementName isEqualToString:@"feature"]) { // no longer handling a feature so release
+        featureName = nil;
     }
 }
 
 - (void)parser:(NSXMLParser*)parser parseErrorOccurred:(NSError*)parseError
 {
     NSAssert(NO, @"config.xml parse error line %d col %d", [parser lineNumber], [parser columnNumber]);
-}
-
-- (NSString*)getStartPage
-{
-    if (self.startPage != nil) {
-        return self.startPage;
-    } else {
-        return @"index.html";
-    }
 }
 
 @end

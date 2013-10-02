@@ -23,7 +23,7 @@
 /**
  * @name Operation execution result access properties
  */
-@property (nonatomic, readonly) BOOL isSuccessfull;
+@property (nonatomic, assign, readonly) BOOL isSuccessfull;
 @property (nonatomic, retain) NSError *error;
 
 /**

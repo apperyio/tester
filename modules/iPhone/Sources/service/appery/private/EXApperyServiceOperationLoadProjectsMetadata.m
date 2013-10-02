@@ -11,43 +11,28 @@
 #import <Cordova/CDVJSON.h>
 #import "EXProjectMetadata.h"
 
-@implementation EXApperyServiceOperationLoadProjectsMetadata
+@interface EXApperyServiceOperationLoadProjectsMetadata ()
 
-@synthesize projectsMetadata = _projectsMetadata;
+@property (nonatomic, strong, readwrite) NSArray *projectsMetadata;
+    
+@end
+
+@implementation EXApperyServiceOperationLoadProjectsMetadata
 
 #pragma mark - EXApperyServiceOperation protected interface implementation
 - (BOOL) processReceivedData: (NSData *)data {
-    DLog(@"Projects metadata was loaded");
+    NSLog(@"Projects metadata was loaded");
     NSString *serializedResponseString = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
-    @try {
-        NSDictionary *serializedResponseDictionary = [serializedResponseString JSONObject];
-        NSArray *serializedProjectsMetadata = [serializedResponseDictionary objectForKey: @"projects"];
-        NSMutableArray *projectsMetadata = [[NSMutableArray alloc] initWithCapacity: serializedProjectsMetadata.count];
-        for (NSDictionary *serializedProjectMetadata in serializedProjectsMetadata) {
-            EXProjectMetadata *projectMetadata = [[EXProjectMetadata alloc]
-                                                  initWithMetadata: serializedProjectMetadata];
-            [projectsMetadata addObject: projectMetadata];
-            [projectMetadata release];
-        }
-        if (_projectsMetadata) {
-            [_projectsMetadata release];
-            _projectsMetadata = nil;
-        }
-        _projectsMetadata = [[NSArray alloc] initWithArray: projectsMetadata];
-        [projectsMetadata release];
+    NSDictionary *serializedResponseDictionary = [serializedResponseString JSONObject];
+    NSArray *serializedProjectsMetadata = [serializedResponseDictionary objectForKey: @"projects"];
+    NSMutableArray *projectsMetadata = [[NSMutableArray alloc] initWithCapacity: serializedProjectsMetadata.count];
+    for (NSDictionary *serializedProjectMetadata in serializedProjectsMetadata) {
+        EXProjectMetadata *projectMetadata = [[EXProjectMetadata alloc]
+                                              initWithMetadata: serializedProjectMetadata];
+        [projectsMetadata addObject: projectMetadata];
     }
-    @finally {
-        [serializedResponseString release];
-    }
+    self.projectsMetadata = [[NSArray alloc] initWithArray: projectsMetadata];
     return YES;
 }
 
-#pragma mark - Life cycle
-- (void) dealloc {
-    if (_projectsMetadata) {
-        [_projectsMetadata release];
-        _projectsMetadata = nil;
-    }
-    [super dealloc];
-}
 @end

@@ -168,7 +168,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
                                                              delegate: nil cancelButtonTitle: errorCancelButtonTitle
                                                     otherButtonTitles: nil];
          [errorAlert show];
-         DLog(@"Projects loading failed due to: %@", [error localizedDescription]);
+         NSLog(@"Projects loading failed due to: %@", [error localizedDescription]);
          if (completion) {
              completion(NO);
          }
@@ -408,7 +408,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
         EXProjectMetadata *first = (EXProjectMetadata *)obj1;
         EXProjectMetadata *second = (EXProjectMetadata *)obj2;
         if (first.modifyDate == nil || second.modifyDate == nil) {
-            DLog(@"Oops: modify date is nil");
+            NSLog(@"Oops: modify date is nil");
         }
         if (ascending) {
             return [first.modifyDate compare: second.modifyDate];

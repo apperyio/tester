@@ -18,6 +18,6 @@
  *
  * @return array of EXProjectMetadata objects
  */
-@property (nonatomic, readonly) NSArray *projectsMetadata;
+@property (nonatomic, strong, readonly) NSArray *projectsMetadata;
 
 @end
