@@ -3,7 +3,7 @@
         id        = "io.cordova.helloCordova"
         version   = "2.0.0">
     
-    <access origin="http://127.0.0.1*"/> <!-- allow local pages -->
+    <access origin="*"/> 
 
     <log level="DEBUG"/>
     <feature name="Device">
