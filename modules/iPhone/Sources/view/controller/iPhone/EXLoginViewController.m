@@ -16,12 +16,7 @@
 #import "EXApperyServiceException.h"
 
 #pragma mark - Private interface declaration
-@interface EXLoginViewController () {
-    /**
-     * Reference to to the application root view controoler's view
-     */
-    UIView *_rootView;
-}
+@interface EXLoginViewController ()
 
 @property (nonatomic, retain) EXProjectViewController *projectViewController;
 
@@ -43,13 +38,32 @@
 }
 
 - (void) viewDidLoad {
-    [self configureUI];
     [super viewDidLoad];
+    [self configureUI];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self configureCredentialFields];
+}
+
+#pragma mark - iOS 5 rotation
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
+    return NO;
+}
+
+#pragma mark - iOS 6 rotation
+- (BOOL) shouldAutorotate {
+    return NO;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return UIInterfaceOrientationPortrait;
+    
+}
+
+-(NSUInteger)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 #pragma mark - EXViewControllerProvider protocol implementation

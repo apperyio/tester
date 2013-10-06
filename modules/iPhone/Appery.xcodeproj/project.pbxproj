@@ -27,6 +27,7 @@
 		683954FF17453032001EC185 /* Default-Landscape@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 683954FD17453032001EC185 /* Default-Landscape@2x~ipad.png */; };
 		6839550117453043001EC185 /* Icon-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6839550017453043001EC185 /* Icon-72@2x.png */; };
 		6839550B17453B15001EC185 /* EXLoginViewController~iPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 6839550A17453B15001EC185 /* EXLoginViewController~iPad.m */; };
+		6879169C180177F2007B8401 /* VERSION in Resources */ = {isa = PBXBuildFile; fileRef = 6879169B180177F2007B8401 /* VERSION */; };
 		687FBA4C15E63DDF008B956A /* EXMainWindowAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 687FBA1315E63DDF008B956A /* EXMainWindowAppDelegate.m */; };
 		687FBA5615E63DDF008B956A /* EXCredentialsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 687FBA2D15E63DDF008B956A /* EXCredentialsManager.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		687FBA5715E63DDF008B956A /* EXUserSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 687FBA3015E63DDF008B956A /* EXUserSettings.m */; };
@@ -172,6 +173,7 @@
 		6839550017453043001EC185 /* Icon-72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72@2x.png"; sourceTree = "<group>"; };
 		6839550917453B15001EC185 /* EXLoginViewController~iPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "EXLoginViewController~iPad.h"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		6839550A17453B15001EC185 /* EXLoginViewController~iPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "EXLoginViewController~iPad.m"; sourceTree = "<group>"; };
+		6879169B180177F2007B8401 /* VERSION */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = VERSION; sourceTree = "<group>"; };
 		687FBA1215E63DDF008B956A /* EXMainWindowAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXMainWindowAppDelegate.h; sourceTree = "<group>"; };
 		687FBA1315E63DDF008B956A /* EXMainWindowAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXMainWindowAppDelegate.m; sourceTree = "<group>"; };
 		687FBA2C15E63DDF008B956A /* EXCredentialsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = EXCredentialsManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -416,6 +418,7 @@
 				683954CD174231CD001EC185 /* IIViewDeckController.m */,
 				683954CE174231CD001EC185 /* IIWrapController.h */,
 				683954CF174231CD001EC185 /* IIWrapController.m */,
+				6879169B180177F2007B8401 /* VERSION */,
 			);
 			path = ViewDeck;
 			sourceTree = "<group>";
@@ -1070,6 +1073,7 @@
 				687FBA6015E63DDF008B956A /* EXLoginViewController.xib in Resources */,
 				687FBA6115E63DDF008B956A /* EXMainWindow.xib in Resources */,
 				687FBAF115EB8840008B956A /* EXProjectsMetadataViewController.xib in Resources */,
+				6879169C180177F2007B8401 /* VERSION in Resources */,
 				6885325317F9884F0095810A /* config.xml in Resources */,
 				6885330817F989320095810A /* scannerOverlay.xib in Resources */,
 				27F3A09C172A6B39004CA51E /* EXSelectViewController.xib in Resources */,
