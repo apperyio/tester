@@ -16,7 +16,7 @@
  * Provides container for cordova projects.
  *     Inheritance is used to configure navigation controller bar appearance and behaviour.
  */
-@interface EXProjectViewController : CDVViewController
+@interface EXProjectViewController : CDVViewController <CDVScreenOrientationDelegate>
 
 /**
  * Initialize with view controller and configures it with loaded project correspond to the specified project metadata.

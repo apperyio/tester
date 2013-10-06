@@ -43,15 +43,16 @@ static const CGFloat kCenterViewLedge = 50;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     [self.projectsMetadataViewController addProjectsObserver: self];
     [self attachSlideViewController];
-    [super viewDidAppear:animated];
 }
 
 - (void) viewDidDisappear: (BOOL)animated {
+    [super viewDidDisappear: animated];
+
     [self.projectsMetadataViewController removeProjectsObserver: self];
     [self detachSlideViewController];
-    [super viewDidDisappear: animated];
 }
 
 - (void) viewDidLoad {
@@ -81,6 +82,25 @@ static const CGFloat kCenterViewLedge = 50;
     [self.viewDeckController closeLeftViewAnimated:NO];
     self.viewDeckController.leftController = nil;
     [self.navigationController popToRootViewControllerAnimated:NO];
+}
+
+#pragma mark - iOS 5 rotation
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
+    return YES;
+}
+
+#pragma mark - iOS 6 rotation
+- (BOOL) shouldAutorotate {
+    return YES;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return UIInterfaceOrientationPortrait;
+    
+}
+
+-(NSUInteger)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskAll;
 }
 
 #pragma mark - Private interface implementation
