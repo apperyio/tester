@@ -50,7 +50,7 @@ static const CGFloat kCenterViewLedge = 50;
 
 - (void) viewDidDisappear: (BOOL)animated {
     [self.projectsMetadataViewController removeProjectsObserver: self];
-    [self deattachSlideViewController];
+    [self detachSlideViewController];
     [super viewDidDisappear: animated];
 }
 
@@ -173,7 +173,7 @@ static const CGFloat kCenterViewLedge = 50;
     }
 }
 
-- (void)deattachSlideViewController {
+- (void)detachSlideViewController {
     [self.viewDeckController closeLeftView];
     self.viewDeckController.leftController = nil;
 }
