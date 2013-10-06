@@ -16,6 +16,10 @@
 static const CGFloat kLeftViewWidth = 270;
 static const CGFloat kCenterViewLedge = 50;
 
+static const CGFloat kStatusBarHeight = 20;
+static const CGFloat kNavigationBarHeight = 44;
+
+
 @interface EXProjectViewController () <EXProjectsObserver>
 
 @property (nonatomic, retain) EXProjectMetadata *_projectMetadata;
@@ -24,13 +28,6 @@ static const CGFloat kCenterViewLedge = 50;
 @end
 
 @implementation EXProjectViewController
-
-#pragma mark - Public properties synthesize
-@synthesize apperyService = _apperyService;
-@synthesize projectsMetadataViewController = _projectsMetadataViewController;
-
-#pragma mark - Private properties synthesize
-@synthesize _projectMetadata = __projectMetadata;
 
 #pragma mark - Lifecycle
 - (id) initWithProjectMetadata: (EXProjectMetadata *)projectMetadata {
@@ -58,10 +55,15 @@ static const CGFloat kCenterViewLedge = 50;
 - (void) viewDidLoad {
     [super viewDidLoad];
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didRotate:)
-                                                name:@"UIDeviceOrientationDidChangeNotification"
-                                              object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRotate:)
+            name:UIDeviceOrientationDidChangeNotification object:nil];
+        
     [self configureNavigationBar];
+}
+
+- (void) dealloc {
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Public interface implementation
@@ -168,8 +170,9 @@ static const CGFloat kCenterViewLedge = 50;
             [progressHud hide: NO];
             NSString *errorTitle = NSLocalizedString(@"Failed", @"Title for Failed alert");
             NSString *errorCancelButtonTitle = NSLocalizedString(@"Ok", @"Failed alert cancel button");
-            UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle: errorTitle message: error.domain
-                    delegate: nil cancelButtonTitle: errorCancelButtonTitle otherButtonTitles: nil];
+            UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle: errorTitle
+                    message: [error localizedDescription] delegate: nil
+                    cancelButtonTitle: errorCancelButtonTitle otherButtonTitles: nil];
             [errorAlert show];
             NSLog(@"Project loading failed due to: %@", [error localizedDescription]);
         }
@@ -178,6 +181,16 @@ static const CGFloat kCenterViewLedge = 50;
 
 - (void) didRotate:(NSNotification *)notification {
     self.viewDeckController.leftSize = [self calculateLeftViewSize];
+    if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
+        // ETST-14908 fix
+        CGSize screen = [[UIScreen mainScreen] bounds].size;
+        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+        if (UIDeviceOrientationIsPortrait(orientation)) {
+            self.view.frame = CGRectMake(0, 0, screen.width, screen.height - kStatusBarHeight - kNavigationBarHeight);
+        } else {
+            self.view.frame = CGRectMake(0, 0, screen.height, screen.width - kStatusBarHeight - kNavigationBarHeight);
+        }
+    }
 }
 
 - (CGFloat)calculateLeftViewSize {
