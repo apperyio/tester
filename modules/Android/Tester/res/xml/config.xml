@@ -55,13 +55,10 @@
         <param name="android-package" value="org.apache.cordova.core.splashscreen.SplashScreen" />
     </feature>
     <feature name="InAppBrowser">
-        <param name="android-package" value="org.apache.cordova.coreinappbrowser.InAppBrowser" />
+        <param name="android-package" value="org.apache.cordova.core.inappbrowser.InAppBrowser" />
     </feature>
 
     <!-- Appery plugins -->
-    <feature name="ChildBrowser">
-      <param name="android-package" value="com.phonegap.plugins.childBrowser.ChildBrowser"/>
-    </feature>
     <feature name="BarcodeScanner">
       <param name="android-package" value="com.phonegap.plugins.barcodescanner.BarcodeScanner"/>
     </feature>
