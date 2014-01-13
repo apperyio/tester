@@ -81,7 +81,18 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [self configureNavigationBar];
     [self configureToolbar];
     [self registerRotationObserving];
+    
     [super viewDidLoad];
+}
+
+- (void) viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+//    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
+//        CGRect barFrame = self.navigationBar.frame;
+//        barFrame.size = CGSizeMake(barFrame.size.width, 80);
+//    }
 }
 
 - (void)dealloc {
@@ -244,6 +255,13 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     NSString *logoutButtonTiltle = NSLocalizedString(@"Logout", @"Logout button title");
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle: logoutButtonTiltle
             style: UIBarButtonItemStylePlain target: self action: @selector(logoutButtonPressed:)];
+    
+    //For ios 7 and later
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
+        CGRect barFrame = self.navigationBar.frame;
+        barFrame.size = CGSizeMake(barFrame.size.width, 64);
+        self.navigationBar.frame = barFrame;
+    }
 }
 
 - (void)setSortButtonsDefaultNames {
@@ -422,6 +440,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [self setSortButtonsDefaultNames];
     self.sortByDateButton.title = [self.sortByDateButton.title stringByAppendingFormat:@" %@",
             ascending ? kArrowUpSymbol : kArrowDownSymbol];
+    NSLog(@"%f %f", self.sortByDateButton.width, self.sortByNameButton.width);
     
     self.currentProjectsSortingMethod = ascending ?
             EXProjectsMetadataSortingMethodType_DateAscending :
@@ -462,7 +481,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [self setSortButtonsDefaultNames];
     self.sortByNameButton.title = [self.sortByNameButton.title stringByAppendingFormat:@" %@",
             ascending ? kArrowUpSymbol : kArrowDownSymbol];
-    
+    NSLog(@"%f %f", self.sortByDateButton.width, self.sortByNameButton.width);
     self.currentProjectsSortingMethod = ascending ?
             EXProjectsMetadataSortingMethodType_NameAscending :
             EXProjectsMetadataSortingMethodType_NameDescending;

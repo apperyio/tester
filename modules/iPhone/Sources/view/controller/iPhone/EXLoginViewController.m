@@ -39,6 +39,7 @@
 
 - (void) viewDidLoad {
     [super viewDidLoad];
+    
     [self configureUI];
 }
 
@@ -173,8 +174,12 @@
     EXProjectsMetadataViewController *projectsMetadataViewController = [[EXProjectsMetadataViewController alloc]
             initWithNibName:NSStringFromClass([EXProjectsMetadataViewController class]) bundle:nil];
     projectsMetadataViewController.apperyService = self.apperyService;
-
     self.projectViewController.projectsMetadataViewController = projectsMetadataViewController;
+    
+    //For ios 7 and later
+    if([self respondsToSelector:@selector(setEdgesForExtendedLayout:)]) {
+        self.edgesForExtendedLayout = UIRectEdgeBottom;
+    }
 }
 
 - (void)configureLoginButton {
