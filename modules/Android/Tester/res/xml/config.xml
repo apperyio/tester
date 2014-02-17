@@ -7,7 +7,10 @@
     
     <preference name="loglevel" value="DEBUG" />
     <preference name="KeepRunning" value="false"/>
+    <preference name="LoadUrlTimeoutValue" value="10000"/>
     <preference name="loadInWebView" value="false"/>
+    <preference name="InAppBrowserStorageEnabled" value="false"/>
+    
     <feature name="App">
         <param name="android-package" value="org.apache.cordova.App" />
     </feature>		
@@ -67,4 +70,10 @@
     <feature name="BarcodeScanner">
       <param name="android-package" value="com.phonegap.plugins.barcodescanner.BarcodeScanner"/>
     </feature>
+    
+    <!-- Third party libraries -->
+    <feature name="GAPlugin" >
+        <param name="android-package" value="com.adobe.plugins.GAPlugin" />
+    </feature>
+	
 </widget>

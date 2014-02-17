@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.webkit.ValueCallback;
 
 /**
@@ -64,5 +65,20 @@ public class ApperyActivity extends org.apache.cordova.CordovaActivity {
         }
 
         return path + File.separator + fileName;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.cordova.CordovaActivity#onKeyUp(int, android.view.KeyEvent)
+     */
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        boolean result = super.onKeyUp(keyCode, event);
+        
+        // End activity if return to projects list
+        if (result) {
+            endActivity();
+        }
+        
+        return result;
     }
 }

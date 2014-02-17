@@ -434,6 +434,13 @@ module.exports = [
         "clobbers": [
             "BarcodeScanner"
         ]
+    },
+    {
+        "file": "plugins\\com.adobe.plugins\\www\\GAPlugin.js",
+        "id": "com.adobe.plugins.GAPlugin",
+        "clobbers": [
+            "GAPlugin"
+        ]
     }
 ]
 });

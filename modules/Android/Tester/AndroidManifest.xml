@@ -60,17 +60,15 @@
         android:icon="@drawable/icon"
         android:label="@string/application_name"
         android:theme="@style/ProjectListThemeABS"
-        android:debuggable="false"
-        >
+        android:debuggable="true"
+        android:allowBackup="false" >
        <!-- android:theme="@style/ProjectListTheme"         -->
 
         <activity
             android:name=".LoginActivity"
             android:configChanges="keyboardHidden"
             android:label="@string/application_name"
-            android:launchMode="singleTask"
-
-               >
+            android:launchMode="singleTask" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -80,9 +78,7 @@
         <activity
             android:name=".ProjectListActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="@string/application_name"
-
-            >
+            android:label="@string/application_name" >
         </activity>
         <activity
             android:name="io.appery.tester.ApperyActivity"
@@ -96,6 +92,7 @@
             android:label="@string/application_name"
             android:launchMode="singleTop" >
         </activity>
+        <!--
         <activity
             android:name="org.apache.cordova.DroidGap"
             android:configChanges="orientation|keyboardHidden"
@@ -103,6 +100,7 @@
             <intent-filter>
             </intent-filter>
         </activity>
+        -->
 
         <!-- ZXing activities -->
         <activity
@@ -119,6 +117,6 @@
         </activity>
     </application>
 
-    <uses-sdk android:minSdkVersion="10" />
+    <uses-sdk android:minSdkVersion="11" />
 
 </manifest>
