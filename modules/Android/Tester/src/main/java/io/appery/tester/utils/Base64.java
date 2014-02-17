@@ -1,5 +1,6 @@
 package io.appery.tester.utils;
 
+
 /**
  * <p>
  * Encodes and decodes to and from Base64 notation.
@@ -948,10 +949,10 @@ public class Base64 {
                 // Not too bad of an estimate on array size, I'd say.
                 byte[] finalOut = new byte[e];
                 System.arraycopy(outBuff, 0, finalOut, 0, e);
-                // System.err.println("Having to resize array from " + outBuff.length + " to " + e );
+                // Log.e("Base64", "Having to resize array from " + outBuff.length + " to " + e );
                 return finalOut;
             } else {
-                // System.err.println("No need to resize array.");
+                // Log.e("Base64", "No need to resize array.");
                 return outBuff;
             }
 

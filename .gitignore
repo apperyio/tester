@@ -1,5 +1,9 @@
 *~
+
+# IDEA Files
 /.idea
+.idea/
+*.iml
 
 # Xcode
 .DS_Store
@@ -19,5 +23,4 @@ profile
 *.moved-aside
 DerivedData
 xcdebugger
-.idea/
 

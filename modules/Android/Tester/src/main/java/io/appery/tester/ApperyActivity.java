@@ -8,13 +8,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 
-import org.apache.cordova.CordovaChromeClient;
-import org.apache.cordova.CordovaWebView;
-import org.apache.cordova.CordovaWebViewClient;
-import org.apache.cordova.IceCreamCordovaWebViewClient;
-import org.apache.cordova.CordovaInterface;
-
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,7 +16,7 @@ import android.webkit.ValueCallback;
 /**
  * @author Daniel Lukashevich
  */
-public class ApperyActivity extends org.apache.cordova.DroidGap {
+public class ApperyActivity extends org.apache.cordova.CordovaActivity {
 
     private static final String TAG = "ApperyActivity";
 
@@ -41,22 +34,6 @@ public class ApperyActivity extends org.apache.cordova.DroidGap {
         loadUrlTimeoutValue = 60000;
         clearCache();
         loadUrl(indexPath);
-        setBooleanProperty("loadInWebView", true);
-    }
-
-    /**
-     * Create and initialize web container with default web view objects.
-     */
-    @Override
-    public void init() {
-        CordovaWebView webView = new CordovaWebView(this);
-        CordovaWebViewClient webViewClient;
-        if (android.os.Build.VERSION.SDK_INT < 11) {
-            webViewClient = new CordovaWebViewClient(this, webView);
-        } else {
-            webViewClient = new IceCreamCordovaWebViewClient(this, webView);
-        }
-        this.init(webView, webViewClient, new ApperyChromeClient(this, webView));
     }
 
     @Override
@@ -82,41 +59,10 @@ public class ApperyActivity extends org.apache.cordova.DroidGap {
                 }
                 in.close();
             } catch (Exception e) {// Catch exception if any
-                System.err.println("Error: " + e.getMessage());
+                Log.e(TAG, "Can't define start file name", e);
             }
         }
 
         return path + File.separator + fileName;
-    }
-
-    /** This class is used to make <input type="file" ... /> work in APK **/
-    public class ApperyChromeClient extends CordovaChromeClient {
-        public ApperyChromeClient(CordovaInterface cordova) {
-            super(cordova);
-        }
-
-        public ApperyChromeClient(CordovaInterface ctx, CordovaWebView app) {
-            super(ctx, app);
-        }
-
-        public void openFileChooser(ValueCallback<Uri> uploadMsg) {
-            openFileChooser(uploadMsg, DEFAULT_ACCEPT_TYPE);
-        }
-
-        public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType) {
-            if (acceptType == null || acceptType.isEmpty()) {
-                acceptType = DEFAULT_ACCEPT_TYPE;
-            }
-            ApperyActivity.this.mUploadMessage = uploadMsg;
-            Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-            i.addCategory(Intent.CATEGORY_OPENABLE);
-            i.setType(acceptType);
-            ApperyActivity.this.startActivityForResult(Intent.createChooser(i, "File Chooser"),
-                    ApperyActivity.FILECHOOSER_RESULTCODE);
-        }
-
-        public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
-            openFileChooser(uploadMsg, acceptType);
-        }
     }
 }

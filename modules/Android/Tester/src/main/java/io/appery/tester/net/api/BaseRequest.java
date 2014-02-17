@@ -82,16 +82,15 @@ public abstract class BaseRequest implements RequestCallback {
                 }
 
             } catch (ClientProtocolException e) {
-                Log.e(getTag(), e.getMessage(), e);
+                Log.e(getTag(), "Can't execute request", e);
                 notifyCallback(true, e.getMessage());
             } catch (IOException e) {
-                Log.e(getTag(), e.getMessage(), e);
+                Log.e(getTag(), "Can't execute request", e);
                 notifyCallback(true, "Unable to connect");
             } catch (Exception e) {
-                Log.e(getTag(), e.getMessage(), e);
+                Log.e(getTag(), "Can't execute request", e);
                 notifyCallback(true, "Unknown error");
             }
-
         }
     }
 

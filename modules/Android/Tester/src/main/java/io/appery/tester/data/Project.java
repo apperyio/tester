@@ -58,7 +58,7 @@ public class Project implements Serializable {
                     id = Integer.parseInt(urlParts[urlParts.length - 2]);
                     resourcesLink = String.format(Constants.API.GET_PROJECT_RESOURCE, id);
                 } catch (Exception e) {
-                    Log.e("Project", e.getMessage());
+                    Log.e("Project", "Can't compose a link to resources", e);
                 }
             }
             if (json.has("lasteditor")) {

@@ -11,7 +11,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.util.Log;
 
 /**
@@ -133,7 +132,7 @@ public class FileUtils {
         	Log.e(TAG,ex.getMessage() + " in the specified directory.");
             System.exit(0);
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            Log.e(TAG, "Can't copy asset: " + assetName, e);
         }
     }
     

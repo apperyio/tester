@@ -45,11 +45,11 @@
 			<scope>compile</scope>
 		</dependency>
 
-	<dependency>
-		<groupId>org.apache.cordova</groupId>
-		<artifactId>cordova-core</artifactId>
-		<scope>compile</scope>
-	</dependency>		
+		<dependency>
+			<groupId>org.apache.cordova</groupId>
+			<artifactId>cordova-core</artifactId>
+			<scope>compile</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>jivesoftware.smack.osgi</groupId>
@@ -70,6 +70,27 @@
 		<finalName>${project.name}-${project.version}</finalName>
 
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<descriptor>src/assets/cordova_resources_assembly.xml</descriptor>
+					<archiveBaseDirectory>src/assets</archiveBaseDirectory>
+					<outputDirectory>assets</outputDirectory>
+					<finalName>cordova_resources</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 			<plugin>
 				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
 				<artifactId>android-maven-plugin</artifactId>
@@ -96,64 +117,75 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jarsigner-plugin</artifactId>
-				<version>1.2</version>
-				<executions>
-					<execution>
-						<id>signing</id>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-						<phase>package</phase>
-						<inherited>true</inherited>
-						<configuration>
-							<archiveDirectory></archiveDirectory>
-							<includes>
-								<include>target/*.apk</include>
-							</includes>
-							<keystore>${keystore.location}</keystore>
-							<storepass>${keystore.password}</storepass>
-							<keypass>${keystore.keypass}</keypass>
-							<alias>${keystore.alias}</alias>
-							<arguments>
-								<argument>-sigalg</argument>
-								<argument>MD5withRSA</argument>
-								<argument>-digestalg</argument>
-								<argument>SHA1</argument>
-							</arguments>							
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.1.1</version>
-				<executions>
-					<execution>
-						<id>zipalign</id>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-						<phase>package</phase>
-						<configuration>
-							<executable>${ANDROID_HOME}/tools/zipalign</executable>
-							<arguments>
-								<argument>-f</argument>
-								<argument>4</argument>
-								<argument>target/${project.build.finalName}.apk</argument>
-								<argument>target/${apk.final.name}.apk</argument>
-							</arguments>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>sign</id>
+			<properties>
+				<debug>false</debug>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jarsigner-plugin</artifactId>
+						<version>1.2</version>
+						<executions>
+							<execution>
+								<id>signing</id>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+								<phase>package</phase>
+								<inherited>true</inherited>
+								<configuration>
+									<archiveDirectory></archiveDirectory>
+									<includes>
+										<include>target/*.apk</include>
+									</includes>
+									<keystore>${keystore.location}</keystore>
+									<storepass>${keystore.password}</storepass>
+									<keypass>${keystore.keypass}</keypass>
+									<alias>${keystore.alias}</alias>
+									<arguments>
+										<argument>-sigalg</argument>
+										<argument>MD5withRSA</argument>
+										<argument>-digestalg</argument>
+										<argument>SHA1</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.1.1</version>
+						<executions>
+							<execution>
+								<id>zipalign</id>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<phase>package</phase>
+								<configuration>
+									<executable>${ANDROID_HOME}/tools/zipalign</executable>
+									<arguments>
+										<argument>-f</argument>
+										<argument>4</argument>
+										<argument>target/${project.build.finalName}.apk</argument>
+										<argument>target/${apk.final.name}.apk</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<repositories>
 		<repository>

@@ -143,7 +143,7 @@ public class LoginActivity extends BaseActivity implements LoginCallback, UserId
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                 } catch (NumberFormatException e) {
-                    Log.e("onGetUserId", e.getMessage());
+                    Log.e("onGetUserId", "Invalid format of USER_ID", e);
                 }
 
             }
