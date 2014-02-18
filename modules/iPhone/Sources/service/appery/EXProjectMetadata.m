@@ -95,7 +95,7 @@ static NSString *const kProjectIsDisabled = @"isDisabled";
 
 - (NSString *) formatDateFromMiliseconds:(NSNumber *) milliseconds {
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:[milliseconds doubleValue] * 0.001];
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    NSDateFormatter *dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
     
     [dateFormatter setDateFormat:@"yyyy-MM-dd kk:mm:ss"];
     return [dateFormatter stringFromDate: date];

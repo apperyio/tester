@@ -168,7 +168,7 @@
 
     self.projectViewController = [[EXProjectViewController alloc] initWithProjectMetadata: nil];
     self.projectViewController.apperyService = self.apperyService;
-    self.projectViewController.wwwFolderName = [[NSBundle mainBundle] pathForResource:@"www" ofType:@""];
+    self.projectViewController.wwwFolderName = [self.projectViewController defaultWebResourceFolder];
     self.projectViewController.startPage = @"index.html";
     
     EXProjectsMetadataViewController *projectsMetadataViewController = [[EXProjectsMetadataViewController alloc]

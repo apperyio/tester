@@ -39,7 +39,7 @@
         self.completion = [completion copy];
         NSURLRequest *operationRequest = [NSURLRequest requestWithURL: url
                                                           cachePolicy: NSURLRequestUseProtocolCachePolicy 
-                                                      timeoutInterval: 20.0];
+                                                      timeoutInterval: 60.0];
         self.connection = [[NSURLConnection alloc] initWithRequest: operationRequest delegate: self startImmediately: NO];
         self.receivedData = [[NSMutableData alloc] init];
 

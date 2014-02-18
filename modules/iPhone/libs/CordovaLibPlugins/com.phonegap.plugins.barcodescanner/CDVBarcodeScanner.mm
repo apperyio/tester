@@ -46,8 +46,8 @@
 //------------------------------------------------------------------------------
 @interface CDVBarcodeScanner : CDVPlugin {}
 - (NSString*)isScanNotPossible;
-- (void)scan:(CDVInvokedUrlCommand *)command;
-- (void)encode:(CDVInvokedUrlCommand *)command;
+- (void)scan:(CDVInvokedUrlCommand*)command;
+- (void)encode:(CDVInvokedUrlCommand*)command;
 - (void)returnSuccess:(NSString*)scannedText format:(NSString*)format cancelled:(BOOL)cancelled callback:(NSString*)callback;
 - (void)returnError:(NSString*)message callback:(NSString*)callback;
 @end
@@ -120,27 +120,29 @@
 }
 
 //--------------------------------------------------------------------------
-- (void)scan:(CDVInvokedUrlCommand *)command {
+- (void)scan:(CDVInvokedUrlCommand*)command {
     CDVbcsProcessor* processor;
+    NSString*       callback;
     NSString*       capabilityError;
     
+    callback = command.callbackId;
     
     // We allow the user to define an alternate xib file for loading the overlay. 
     NSString *overlayXib = nil;
-    if ( [command.arguments count] == 2 )
+    if ( [command.arguments count] >= 1 )
     {
-        overlayXib = [command.arguments objectAtIndex:1];
+        overlayXib = [command.arguments objectAtIndex:0];
     }
     
     capabilityError = [self isScanNotPossible];
     if (capabilityError) {
-        [self returnError:capabilityError callback:command.callbackId];
+        [self returnError:capabilityError callback:callback];
         return;
     }
     
     processor = [[CDVbcsProcessor alloc]
                  initWithPlugin:self
-                 callback:command.callbackId
+                 callback:callback
                  parentViewController:self.viewController
                  alterateOverlayXib:overlayXib
                  ];
@@ -150,8 +152,8 @@
 }
 
 //--------------------------------------------------------------------------
-- (void)encode:(CDVInvokedUrlCommand *)command {
-    [self returnError:@"encode function not supported" callback:[command.arguments objectAtIndex:0]];
+- (void)encode:(CDVInvokedUrlCommand*)command {
+    [self returnError:@"encode function not supported" callback:command.callbackId];
 }
 
 //--------------------------------------------------------------------------

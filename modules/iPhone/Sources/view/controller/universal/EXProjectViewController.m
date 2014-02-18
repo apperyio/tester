@@ -8,6 +8,7 @@
 
 #import "EXProjectViewController.h"
 
+#import "MainCommandQueue.h"
 #import "MBProgressHUD.h"
 #import "IIViewDeckController.h"
 #import "EXProjectsMetadataViewController.h"
@@ -33,6 +34,7 @@ static const CGFloat kNavigationBarHeight = 44;
 - (id) initWithProjectMetadata: (EXProjectMetadata *)projectMetadata {
     self = [super init];
     if (self) {
+        _commandQueue = [[MainCommandQueue alloc] initWithViewController:self];
         self.title = projectMetadata == nil ? [self defaultTitle] : projectMetadata.name;
         self._projectMetadata = projectMetadata;
     }
@@ -73,6 +75,10 @@ static const CGFloat kNavigationBarHeight = 44;
             [self.viewDeckController openLeftViewAnimated:YES];
         }
     }];
+}
+
+- (NSString *)defaultWebResourceFolder {
+    return [[NSBundle mainBundle] pathForResource:@"www" ofType:@""];
 }
 
 #pragma mark - EXProjectsObserver protocol implementation
@@ -201,7 +207,7 @@ static const CGFloat kNavigationBarHeight = 44;
 - (void)attachSlideViewController {
     self.viewDeckController.leftController = self.projectsMetadataViewController;
     self.viewDeckController.leftSize = [self calculateLeftViewSize];
-    if (self.wwwFolderName == nil) {
+    if ([self.wwwFolderName isEqualToString:[self defaultWebResourceFolder]]) {
         [self.viewDeckController openLeftViewAnimated:YES];
     }
 }
