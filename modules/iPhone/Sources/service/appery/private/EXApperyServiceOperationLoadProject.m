@@ -27,6 +27,7 @@ static NSString * const kDefaultStartPageName = @"index.html";
 
 
 #pragma mark - Protected interface implementation
+
 - (BOOL) processReceivedData: (NSData *)data {
     NSError *processError = nil;
     
@@ -42,7 +43,7 @@ static NSString * const kDefaultStartPageName = @"index.html";
         return NO;
     }
     
-    NSString *libsLocation = [projectLocation stringByAppendingPathComponent:@"files/resources/lib"];
+    NSString *libsLocation = [NSString pathWithComponents:@[projectLocation, @"files/resources/lib"]];
     
     if ([self copyCordovaLibsToLocation: libsLocation error: &processError] == NO) {
         return NO;
@@ -60,8 +61,8 @@ static NSString * const kDefaultStartPageName = @"index.html";
         NSLog(@"Cannot prevent CSS and JS caching due to error: %@", processError);
     }
     
-    self.projectLocation = projectLocation;
-    self.projectStartPageName = projectStartPageName;
+    self.projectLocation = [projectLocation stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    self.projectStartPageName = [projectStartPageName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     return YES;
 }
 
@@ -72,7 +73,7 @@ static NSString * const kDefaultStartPageName = @"index.html";
     
     NSArray *directoriesInDomain = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsFolderPath = [directoriesInDomain objectAtIndex: 0];
-    NSString *projectLocation = [documentsFolderPath stringByAppendingPathComponent: projectMetadata.name];
+    NSString *projectLocation = [NSString pathWithComponents:@[documentsFolderPath, projectMetadata.name]];
     
     return projectLocation;
 }
@@ -211,6 +212,7 @@ static NSString * const kDefaultStartPageName = @"index.html";
 }
 
 #pragma mark - File manager helper
+
 - (BOOL)replaceResource: (NSString *)resourceName ofType: (NSString *)resourceType atPath:(NSString *)rootPath
         error: (NSError **) error {
     
