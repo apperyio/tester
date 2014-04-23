@@ -15,20 +15,26 @@
 @implementation EXLoginViewController_iPad
 
 #pragma mark - iOS 5 rotation
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
     return YES;
 }
 
 #pragma mark - iOS 6 rotation
-- (BOOL) shouldAutorotate {
+
+- (BOOL) shouldAutorotate
+{
     return YES;
 }
 
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
     return UIInterfaceOrientationPortrait;
 }
 
--(NSUInteger)supportedInterfaceOrientations {
+- (NSUInteger)supportedInterfaceOrientations
+{
     return UIInterfaceOrientationMaskAll;
 }
 

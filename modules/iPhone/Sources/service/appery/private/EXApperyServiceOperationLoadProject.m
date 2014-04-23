@@ -15,6 +15,7 @@ static NSString * const kDescriptorFileName = @"descriptor.txt";
 static NSString * const kDefaultStartPageName = @"index.html";
 
 #pragma mark - Private interface declaration
+
 @interface EXApperyServiceOperationLoadProject ()
 
 /** Removed 'readonly' restriction for private purposes */
@@ -25,19 +26,20 @@ static NSString * const kDefaultStartPageName = @"index.html";
 
 @implementation EXApperyServiceOperationLoadProject
 
-
 #pragma mark - Protected interface implementation
 
-- (BOOL) processReceivedData: (NSData *)data {
+- (BOOL) processReceivedData: (NSData *)data
+{
     NSError *processError = nil;
-    
     NSString * projectLocation = [self buildLocationForProjectMetadata: self.projectMetadata error: &processError];
+    
     if (processError) {
         self.error = processError;
         return NO;
     }
-
+    
     [self unzipProject: data toLocation: projectLocation error: &processError];
+    
     if (processError) {
         self.error = processError;
         return NO;
@@ -50,6 +52,7 @@ static NSString * const kDefaultStartPageName = @"index.html";
     }
     
     NSString *projectStartPageName = [self retreiveStartPageNameFromLocation: projectLocation error: &processError];
+    
     if (processError) {
         self.error = processError;
         return NO;
@@ -63,12 +66,14 @@ static NSString * const kDefaultStartPageName = @"index.html";
     
     self.projectLocation = [projectLocation stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     self.projectStartPageName = [projectStartPageName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
     return YES;
 }
 
 #pragma mark - Private service methods
 
-- (NSString *) buildLocationForProjectMetadata: (EXProjectMetadata *) projectMetadata error: (NSError **) error {
+- (NSString *) buildLocationForProjectMetadata: (EXProjectMetadata *) projectMetadata error: (NSError **) error
+{
     NSAssert(projectMetadata != nil, @"projectMetadata is undefined");
     
     NSArray *directoriesInDomain = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -78,7 +83,8 @@ static NSString * const kDefaultStartPageName = @"index.html";
     return projectLocation;
 }
 
-- (BOOL) unzipProject: (NSData *) zippedProject toLocation: (NSString *) location error: (NSError **) error {
+- (BOOL) unzipProject: (NSData *) zippedProject toLocation: (NSString *) location error: (NSError **) error
+{
     NSAssert(zippedProject != nil, @"zippedProject is undefined");
     NSAssert(location != nil, @"location is undefined");
     
@@ -91,8 +97,7 @@ static NSString * const kDefaultStartPageName = @"index.html";
         }
     }
     
-    if ([fileManager createDirectoryAtPath: location withIntermediateDirectories: YES attributes: nil
-                                     error: error] == NO) {
+    if ([fileManager createDirectoryAtPath: location withIntermediateDirectories: YES attributes: nil error: error] == NO) {
         return NO;
     }
     
@@ -135,13 +140,14 @@ static NSString * const kDefaultStartPageName = @"index.html";
     return YES;
 }
 
-- (BOOL) copyCordovaLibsToLocation: (NSString *)destination error: (NSError **)error {
+- (BOOL) copyCordovaLibsToLocation: (NSString *)destination error: (NSError **)error
+{
     NSLog(@"Coping www resources...");
     
     NSString *wwwResource = [[[NSBundle mainBundle] URLForResource:@"www" withExtension:@""] path];
-    
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSArray *wwwContent = [fileManager contentsOfDirectoryAtPath:wwwResource error:error];
+    
     if (wwwContent == nil) {
         return NO;
     }
@@ -161,15 +167,15 @@ static NSString * const kDefaultStartPageName = @"index.html";
     return YES;
 }
 
-- (NSString *) retreiveStartPageNameFromLocation: (NSString *) projectLocation error: (NSError **) error {
+- (NSString *) retreiveStartPageNameFromLocation: (NSString *) projectLocation error: (NSError **) error
+{
     NSAssert(projectLocation != nil, @"projectLocation is undefined");
     NSAssert(error != nil, @"reference to error object was not defined");
 
     NSString *desriptorFilePath = [projectLocation stringByAppendingPathComponent: kDescriptorFileName];
     
     if ([[NSFileManager defaultManager] fileExistsAtPath: desriptorFilePath]) {
-        NSString *startPageName = [NSString stringWithContentsOfFile: desriptorFilePath
-                                                        encoding: NSUTF8StringEncoding error: error];
+        NSString *startPageName = [NSString stringWithContentsOfFile: desriptorFilePath encoding: NSUTF8StringEncoding error: error];
         if (*error == nil) {
             return [startPageName decodedUrlString];
         }
@@ -178,32 +184,30 @@ static NSString * const kDefaultStartPageName = @"index.html";
     return kDefaultStartPageName;
 }
 
-- (BOOL) preventCSSandJSCachingForProject: (NSString *)projectLocation error: (NSError **)error {
+- (BOOL) preventCSSandJSCachingForProject: (NSString *)projectLocation error: (NSError **)error
+{
     NSDirectoryEnumerator *dirEnum = [[NSFileManager defaultManager] enumeratorAtPath: projectLocation];
-    
+    NSString *versionStrign = [NSString stringWithFormat:@"?version=%lu\"", (uLong)[[NSDate date] timeIntervalSince1970]];
     NSString *file = nil;
+    
     while (file = [dirEnum nextObject]) {
         if ([file hasSuffix:@".html"]) {
-            
-            NSString *htmlFilePath = [projectLocation stringByAppendingPathComponent: file];
-            NSString *htmlFileString = [[NSString alloc] initWithContentsOfFile: htmlFilePath 
-                    encoding: NSUTF8StringEncoding error: nil];
-            
-            htmlFileString = [htmlFileString
-                    stringByReplacingOccurrencesOfString: @".css" 
-                    withString: [@".css" stringByAppendingFormat: @"?version=%lu",
-                    (uLong)[[NSDate date] timeIntervalSince1970]]];
+            NSString *htmlFilePath = [projectLocation stringByAppendingPathComponent:file];
+            NSString *htlmFileString = [[NSString alloc] initWithContentsOfFile:htmlFilePath
+                                                                       encoding:NSUTF8StringEncoding
+                                                                          error:error];
 
-            htmlFileString = [htmlFileString
-                    stringByReplacingOccurrencesOfString: @".js"
-                    withString: [@".js" stringByAppendingFormat: @"?version=%lu",
-                    (uLong)[[NSDate date] timeIntervalSince1970]]];
-
+            htlmFileString = [htlmFileString stringByReplacingOccurrencesOfString:@".css\""
+                                                                       withString:[@".css" stringByAppendingString:versionStrign]];
             
-            [htmlFileString writeToFile: htmlFilePath atomically: YES
-                    encoding: NSUTF8StringEncoding error: error];
+            htlmFileString = [htlmFileString stringByReplacingOccurrencesOfString:@".js\""
+                                                                       withString:[@".js" stringByAppendingString:versionStrign]];
+            [htlmFileString writeToFile:htmlFilePath
+                             atomically:YES
+                               encoding:NSUTF8StringEncoding
+                                  error:error];
             
-            if(*error != nil) {
+            if (*error != nil) {
                 return NO;
             }
         }
@@ -213,9 +217,8 @@ static NSString * const kDefaultStartPageName = @"index.html";
 
 #pragma mark - File manager helper
 
-- (BOOL)replaceResource: (NSString *)resourceName ofType: (NSString *)resourceType atPath:(NSString *)rootPath
-        error: (NSError **) error {
-    
+- (BOOL)replaceResource: (NSString *)resourceName ofType: (NSString *)resourceType atPath:(NSString *)rootPath error: (NSError **) error
+{
     NSString *resourceFullPath = [[NSBundle mainBundle] pathForResource:resourceName ofType:resourceType];
     
     if (resourceFullPath == nil) {
@@ -227,9 +230,9 @@ static NSString * const kDefaultStartPageName = @"index.html";
     }
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    
     NSDirectoryEnumerator *dirEnum = [fileManager enumeratorAtPath: rootPath];
     NSString *file = nil;
+    
     while (file = [dirEnum nextObject]) {
         if (![[file lastPathComponent] isEqualToString:[resourceFullPath lastPathComponent]]) {
             continue;
@@ -250,9 +253,8 @@ static NSString * const kDefaultStartPageName = @"index.html";
     return YES;
 }
 
-- (BOOL) copyResource: (NSString *)resourceName ofType: (NSString *)resourceType
-               toPath: (NSString *)destination error: (NSError **) error {
-    
+- (BOOL) copyResource: (NSString *)resourceName ofType: (NSString *)resourceType toPath: (NSString *)destination error: (NSError **) error
+{
     NSString *resourceFullPath = [[NSBundle mainBundle] pathForResource:resourceName ofType:resourceType];
     
     if (resourceFullPath == nil) {
@@ -263,19 +265,17 @@ static NSString * const kDefaultStartPageName = @"index.html";
         return NO;
     }
 	
-	NSString *destinationFullPath = [destination stringByAppendingPathComponent: 
-            [NSString stringWithFormat: @"%@.%@", [resourceName lowercaseString], resourceType]];
-    
+	NSString *destinationFullPath = [destination stringByAppendingPathComponent:[NSString stringWithFormat: @"%@.%@", [resourceName lowercaseString], resourceType]];
     NSFileManager *fileManager = [NSFileManager defaultManager];
-	if([fileManager fileExistsAtPath: destinationFullPath]) {
-		if ([fileManager removeItemAtPath: destinationFullPath error: error] == NO) {
+	
+    if([fileManager fileExistsAtPath: destinationFullPath]) {
+		if ([fileManager removeItemAtPath:destinationFullPath error: error] == NO) {
             return NO;
         }
 	}
     
     if (![fileManager fileExistsAtPath:destination]) {
-        if ([fileManager createDirectoryAtPath:destination withIntermediateDirectories: YES
-                attributes:nil error:error] == NO) {
+        if ([fileManager createDirectoryAtPath:destination withIntermediateDirectories: YES attributes:nil error:error] == NO) {
             return NO;
         }
     }

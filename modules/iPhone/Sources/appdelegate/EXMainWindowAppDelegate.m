@@ -24,22 +24,22 @@
 NSString * const NSURLIsExcludedFromBackupKey = @"NSURLIsExcludedFromBackupKey";
 
 #pragma mark - Private interface declaration
+
 @interface EXMainWindowAppDelegate ()
 
 @property (nonatomic, strong) EXApperyService *apperyService;
 @property (nonatomic, strong) EXUserSettingsStorage *userSettingsStorage;
 @property (nonatomic, strong) EXCredentialsManager *credentialsManager;
 @property (nonatomic, strong) UINavigationController *rootNavigationController;
+
 @end
 
 @implementation EXMainWindowAppDelegate
 
-#pragma mark - Public properties synthesize
-
-#pragma mark - UIApplicationDelegate protocol
 #pragma mark - UIApplicationDelegate protocol - Monitoring Application State Changes
 
-- (BOOL) application: (UIApplication *)application didFinishLaunchingWithOptions: (NSDictionary *) launchOptions {
+- (BOOL) application: (UIApplication *)application didFinishLaunchingWithOptions: (NSDictionary *) launchOptions
+{
     [self createApperyService];
     [self configureApperyService];
     [self createAndConfigureUserSettingsStorage];
@@ -54,8 +54,7 @@ NSString * const NSURLIsExcludedFromBackupKey = @"NSURLIsExcludedFromBackupKey";
     loginViewController.credentialsManager = self.credentialsManager;
     
     self.rootNavigationController = [[UINavigationController alloc] initWithRootViewController: loginViewController];
-    IIViewDeckController *viewDeckController =
-            [[IIViewDeckController alloc] initWithCenterViewController: self.rootNavigationController];
+    IIViewDeckController *viewDeckController = [[IIViewDeckController alloc] initWithCenterViewController: self.rootNavigationController];
     viewDeckController.navigationControllerBehavior = IIViewDeckNavigationControllerContained;
     viewDeckController.elastic = NO;
     viewDeckController.sizeMode = IIViewDeckLedgeSizeMode;
@@ -67,47 +66,59 @@ NSString * const NSURLIsExcludedFromBackupKey = @"NSURLIsExcludedFromBackupKey";
 }
 
 #pragma mark - UIApplicationDelegate protocol - Responding to System Notifications
-- (void) applicationDidReceiveMemoryWarning: (UIApplication *)application {
+
+- (void) applicationDidReceiveMemoryWarning: (UIApplication *)application
+{
     
 }
 
-- (void) applicationDidEnterBackground: (UIApplication *)application {
+- (void) applicationDidEnterBackground: (UIApplication *)application
+{
     [self hideAllHuds];
     [self cancelApperyServiceActivity];
     [self navigateToStartPage];
 }
 
-- (void) applicationWillEnterForeground: (UIApplication *)application {
+- (void) applicationWillEnterForeground: (UIApplication *)application
+{
     [self configureApperyService];
 }
 
 #pragma mark - Private interface implementation
-- (void) createApperyService {
+
+- (void) createApperyService
+{
     NSAssert(self.apperyService == nil, @"self.apperyService is already initialized");
     self.apperyService = [[EXApperyService alloc] init];
 }
 
-- (void) configureApperyService {
+- (void) configureApperyService
+{
     self.apperyService.baseUrl = [[NSUserDefaults standardUserDefaults] valueForKey: @"baseURL"];
     NSLog(@"Appery service base URL: %@", self.apperyService.baseUrl);
 }
 
-- (void) createAndConfigureUserSettingsStorage {
+- (void) createAndConfigureUserSettingsStorage
+{
     NSAssert(self.userSettingsStorage == nil, @"self.userSettingsStorage is already initialized");
     self.userSettingsStorage = [[EXUserSettingsStorage alloc] init];
 }
 
-- (void) createCredentialsManager {
+- (void) createCredentialsManager
+{
     NSAssert(self.credentialsManager == nil, @"self.credentialsManager is already initialized");
     self.credentialsManager = [[EXCredentialsManager alloc] init];
 }
 
-- (void) hideAllHuds {
+- (void) hideAllHuds
+{
     [MBProgressHUD hideAllHUDsForView: self.window.rootViewController.view animated: NO];
 }
 
-- (void) navigateToStartPage {
+- (void) navigateToStartPage
+{
     [self.rootNavigationController popToRootViewControllerAnimated: NO];
+
     IIViewDeckController *rootDeckViewController = (IIViewDeckController *)self.window.rootViewController;
     [rootDeckViewController closeLeftView];
     rootDeckViewController.leftController = nil;
@@ -115,8 +126,10 @@ NSString * const NSURLIsExcludedFromBackupKey = @"NSURLIsExcludedFromBackupKey";
     rootDeckViewController.rightController = nil;
 }
 
-- (void) cancelApperyServiceActivity {
+- (void) cancelApperyServiceActivity
+{
     [self.apperyService cancelCurrentOperation];
+
     if (self.apperyService.isLoggedIn) {
         [self.apperyService quickLogout];
     }

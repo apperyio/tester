@@ -16,13 +16,16 @@
 #import "NSString+URLUtility.h"
 
 #pragma mark - Service configure constants
+
 static NSString * const BASE_URL_STRING = @"https://appery.io";
 static NSString * const PROJECTS_PATH_URL_STRING = @"/app/rest/user/projects";
 static NSString * const LOGIN_PATH_URL_STRING = @"/app/rest/user/login";
 static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
 
 #pragma mark - Private interface declaration
-@interface EXApperyService () {
+
+@interface EXApperyService ()
+{
     /**
      * Contains current executing operation reference. Used be cancelCurrentOperation method.
      */
@@ -62,37 +65,46 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
 @end
 
 #pragma mark - Implementation
+
 @implementation EXApperyService
 
 #pragma mark - Public properties synthesize
+
 @synthesize baseUrl = _baseUrl;
 @synthesize isLoggedIn = _isLoggedIn;
 
 #pragma mark - Private properties synthesize
+
 @synthesize _userName = __userName;
 @synthesize _userPassword = __userPassword;
 
 #pragma mark - Lifecycle
 
-- (id) init {
+- (id) init
+{
     self = [super init];
     if (self) {
     }
     return self;
 }
 
-- (void) dealloc {
+- (void) dealloc
+{
     self._userName = nil;
     self._userPassword = nil;
+    
     [super dealloc];
 }
 
-#pragma mark - Getters /Setters
-- (NSString *) baseUrl {
+#pragma mark - Getters/Setters
+
+- (NSString *) baseUrl
+{
     return _baseUrl == nil ? BASE_URL_STRING : _baseUrl;
 }
 
-- (void) setBaseUrl: (NSString *)baseUrl {
+- (void) setBaseUrl: (NSString *)baseUrl
+{
     [_baseUrl release];
     _baseUrl = nil;
 
@@ -101,27 +113,31 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
     }
 }
 
-- (BOOL) isLoggedIn {
+- (BOOL) isLoggedIn
+{
     return _isLoggedIn;
 }
 
-- (BOOL) isLoggedOut {
+- (BOOL) isLoggedOut
+{
     return !self.isLoggedIn;
 }
 
-- (NSString *)loggedUserName {
+- (NSString *)loggedUserName
+{
     return self._userName;
 }
 
 #pragma mark - Public interface implementation
-- (void)loginWithUsername: (NSString *)userName password: (NSString *)password succeed: (void (^)(void))succeed
-                   failed: (void (^)(NSError *))failed {
+
+- (void)loginWithUsername: (NSString *)userName password: (NSString *)password succeed: (void (^)(void))succeed failed: (void (^)(NSError *))failed
+{
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");
-
-    [self throwExceptionIfServiceIsLoggedIn];
-    NSString *loginString = [self.baseUrl URLByAddingResourceComponent: LOGIN_PATH_URL_STRING];
     
+    [self throwExceptionIfServiceIsLoggedIn];
+    
+    NSString *loginString = [self.baseUrl URLByAddingResourceComponent: LOGIN_PATH_URL_STRING];
     EXApperyServiceOperation *loginOperation = [[EXApperyServiceOperation alloc]
             initWithURL: [NSURL URLWithString: loginString] completion: ^(EXApperyServiceOperation *operation) {
                 if (operation.isSuccessfull) {
@@ -142,24 +158,26 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
     [loginOperation start];
 }
 
-- (void) quickLogout {
+- (void) quickLogout
+{
     [self throwExceptionIfServiceIsLoggedOut];
     [self removeLocalAuthentication];
     [self changeLoggedStatusTo: NO];
 }
 
-- (void) cancelCurrentOperation {
+- (void) cancelCurrentOperation
+{
     [_currentOperation cancel];
 }
 
-- (void) logoutSucceed: (void (^)(void))succeed failed: (void (^)(NSError *))failed {
+- (void) logoutSucceed: (void (^)(void))succeed failed: (void (^)(NSError *))failed
+{
     [self throwExceptionIfServiceIsLoggedOut];
 
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");
 
-    NSURL *logoutOperationUrl = [NSURL URLWithString:
-                                 [self.baseUrl URLByAddingResourceComponent: LOGOUT_PATH_URL_STRING]];
+    NSURL *logoutOperationUrl = [NSURL URLWithString:[self.baseUrl URLByAddingResourceComponent: LOGOUT_PATH_URL_STRING]];
     EXApperyServiceOperation *logoutOperation = [[EXApperyServiceOperation alloc] initWithURL: logoutOperationUrl
         completion:^(EXApperyServiceOperation *operation) {
             if (operation.isSuccessfull) {
@@ -179,14 +197,14 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
     [self quickLogout];
 }
 
-- (void) loadProjectsMetadata: (void (^)(NSArray *))succeed failed: (void (^)(NSError *))failed {
+- (void) loadProjectsMetadata: (void (^)(NSArray *))succeed failed: (void (^)(NSError *))failed
+{
     [self throwExceptionIfServiceIsLoggedOut];
 
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");
     
-    NSURL *loadProjectsUrl = [NSURL URLWithString:
-                              [self.baseUrl URLByAddingResourceComponent: PROJECTS_PATH_URL_STRING]];
+    NSURL *loadProjectsUrl = [NSURL URLWithString:[self.baseUrl URLByAddingResourceComponent: PROJECTS_PATH_URL_STRING]];
     EXApperyServiceOperationLoadProjectsMetadata *loadProjectsMetadataOperation =
             [[EXApperyServiceOperationLoadProjectsMetadata alloc] initWithURL:  loadProjectsUrl
             completion:^(EXApperyServiceOperation *operation) {
@@ -208,7 +226,8 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
 
 - (void) loadProjectForMetadata: (EXProjectMetadata *) projectMetadata
                         succeed: (void (^)(NSString *projectLocation, NSString *startPageName)) succeed
-                         failed: (void (^)(NSError *error)) failed {
+                         failed: (void (^)(NSError *error)) failed
+{
     [self throwExceptionIfServiceIsLoggedOut];
     
     NSAssert(projectMetadata != nil, @"projectMetadata is undefined");
@@ -241,53 +260,65 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
 }
 
 #pragma mark - Private interface implementation
-- (void) throwExceptionIfServiceIsLoggedOut {
+
+- (void) throwExceptionIfServiceIsLoggedOut
+{
     if (self.isLoggedOut) {
         @throw [NSException exceptionWithName: @"IllegalStateException"
                                        reason: @"Service is already logged out" userInfo: nil];
     }
 }
 
-- (void) throwExceptionIfServiceIsLoggedIn {
+- (void) throwExceptionIfServiceIsLoggedIn
+{
     if (self.isLoggedIn) {
         @throw [NSException exceptionWithName: @"IllegalStateException"
                                        reason: @"Service is already logged in" userInfo: nil];
     }
 }
 
-- (void) changeLoggedStatusTo: (BOOL)status {
+- (void) changeLoggedStatusTo: (BOOL)status
+{
     _isLoggedIn = status;
 }
 
-- (void) rememberUserName: (NSString *)userName password: (NSString *)password {
+- (void) rememberUserName: (NSString *)userName password: (NSString *)password
+{
     NSAssert(userName != nil, @"userName is not specified");
     NSAssert(password != nil, @"password is not specified");
+    
     self._userName = userName;
     self._userPassword = password;
 }
 
-- (void) removeLocalAuthentication {
+- (void) removeLocalAuthentication
+{
     self._userName = nil;
     self._userPassword = nil;
+    
     [self removeAutenticationCookies];
 }
 
-- (void) removeAutenticationCookies {
+- (void) removeAutenticationCookies
+{
     NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    
     for (NSHTTPCookie *cookie in [self findAuthenticationCookies]) {
         [cookieStorage deleteCookie: cookie];
     }
 }
 
-- (NSArray *) findAuthenticationCookies {
+- (NSArray *) findAuthenticationCookies
+{
     NSMutableArray *authenticationCookies = [[NSMutableArray alloc] init];
     NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    
     for (NSHTTPCookie *cookie in [cookieStorage cookies]) {
         if ([cookie.name isEqualToString: @"JSESSIONID"] || [cookie.name isEqualToString: @"JSESSIONIDSSO"]) {
             [authenticationCookies addObject: cookie];
-            NSLog(@"Found autentication cookie: name=%@; value=%@", cookie.name, cookie.value);
         }
     }
+    
     return [authenticationCookies autorelease];
 }
 

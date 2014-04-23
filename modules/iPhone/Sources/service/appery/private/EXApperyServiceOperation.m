@@ -9,6 +9,7 @@
 #import "EXApperyServiceOperation.h"
 
 #pragma mark - Private interface declaration
+
 @interface EXApperyServiceOperation () <NSURLConnectionDelegate>
 
 @property (nonatomic, assign, readwrite) BOOL isSuccessfull;
@@ -30,7 +31,8 @@
 
 #pragma mark - Life cycle
 
-- (id) initWithURL:(NSURL *)url completion: (void (^)(EXApperyServiceOperation *))completion {
+- (id) initWithURL:(NSURL *)url completion: (void (^)(EXApperyServiceOperation *))completion
+{
     NSAssert(url != nil, @"Operation URL is udefined");
     NSAssert(completion != nil, @"completion callback block is not defined");
 
@@ -49,34 +51,42 @@
 
 
 #pragma mark - Public interface implementation
-- (void) start {
+
+- (void) start
+{
     NSAssert(self.connection != nil, @"Connection was not initialized");
     [self.connection start];
 }
 
-- (void) cancel {
+- (void) cancel
+{
     [self.connection cancel];
 }
 
 #pragma mark - Protected interface
-- (BOOL) processReceivedData: (NSData *)data {
+
+- (BOOL) processReceivedData: (NSData *)data
+{
     // Do nothing for operations wich do not need data processing
     return YES;
 }
 
 #pragma mark - NSURLConnectionDelegate protocol implementation
-- (void) connection: (NSURLConnection *)connection didReceiveResponse: (NSURLResponse *)response {
+
+- (void) connection: (NSURLConnection *)connection didReceiveResponse: (NSURLResponse *)response
+{
     NSAssert(self.receivedData != nil, @"receivedData property was not initialized");
     self.receivedData.length = 0;
 }
 
-- (void) connection: (NSURLConnection *)connection didReceiveData: (NSData *)data {
+- (void) connection: (NSURLConnection *)connection didReceiveData: (NSData *)data
+{
     [self.receivedData appendData: data];
 }
 
-- (void) connectionDidFinishLoading: (NSURLConnection *)connection {
+- (void) connectionDidFinishLoading: (NSURLConnection *)connection
+{
     self.connection = nil;
-
     self.isSuccessfull = [self processReceivedData: self.receivedData];
 
     if(self.completion) {
@@ -85,20 +95,19 @@
 }
 
 
-- (BOOL) connection:(NSURLConnection *)connection
-        canAuthenticateAgainstProtectionSpace: (NSURLProtectionSpace *)protectionSpace {
+- (BOOL) connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace: (NSURLProtectionSpace *)protectionSpace
+{
     return YES;
 }
 
-- (void) connection:(NSURLConnection *)connection
-        didReceiveAuthenticationChallenge:( NSURLAuthenticationChallenge *)challenge {
+- (void) connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:( NSURLAuthenticationChallenge *)challenge
+{
     [self connection: connection willSendRequestForAuthenticationChallenge: challenge];
 }
 
-- (void) connection: (NSURLConnection *) connection
-        willSendRequestForAuthenticationChallenge: (NSURLAuthenticationChallenge *)challenge {
+- (void) connection: (NSURLConnection *) connection willSendRequestForAuthenticationChallenge: (NSURLAuthenticationChallenge *)challenge
+{
     if ([challenge previousFailureCount] == 0) {
-        
         NSURLCredential *credential = [NSURLCredential credentialWithUser: self.userName
                                                                  password: self.userPassword
                                                               persistence: NSURLCredentialPersistenceNone];
@@ -108,19 +117,19 @@
     }
 }
 
-- (void) connection: (NSURLConnection *)connection didFailWithError: (NSError *)error {
+- (void) connection: (NSURLConnection *)connection didFailWithError: (NSError *)error
+{
     self.connection = nil;
-    
     self.isSuccessfull = NO;
     
     if (error.code == kCFURLErrorUserCancelledAuthentication) {
         NSString *loginErrorDomain = NSLocalizedString(@"User name or password are incorrect",
                                                        @"Login failed message due to illegal credentials");
         self.error = [NSError errorWithDomain: loginErrorDomain code: 0 userInfo: nil];
-
     } else {
         self.error = error;
     }
+    
     if(self.completion) {
         self.completion(self);
     }

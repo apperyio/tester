@@ -21,6 +21,7 @@ typedef void(^EXProjectsMetadataViewControllerCompletionBlock)(BOOL succeeded);
  * This protocol provides callback interface for EXProjectsViewController events observing.
  */
 @protocol EXProjectsObserver <NSObject>
+
 @optional
 /**
  * Fires when user taps on some project metadata.
@@ -31,6 +32,7 @@ typedef void(^EXProjectsMetadataViewControllerCompletionBlock)(BOOL succeeded);
  * Fires when user logged out from the service.
  */
 - (void) logoutCompleted;
+
 @end
 
 @interface EXProjectsMetadataViewController : UIViewController

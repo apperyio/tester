@@ -16,6 +16,7 @@
 #import "EXApperyServiceException.h"
 
 #pragma mark - Private interface declaration
+
 @interface EXLoginViewController ()
 
 @property (nonatomic, retain) EXProjectViewController *projectViewController;
@@ -24,61 +25,77 @@
  * Hides keyboard if it visible
  */
 - (void) hideKeyboard;
+
 @end
 
 @implementation EXLoginViewController
 
 #pragma mark - Life cycle
-- (id) initWithNibName: (NSString *)nibNameOrNil bundle: (NSBundle *)nibBundleOrNil {
+
+- (id) initWithNibName: (NSString *)nibNameOrNil bundle: (NSBundle *)nibBundleOrNil
+{
     self = [super initWithNibName: nibNameOrNil bundle: nibBundleOrNil];
-    if (self) {
+    if (self)
+    {
         self.title = NSLocalizedString(@"Login", @"EXLoginViewController title");
     }
     return self;
 }
 
-- (void) viewDidLoad {
+- (void) viewDidLoad
+{
     [super viewDidLoad];
     
     [self configureUI];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:animated];
     [self configureCredentialFields];
 }
 
 #pragma mark - iOS 5 rotation
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
     return NO;
 }
 
 #pragma mark - iOS 6 rotation
-- (BOOL) shouldAutorotate {
+
+- (BOOL) shouldAutorotate
+{
     return NO;
 }
 
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
     return UIInterfaceOrientationPortrait;
-    
 }
 
--(NSUInteger)supportedInterfaceOrientations {
+- (NSUInteger)supportedInterfaceOrientations
+{
     return UIInterfaceOrientationMaskPortrait;
 }
 
 #pragma mark - EXViewControllerProvider protocol implementation
-- (UIViewController *) nextViewController {
+
+- (UIViewController *) nextViewController
+{
     return self.projectViewController;
 }
 
 #pragma mark - Private interface implementation
-- (void) hideKeyboard {
+
+- (void) hideKeyboard
+{
     [self.userName resignFirstResponder];
     [self.userPassword resignFirstResponder];
 }
 
-- (void) saveUserSettings {
+- (void) saveUserSettings
+{
     if (self.shouldRememberMe.on) {
         // save user settings
         EXUserSettings *userSettings = [[EXUserSettings alloc] init];
@@ -106,8 +123,10 @@
     }
 }
 
-- (void) navigateToNextViewController {
+- (void) navigateToNextViewController
+{
     UIViewController *nextViewController = [self nextViewController];
+    
     if ([self.navigationController.viewControllers containsObject: nextViewController]) {
         [self.navigationController popToViewController: nextViewController animated: YES];
     } else {
@@ -115,16 +134,21 @@
     }
 }
 
-- (void) updateProjectsMetadataForNextViewController {
+- (void) updateProjectsMetadataForNextViewController
+{
     id nextViewController = [self nextViewController];
+    
     if ([nextViewController respondsToSelector: @selector(loadProjectsMetadata)]) {
         [nextViewController loadProjectsMetadata];
     }
 }
 
 #pragma mark - UI action handlers
-- (IBAction) login: (id)sender {
+
+- (IBAction) login: (id)sender
+{
     NSAssert(self.apperyService != nil, @"apperyService property is not specified");
+
     [self hideKeyboard];
   
     UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
@@ -132,8 +156,8 @@
     progressHud.labelText = NSLocalizedString(@"Login", @"Login progress hud title");
    
     NSAssert(self.apperyService != nil, @"apperyService property is not defined");
-    [self.apperyService loginWithUsername: self.userName.text password: self.userPassword.text
-        succeed: ^{
+    
+    [self.apperyService loginWithUsername: self.userName.text password: self.userPassword.text succeed: ^{
             [progressHud hide: YES];
             [self saveUserSettings];
             [self navigateToNextViewController];
@@ -149,26 +173,32 @@
         }];
 }
 
-- (IBAction) onShouldRememberMeValueChanged: (id)sender {
+- (IBAction) onShouldRememberMeValueChanged: (id)sender
+{
     self.shouldRememberPassword.enabled = self.shouldRememberMe.on;
     self.shouldRememberPassword.on = self.shouldRememberMe.on ? self.shouldRememberPassword.on : NO;
 }
 
 #pragma mark - UITextFieldDelefate protocol implementation
-- (BOOL) textFieldShouldReturn: (UITextField *)textField {
+
+- (BOOL) textFieldShouldReturn: (UITextField *)textField
+{
     [textField resignFirstResponder];
     return YES;
 }
 
 #pragma mark - Private
+
 #pragma mark - Configuration helpers
-- (void)configureUI {
+
+- (void)configureUI
+{
     [self configureCredentialFields];
     [self configureLoginButton];
 
     self.projectViewController = [[EXProjectViewController alloc] initWithProjectMetadata: nil];
     self.projectViewController.apperyService = self.apperyService;
-    self.projectViewController.wwwFolderName = [self.projectViewController defaultWebResourceFolder];
+    self.projectViewController.wwwFolderName = @"www";
     self.projectViewController.startPage = @"index.html";
     
     EXProjectsMetadataViewController *projectsMetadataViewController = [[EXProjectsMetadataViewController alloc]
@@ -182,7 +212,8 @@
     }
 }
 
-- (void)configureLoginButton {
+- (void)configureLoginButton
+{
     UIColor *topColorNormal = [UIColor colorWithRed:0.f green:152/255.f blue:249/255.f alpha:1.f];
     UIColor *bottomColorNormal = [UIColor colorWithRed:9/255.f green:117/255.f blue:226/255.f alpha:1.f];
     self.loginButton.normalGradientColors =
@@ -201,11 +232,13 @@
     [self.loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
 }
 
-- (void)configureCredentialFields {
+- (void)configureCredentialFields
+{
     self.userName.text = @"";
     self.userPassword.text = @"";
 
     EXUserSettings *lastUserSettings = [self.userSettingsStorage retreiveLastStoredSettings];
+
     if (lastUserSettings) {
         self.shouldRememberMe.on = lastUserSettings.shouldRememberMe;
         self.shouldRememberPassword.enabled = lastUserSettings.shouldRememberMe;

@@ -21,7 +21,9 @@
 @implementation EXProjectsMetadataViewController_iPhone
 
 #pragma mark - Initialization
-- (id) initWithNibName: (NSString *)nibNameOrNil bundle: (NSBundle *)nibBundleOrNil {
+
+- (id) initWithNibName: (NSString *)nibNameOrNil bundle: (NSBundle *)nibBundleOrNil
+{
     if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) == nil) {
         return nil;
     }
@@ -29,17 +31,22 @@
 }
 
 #pragma mark - Lifecycle
-- (void) viewDidLoad {
+
+- (void) viewDidLoad
+{
     [super viewDidLoad];
     [self addProjectsObserver: self];
 }
 
-- (void) dealloc {
+- (void) dealloc
+{
     [self removeProjectsObserver: self];
 }
 
 #pragma mark - EXProjectsObserver protocol implementation
-- (void) projectMetadataWasSelected: (EXProjectMetadata *)projectMetadata {
+
+- (void) projectMetadataWasSelected: (EXProjectMetadata *)projectMetadata
+{
     NSAssert(projectMetadata != nil, @"projectMetadata is not defined");
     
     UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
@@ -63,8 +70,7 @@
                     delegate: nil cancelButtonTitle: errorCancelButtonTitle otherButtonTitles: nil];
             [errorAlert show];
             NSLog(@"Project loading failed due to: %@", [error localizedDescription]);
-        }
-    ];
+    }];
 }
 
 @end

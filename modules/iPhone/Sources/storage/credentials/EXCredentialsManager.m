@@ -10,8 +10,8 @@
 
 @implementation EXCredentialsManager
 
-- (BOOL) addPassword: (NSString *)password forUser: (NSString *)userName {
-    
+- (BOOL) addPassword: (NSString *)password forUser: (NSString *)userName
+{
     NSMutableDictionary *itemAttributesForSearching = [[NSMutableDictionary alloc] init];
     
     [itemAttributesForSearching setObject: (id)kSecClassGenericPassword forKey: (id)kSecClass];
@@ -52,11 +52,13 @@
     }
 }
 
-- (BOOL) removePasswordForUser: (NSString *)userName {
+- (BOOL) removePasswordForUser: (NSString *)userName
+{
     return NO;
 }
 
-- (NSString *) retreivePasswordForUser: (NSString *)userName {
+- (NSString *) retreivePasswordForUser: (NSString *)userName
+{
     
     NSMutableDictionary *itemAttributesForSearching = [[NSMutableDictionary alloc] init];
     [itemAttributesForSearching setObject: (id)kSecClassGenericPassword

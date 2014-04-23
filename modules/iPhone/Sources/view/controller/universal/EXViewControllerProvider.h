@@ -13,9 +13,11 @@
  *     So specific view controller (Phone/iPad) could provide correct next view controller.
  */
 @protocol EXViewControllerProvider <NSObject>
+
 @required
 /**
  * Should to return UIViewController that corresponds to the current platform (iPhone/iPad).
  */
 - (UIViewController *) nextViewController;
+
 @end

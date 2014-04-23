@@ -10,7 +10,8 @@
 
 @implementation EXProjectMetadataCell
 
-- (id) initWithStyle: (UITableViewCellStyle)style reuseIdentifier: (NSString *)reuseIdentifier {
+- (id) initWithStyle: (UITableViewCellStyle)style reuseIdentifier: (NSString *)reuseIdentifier
+{
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         NSArray *nibs = [[NSBundle mainBundle] loadNibNamed: @"EXProjectMetadataCell" owner: self options: nil];

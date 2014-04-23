@@ -13,13 +13,16 @@ static NSString *const kLastUser = @"lastUser";
 @implementation EXUserSettingsStorage
 
 #pragma mark - Private service methods
-- (NSString *) pathForStorageFile {
+
+- (NSString *) pathForStorageFile
+{
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentDirectory = [paths objectAtIndex: 0];
     return [documentDirectory stringByAppendingPathComponent: @"users_settings.plist"];
 }
 
-- (NSMutableDictionary *) retreiveAllSettingsPrivate {
+- (NSMutableDictionary *) retreiveAllSettingsPrivate
+{
     if ([[NSFileManager defaultManager] fileExistsAtPath: [self pathForStorageFile]]) {
         NSData *rawSettings = [NSData dataWithContentsOfFile: [self pathForStorageFile]];
         return [NSMutableDictionary dictionaryWithDictionary: [NSKeyedUnarchiver unarchiveObjectWithData: rawSettings]];
@@ -28,7 +31,8 @@ static NSString *const kLastUser = @"lastUser";
     }
 }
 
-- (BOOL) storeAllSettingsPrivate: (NSDictionary *)allSettings {
+- (BOOL) storeAllSettingsPrivate: (NSDictionary *)allSettings
+{
     NSAssert(allSettings != nil, @"allSettings is not defined");
     
     NSData *serializedData = [NSKeyedArchiver archivedDataWithRootObject: allSettings];
@@ -36,18 +40,23 @@ static NSString *const kLastUser = @"lastUser";
 }
 
 #pragma mark - Public interface implementation
-- (void) storeSettings: (EXUserSettings *)settings {
+
+- (void) storeSettings: (EXUserSettings *)settings
+{
     NSMutableDictionary *allSettings = [self retreiveAllSettingsPrivate];
     
     [allSettings setValue: settings forKey: settings.userName];
     [allSettings setValue: settings forKey: kLastUser];
+
     if ([self storeAllSettingsPrivate: allSettings] == NO) {
         NSLog(@"Settings for user: %@ was not stored.", settings.userName);
     }
 }
 
-- (void) removeSettingsForUser: (NSString *)userName {
+- (void) removeSettingsForUser: (NSString *)userName
+{
     NSAssert(userName != nil, @"userName is undefined");
+
     NSMutableDictionary *allSettings = [self retreiveAllSettingsPrivate];
     [allSettings removeObjectForKey: userName];
     
@@ -57,14 +66,17 @@ static NSString *const kLastUser = @"lastUser";
         // removed user was last stored, so lastUser shoud removed
         [allSettings removeObjectForKey: kLastUser];
     }
+    
     [self storeAllSettingsPrivate: allSettings];
 }
 
-- (EXUserSettings *) retreiveLastStoredSettings {
+- (EXUserSettings *) retreiveLastStoredSettings
+{
     return [[self retreiveAllSettingsPrivate] valueForKey: kLastUser];
 }
 
-- (NSDictionary *) retreiveAllSettings {
+- (NSDictionary *) retreiveAllSettings
+{
     NSMutableDictionary *allSettings = [self retreiveAllSettingsPrivate];
     [allSettings removeObjectForKey: kLastUser];
     return allSettings;

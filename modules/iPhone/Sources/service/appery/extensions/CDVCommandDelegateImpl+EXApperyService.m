@@ -13,9 +13,12 @@
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wobjc-protocol-method-implementation"
-- (NSString *) pathForResource: (NSString *)resourcepath {
-    return [_viewController.wwwFolderName stringByAppendingPathComponent: resourcepath];
+
+- (NSString *) pathForResource: (NSString *)resourcepath
+{
+    return [[_viewController.wwwFolderName stringByAppendingPathComponent: resourcepath] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 }
+
 #pragma clang diagnostic pop
 
 @end

@@ -27,7 +27,8 @@ static NSString *const kShouldRememberPassword = @"shouldRememberPassword";
 
 #pragma mark - NSCoding protocol implementation
 
-- (id) initWithCoder: (NSCoder *)decoder {
+- (id) initWithCoder: (NSCoder *)decoder
+{
     self = [super init];
     if (self) {
         self.userName = [decoder decodeObjectForKey: kUserName];
@@ -37,7 +38,8 @@ static NSString *const kShouldRememberPassword = @"shouldRememberPassword";
     return self;
 }
 
-- (void) encodeWithCoder: (NSCoder *)encoder {
+- (void) encodeWithCoder: (NSCoder *)encoder
+{
     [encoder encodeObject: self.userName forKey: kUserName];
     [encoder encodeBool: self.shouldRememberMe forKey: kShouldRememberMe];
     [encoder encodeBool: self.shouldRememberPassword forKey: kShouldRememberPassword];

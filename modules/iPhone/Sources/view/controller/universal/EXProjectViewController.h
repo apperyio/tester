@@ -40,9 +40,5 @@
  * Updates projects metadata.
  */
 - (void) loadProjectsMetadata;
-/**
- * Default web resource folder
- */
-- (NSString *)defaultWebResourceFolder;
 
 @end

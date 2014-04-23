@@ -14,12 +14,14 @@
 #import "EXProjectsMetadataViewController.h"
 
 #pragma mark - UI constants
+
 static const CGFloat kLeftViewWidth = 270;
 static const CGFloat kCenterViewLedge = 50;
 
 static const CGFloat kStatusBarHeight = 20;
 static const CGFloat kNavigationBarHeight = 44;
 
+static NSString *const kDefaultWebResourceFolder = @"www";
 
 @interface EXProjectViewController () <EXProjectsObserver>
 
@@ -31,7 +33,9 @@ static const CGFloat kNavigationBarHeight = 44;
 @implementation EXProjectViewController
 
 #pragma mark - Lifecycle
-- (id) initWithProjectMetadata: (EXProjectMetadata *)projectMetadata {
+
+- (id) initWithProjectMetadata: (EXProjectMetadata *)projectMetadata
+{
     self = [super init];
     if (self) {
         _commandQueue = [[MainCommandQueue alloc] initWithViewController:self];
@@ -41,21 +45,26 @@ static const CGFloat kNavigationBarHeight = 44;
     return self;
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
+    
     [self.projectsMetadataViewController addProjectsObserver: self];
     [self attachSlideViewController];
 }
 
-- (void) viewDidDisappear: (BOOL)animated {
+- (void) viewDidDisappear: (BOOL)animated
+{
     [super viewDidDisappear: animated];
 
     [self.projectsMetadataViewController removeProjectsObserver: self];
     [self detachSlideViewController];
 }
 
-- (void) viewDidLoad {
+- (void) viewDidLoad
+{
     [super viewDidLoad];
+    
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRotate:)
             name:UIDeviceOrientationDidChangeNotification object:nil];
@@ -63,13 +72,16 @@ static const CGFloat kNavigationBarHeight = 44;
     [self configureNavigationBar];
 }
 
-- (void) dealloc {
+- (void) dealloc
+{
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Public interface implementation
-- (void) loadProjectsMetadata {
+
+- (void) loadProjectsMetadata
+{
     [self.projectsMetadataViewController loadProjectsMetadataCompletion:^(BOOL succeeded) {
         if ([self.title isEqualToString:[self defaultTitle]]) {
             [self.viewDeckController openLeftViewAnimated:YES];
@@ -77,47 +89,53 @@ static const CGFloat kNavigationBarHeight = 44;
     }];
 }
 
-- (NSString *)defaultWebResourceFolder {
-    return [[NSBundle mainBundle] pathForResource:@"www" ofType:@""];
-}
-
 #pragma mark - EXProjectsObserver protocol implementation
-- (void) projectMetadataWasSelected: (EXProjectMetadata *)projectMetadata {
+
+- (void) projectMetadataWasSelected: (EXProjectMetadata *)projectMetadata
+{
     [self loadProjectForMetadata: projectMetadata];
 }
 
-- (void) logoutCompleted {
+- (void) logoutCompleted
+{
     [self.viewDeckController closeLeftViewAnimated:NO];
     self.viewDeckController.leftController = nil;
     [self.navigationController popToRootViewControllerAnimated:NO];
 }
 
 #pragma mark - iOS 5 rotation
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
     return YES;
 }
 
 #pragma mark - iOS 6 rotation
-- (BOOL) shouldAutorotate {
+
+- (BOOL) shouldAutorotate
+{
     return YES;
 }
 
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
     return UIInterfaceOrientationPortrait;
-    
 }
 
--(NSUInteger)supportedInterfaceOrientations {
+- (NSUInteger)supportedInterfaceOrientations
+{
     return UIInterfaceOrientationMaskAll;
 }
 
 #pragma mark - Private interface implementation
-- (NSString *)defaultTitle {
+
+- (NSString *)defaultTitle
+{
     return NSLocalizedString(@"Select project", @"Project view controller | Default title");
 }
 
-- (void) configureNavigationBar {
-    
+- (void) configureNavigationBar
+{
     UIBarButtonItem *projectsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"menu"]
             style: UIBarButtonItemStylePlain target: self action: @selector(showProjectsViewController)];
 
@@ -128,11 +146,13 @@ static const CGFloat kNavigationBarHeight = 44;
     self.navigationItem.rightBarButtonItem = reloadProjectButton;
 }
 
-- (void) showProjectsViewController {
+- (void) showProjectsViewController
+{
     [self.viewDeckController toggleLeftViewAnimated:YES];
 }
 
-- (void) reloadProject {
+- (void) reloadProject
+{
     if (self._projectMetadata) {
         [self loadProjectForMetadata: self._projectMetadata];
     } else {
@@ -147,7 +167,8 @@ static const CGFloat kNavigationBarHeight = 44;
     }
 }
 
-- (void) loadProjectForMetadata: (EXProjectMetadata *)projectMetadata {
+- (void) loadProjectForMetadata: (EXProjectMetadata *)projectMetadata
+{
     NSAssert(projectMetadata != nil, @"projectMetadata is not defined");
     [self.viewDeckController closeLeftViewAnimated:YES];
     
@@ -171,7 +192,6 @@ static const CGFloat kNavigationBarHeight = 44;
             [controllers addObject: projectViewController];
             
             [self.navigationController setViewControllers: controllers animated: NO];
-            
         } failed:^(NSError *error) {
             [progressHud hide: NO];
             NSString *errorTitle = NSLocalizedString(@"Failed", @"Title for Failed alert");
@@ -185,12 +205,15 @@ static const CGFloat kNavigationBarHeight = 44;
      ];
 }
 
-- (void) didRotate:(NSNotification *)notification {
+- (void) didRotate:(NSNotification *)notification
+{
     self.viewDeckController.leftSize = [self calculateLeftViewSize];
+
     if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
         // ETST-14908 fix
         CGSize screen = [[UIScreen mainScreen] bounds].size;
         UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+        
         if (UIDeviceOrientationIsPortrait(orientation)) {
             self.view.frame = CGRectMake(0, 0, screen.width, screen.height - kStatusBarHeight - kNavigationBarHeight);
         } else {
@@ -199,20 +222,24 @@ static const CGFloat kNavigationBarHeight = 44;
     }
 }
 
-- (CGFloat)calculateLeftViewSize {
+- (CGFloat)calculateLeftViewSize
+{
     CGFloat centerViewLedge = self.view.bounds.size.width > kLeftViewWidth ? 0 : kCenterViewLedge;
     return self.view.bounds.size.width - kLeftViewWidth + centerViewLedge;
 }
 
-- (void)attachSlideViewController {
+- (void)attachSlideViewController
+{
     self.viewDeckController.leftController = self.projectsMetadataViewController;
     self.viewDeckController.leftSize = [self calculateLeftViewSize];
-    if ([self.wwwFolderName isEqualToString:[self defaultWebResourceFolder]]) {
+    
+    if ([self.wwwFolderName isEqualToString:kDefaultWebResourceFolder]) {
         [self.viewDeckController openLeftViewAnimated:YES];
     }
 }
 
-- (void)detachSlideViewController {
+- (void)detachSlideViewController
+{
     [self.viewDeckController closeLeftView];
     self.viewDeckController.leftController = nil;
 }

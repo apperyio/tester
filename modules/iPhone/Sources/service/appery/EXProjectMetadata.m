@@ -19,7 +19,6 @@ static NSString *const kProjectOwner = @"owner";
 static NSString *const kProjectLink = @"link";
 static NSString *const kProjectShowcaseLink = @"showcaselink";
 static NSString *const kProjectDescription = @"description";
-static NSString *const kProjectFolderId = @"owner";
 static NSString *const kProjectHtmlBundle = @"htmlBundle";
 static NSString *const kProjectIsDisabled = @"isDisabled";
 
@@ -38,7 +37,6 @@ static NSString *const kProjectIsDisabled = @"isDisabled";
  */
 - (BOOL) isEmptyValue: (id) value;
 
-
 /**
  * @returns - 'value' if it is not empty (@see isEmptyValue: method) or nil otherwise
  */
@@ -50,7 +48,8 @@ static NSString *const kProjectIsDisabled = @"isDisabled";
 
 #pragma mark - Initialization
 
-- (id) initWithMetadata: (NSDictionary *) metadata {
+- (id) initWithMetadata: (NSDictionary *) metadata
+{
     self = [super init];
     if (self) {
         self.identifier =  [self getCorrectValue:[metadata objectForKey: kProjectId]];
@@ -72,40 +71,46 @@ static NSString *const kProjectIsDisabled = @"isDisabled";
 
 #pragma mark - Getters
 
-- (NSString *) formattedCreationDate {
+- (NSString *) formattedCreationDate
+{
     return [self formatDateFromMiliseconds: self.creationDate];
 }
 
-- (NSString *) formattedModifyDate {
+- (NSString *) formattedModifyDate
+{
     return [self formatDateFromMiliseconds: self.modifyDate];
 }
 
-- (NSString *) formattedSubmissionDate {
+- (NSString *) formattedSubmissionDate
+{
     return [self formatDateFromMiliseconds: self.submissionDate];
 }
 
-#pragma mark Override
+#pragma mark - Override
 
-- (NSString *) description {
+- (NSString *) description
+{
     return [NSString stringWithFormat: @"id = %@, name = %@", self.identifier, self.name];
 }
 
-
 #pragma mark - Private interface implementation
 
-- (NSString *) formatDateFromMiliseconds:(NSNumber *) milliseconds {
+- (NSString *) formatDateFromMiliseconds:(NSNumber *) milliseconds
+{
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:[milliseconds doubleValue] * 0.001];
     NSDateFormatter *dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
-    
     [dateFormatter setDateFormat:@"yyyy-MM-dd kk:mm:ss"];
+    
     return [dateFormatter stringFromDate: date];
 }
 
-- (BOOL) isEmptyValue: (id)value {
+- (BOOL) isEmptyValue: (id)value
+{
     return (value == nil) || value == [NSNull null];
 }
                     
-- (id) getCorrectValue: (id) value {
+- (id) getCorrectValue: (id) value
+{
     return [self isEmptyValue: value] ? nil : value;
 }
     
