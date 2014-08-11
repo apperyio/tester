@@ -45,13 +45,14 @@ typedef void(^EXProjectsMetadataViewControllerCompletionBlock)(BOOL succeeded);
 @property (retain, nonatomic) IBOutlet UIBarButtonItem *sortByDateButton;
 @property (retain, nonatomic) IBOutlet UIBarButtonItem *sortByNameButton;
 @property (retain, nonatomic) IBOutlet UIBarButtonItem *folderButton;
+@property (retain, nonatomic) UIRefreshControl *refreshControl;
 
 /// @name UI actions
-- (IBAction)reloadButtonPressed:(id)sender;
 - (IBAction)logoutButtonPressed:(id)sender;
 - (IBAction)sortByDateButtonPressed:(id)sender;
 - (IBAction)sortByNameButtonPressed:(id)sender;
 - (IBAction)selectFolderButtonPressed:(id)sender;
+- (void)reloadButtonPressed:(id)sender;
 
 /**
  * Reference to the appery.io web service.

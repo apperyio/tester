@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="4514" systemVersion="13B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
-        <deployment version="1072" defaultVersion="1280" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3747"/>
+        <deployment version="1072" defaultVersion="1296" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EXProjectsMetadataViewController">
@@ -29,11 +29,6 @@
                             <barButtonItem key="leftBarButtonItem" image="logout.png" id="61">
                                 <connections>
                                     <action selector="logoutButtonPressed:" destination="-1" id="63"/>
-                                </connections>
-                            </barButtonItem>
-                            <barButtonItem key="rightBarButtonItem" image="reload.png" id="65">
-                                <connections>
-                                    <action selector="reloadButtonPressed:" destination="-1" id="66"/>
                                 </connections>
                             </barButtonItem>
                         </navigationItem>
@@ -75,6 +70,5 @@
     </objects>
     <resources>
         <image name="logout.png" width="24" height="24"/>
-        <image name="reload.png" width="24" height="24"/>
     </resources>
 </document>

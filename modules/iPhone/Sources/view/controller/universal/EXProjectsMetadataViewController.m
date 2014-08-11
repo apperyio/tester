@@ -71,6 +71,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 @implementation EXProjectsMetadataViewController
 
 #pragma mark - Life cycle
+
 - (id) initWithNibName: (NSString *)nibNameOrNil bundle: (NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName: nibNameOrNil bundle:nibBundleOrNil];
@@ -106,7 +107,9 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 - (IBAction)reloadButtonPressed:(id)sender
 {
     self.currentProjectsSortingMethod = EXProjectsMetadataSortingMethodType_None;
-    [self loadProjectsMetadataCompletion:nil];
+    [self loadProjectsMetadataCompletion:^(BOOL succeeded) {
+        [self.refreshControl endRefreshing];
+    }];
 }
 
 - (IBAction)logoutButtonPressed:(id)sender
@@ -169,14 +172,9 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 - (void) loadProjectsMetadataCompletion:(EXProjectsMetadataViewControllerCompletionBlock)completion
 {
-    UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
-    MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
-    progressHud.labelText = NSLocalizedString(@"Loading projects", @"Loading projects progress hud title");
-    
     NSAssert(self.apperyService != nil, @"apperyService property is not defined");
     
     [self.apperyService loadProjectsMetadata: ^(NSArray *projectsMetadata) {
-         [progressHud hide: YES];
         
          NSArray *enabledProjectsMetadata = [self getEnabledProjectsMetadata:projectsMetadata];
         
@@ -191,7 +189,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
              completion(YES);
          }
      } failed:^(NSError *error) {
-         [progressHud hide: YES];
          NSString *errorTitle = NSLocalizedString(@"Failed", @"Title for Failed alert");
          NSString *errorCancelButtonTitle = NSLocalizedString(@"Ok", @"Failed alert cancel button");
          UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle: errorTitle message: error.domain
@@ -279,13 +276,11 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 {
     self.title = NSLocalizedString(@"Projects", @"EXProjectsViewController title");
     
-    NSString *updateProjectsButtonTitle = NSLocalizedString(@"Update", @"Update projects button title");
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle: updateProjectsButtonTitle
-            style: UIBarButtonItemStylePlain target: self action: @selector(reloadButtonPressed:)];
-
-    NSString *logoutButtonTiltle = NSLocalizedString(@"Logout", @"Logout button title");
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle: logoutButtonTiltle
-            style: UIBarButtonItemStylePlain target: self action: @selector(logoutButtonPressed:)];
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:@"Loading projects"];
+    [refreshControl addTarget:self action: @selector(reloadButtonPressed:) forControlEvents:UIControlEventValueChanged];
+    self.refreshControl = refreshControl;
+    [self.rootTableView addSubview:self.refreshControl];
     
     //For ios 7 and later
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
@@ -312,12 +307,10 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 {
     static NSString *cellIdentifier = @"ProjectMetadataCellIdentifier";
     
-    EXProjectMetadataCell *cell =
-            (EXProjectMetadataCell *)[self.rootTableView dequeueReusableCellWithIdentifier: cellIdentifier];
+    EXProjectMetadataCell *cell = (EXProjectMetadataCell *)[self.rootTableView dequeueReusableCellWithIdentifier: cellIdentifier];
     
 	if(cell == nil) {
-		cell = [[EXProjectMetadataCell alloc] initWithStyle: UITableViewCellStyleDefault
-                                            reuseIdentifier: cellIdentifier];
+		cell = [[EXProjectMetadataCell alloc] initWithStyle: UITableViewCellStyleDefault reuseIdentifier: cellIdentifier];
 	}
     
     return cell;
