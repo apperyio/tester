@@ -84,7 +84,8 @@
             android:name="io.appery.tester.ApperyActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/application_name"
-            android:launchMode="singleTop" >
+            android:launchMode="singleTop"
+            android:theme="@style/CordovaTheme" >
         </activity>
         <activity
             android:name=".PreferencesActivity"
