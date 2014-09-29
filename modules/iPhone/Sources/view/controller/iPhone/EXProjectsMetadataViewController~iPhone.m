@@ -56,19 +56,20 @@
     [self.apperyService loadProjectForMetadata: projectMetadata
         succeed:^(NSString *projectLocation, NSString *startPageName) {
             [progressHud hide: NO];
-            EXProjectViewController *projectViewController = 
-                    [[EXProjectViewController alloc] initWithProjectMetadata: projectMetadata];
+            EXProjectViewController *projectViewController = [[EXProjectViewController alloc] initWithProjectMetadata: projectMetadata];
             projectViewController.apperyService = self.apperyService;
             projectViewController.wwwFolderName = projectLocation;
             projectViewController.startPage = startPageName;
             [self.navigationController pushViewController: projectViewController animated: YES];
         } failed:^(NSError *error) {
             [progressHud hide: NO];
-            NSString *errorTitle = NSLocalizedString(@"Failed", @"Title for Failed alert");
-            NSString *errorCancelButtonTitle = NSLocalizedString(@"Ok", @"Failed alert cancel button");
-            UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle: errorTitle message: error.domain
-                    delegate: nil cancelButtonTitle: errorCancelButtonTitle otherButtonTitles: nil];
-            [errorAlert show];
+            
+            [[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"Failed", nil)
+                                       message: error.domain
+                                      delegate: nil
+                             cancelButtonTitle: NSLocalizedString(@"Ok", nil)
+                             otherButtonTitles: nil] show];
+
             NSLog(@"Project loading failed due to: %@", [error localizedDescription]);
     }];
 }

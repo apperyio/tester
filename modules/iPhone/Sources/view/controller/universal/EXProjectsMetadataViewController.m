@@ -12,6 +12,9 @@
 
 #import "MBProgressHUD.h"
 
+#import "EXCredentialsManager.h"
+#import "EXUserSettingsStorage.h"
+
 #import "EXProjectMetadataCell.h"
 #import "EXSelectViewController.h"
 
@@ -104,12 +107,35 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - UI actions
 
-- (IBAction)reloadButtonPressed:(id)sender
+- (void)reloadProjects
 {
     self.currentProjectsSortingMethod = EXProjectsMetadataSortingMethodType_None;
-    [self loadProjectsMetadataCompletion:^(BOOL succeeded) {
-        [self.refreshControl endRefreshing];
-    }];
+    
+    void(^reloadProjectsInfo)(void) = ^{
+        [self loadProjectsMetadataCompletion:^(BOOL succeeded) {
+            self.rootTableView.userInteractionEnabled = YES;
+            [self.refreshControl endRefreshing];
+        }];
+    };
+    
+    if(self.apperyService.isLoggedOut) {
+        self.rootTableView.userInteractionEnabled = NO;
+        
+        EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
+        EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
+        NSString *password = [EXCredentialsManager retreivePasswordForUser: lastUserSettings.userName];
+        
+        [self.apperyService loginWithUsername:lastUserSettings.userName password:password succeed:^{
+            reloadProjectsInfo();
+        } failed:^(NSError *error) {
+            self.rootTableView.userInteractionEnabled = YES;
+            
+            [self.apperyService quickLogout];
+            [self fireProjectsObserversLogoutCompleted];
+        }];
+    } else {
+        reloadProjectsInfo();
+    }
 }
 
 - (IBAction)logoutButtonPressed:(id)sender
@@ -132,6 +158,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 {
     self.selectFolderController.selection = self.currentFolder;
     [self.selectFolderController updateUI];
+    
     __unsafe_unretained EXProjectsMetadataViewController *weekSelf = self;
     
     self.selectFolderController.completion = ^(BOOL success, id selection) {
@@ -140,6 +167,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
             weekSelf.currentFolder = selection;
             [weekSelf filterProjectsWithOwner:selection];
         }
+        
         weekSelf.navigationBar.userInteractionEnabled = YES;
         weekSelf.rootTableView.userInteractionEnabled = YES;
         weekSelf.toolBar.userInteractionEnabled = YES;
@@ -149,6 +177,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     self.navigationBar.userInteractionEnabled = NO;
     self.rootTableView.userInteractionEnabled = NO;
     self.toolBar.userInteractionEnabled = NO;
+    
     [self showSelectFolderView];
 }
 
@@ -189,14 +218,13 @@ static const NSString * kArrowDownSymbol = @"\u2193";
              completion(YES);
          }
      } failed:^(NSError *error) {
-         NSString *errorTitle = NSLocalizedString(@"Failed", @"Title for Failed alert");
-         NSString *errorCancelButtonTitle = NSLocalizedString(@"Ok", @"Failed alert cancel button");
-         UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle: errorTitle message: error.domain
-                                                             delegate: nil cancelButtonTitle: errorCancelButtonTitle
-                                                    otherButtonTitles: nil];
-         [errorAlert show];
+         [[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"Failed", nil)
+                                     message: error.domain
+                                    delegate: nil
+                           cancelButtonTitle: NSLocalizedString(@"Ok", nil)
+                           otherButtonTitles: nil] show];
          
-         NSLog(@"Projects loading failed due to: %@", [error localizedDescription]);
+         NSLog(@"Projects loading failed due to: %@", error.localizedDescription);
          
          if (completion) {
              completion(NO);
@@ -261,8 +289,9 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 - (void) tableView: (UITableView *)tableView didSelectRowAtIndexPath: (NSIndexPath *)indexPath
 {
     NSAssert(indexPath.row < self.filteredProjectsMetadata.count , @"No data for the specified indexPath");
+    
     EXProjectMetadata *projectMetadata = [self.filteredProjectsMetadata objectAtIndex: indexPath.row];
-
+    
     [self fireProjectsObserversMetadataWasSelected: projectMetadata];
     
     [tableView deselectRowAtIndexPath: indexPath animated: YES];
@@ -278,7 +307,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:@"Loading projects"];
-    [refreshControl addTarget:self action: @selector(reloadButtonPressed:) forControlEvents:UIControlEventValueChanged];
+    [refreshControl addTarget:self action: @selector(reloadProjects) forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refreshControl;
     [self.rootTableView addSubview:self.refreshControl];
     
@@ -388,8 +417,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
         [self.filteredProjectsMetadata addObjectsFromArray:self.projectsMetadata];
     } else {
         NSPredicate *filterByOwnerPredicate = [NSPredicate predicateWithFormat:@"owner like[cd] %@", owner];
-        [self.filteredProjectsMetadata addObjectsFromArray:
-                [self.projectsMetadata filteredArrayUsingPredicate:filterByOwnerPredicate]];
+        [self.filteredProjectsMetadata addObjectsFromArray:[self.projectsMetadata filteredArrayUsingPredicate:filterByOwnerPredicate]];
     }
     
     [self sortProjectsByCurrentSortingMethod];
@@ -400,8 +428,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 - (void)registerRotationObserving
 {
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange:)
-            name:UIDeviceOrientationDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
     
     self.isObservingRegistered = YES;
 }
@@ -409,8 +436,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 - (void)unregisterRotationObserving
 {
     if (self.isObservingRegistered) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self
-                name:UIDeviceOrientationDidChangeNotification object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
         self.isObservingRegistered = NO;
     }
 }

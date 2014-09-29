@@ -11,15 +11,12 @@
 #import "MBProgressHUD.h"
 
 #import "EXProjectsMetadataViewController~iPhone.h"
-#import "EXProjectViewController.h"
 
 #import "EXApperyServiceException.h"
 
 #pragma mark - Private interface declaration
 
 @interface EXLoginViewController ()
-
-@property (nonatomic, retain) EXProjectViewController *projectViewController;
 
 /**
  * Hides keyboard if it visible
@@ -52,6 +49,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
     [self configureCredentialFields];
 }
 
@@ -96,30 +94,30 @@
 
 - (void) saveUserSettings
 {
+    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
+    
     if (self.shouldRememberMe.on) {
         // save user settings
         EXUserSettings *userSettings = [[EXUserSettings alloc] init];
         userSettings.userName = self.userName.text;
         userSettings.shouldRememberMe = self.shouldRememberMe.on;
-        userSettings.shouldRememberPassword = self.shouldRememberPassword.on;
         
-        [self.userSettingsStorage storeSettings: userSettings];
+        [usStorage storeSettings: userSettings];
         
         // save user credentials
-        if (self.shouldRememberPassword.on) {
-            if ([self.credentialsManager addPassword: self.userPassword.text forUser: self.userName.text] == NO) {
-                // not critical
-                NSLog(@"Can not add password: %@ for user: %@", self.userPassword.text, self.userName.text);
-            }
-        } else {
-            if ([self.credentialsManager removePasswordForUser: self.userName.text] == NO) {
-                // not critical
-                NSLog(@"Can not remove password: %@ for user: %@", self.userPassword.text, self.userName.text);
-            }
+        if ([EXCredentialsManager addPassword: self.userPassword.text forUser: self.userName.text] == NO) {
+            // not critical
+            NSLog(@"Can not add password for user: %@", self.userName.text);
         }
+
     } else {
         // remove user settings if it was stored
-        [self.userSettingsStorage removeSettingsForUser: self.userName.text];
+        [usStorage removeSettingsForUser: self.userName.text];
+        
+        if ([EXCredentialsManager removePasswordForUser: self.userName.text] == NO) {
+            // not critical
+            NSLog(@"Can not remove password for user: %@", self.userName.text);
+        }
     }
 }
 
@@ -159,24 +157,24 @@
     
     [self.apperyService loginWithUsername: self.userName.text password: self.userPassword.text succeed: ^{
             [progressHud hide: YES];
+        
             [self saveUserSettings];
             [self navigateToNextViewController];
             [self updateProjectsMetadataForNextViewController];
+        
+            NSLog(@"User %@ login to %@", self.userName.text, self.apperyService.baseUrl);
         }
         failed:^(NSError *error) {
             [progressHud hide: YES];
-            UIAlertView *loginAlert = [[UIAlertView alloc] initWithTitle: @"Login failed"
-                                                                 message: error.domain
-                                                                delegate: nil cancelButtonTitle: @"Ok"
-                                                       otherButtonTitles: nil];
-            [loginAlert show];
+            
+            [[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"Incorrect email address or password", nil)
+                                        message: error.localizedDescription
+                                       delegate: nil
+                              cancelButtonTitle: NSLocalizedString(@"Ok", nil)
+                              otherButtonTitles: nil] show];
+            
+            NSLog(@"User %@ can't login to %@", self.userName.text, self.apperyService.baseUrl);
         }];
-}
-
-- (IBAction) onShouldRememberMeValueChanged: (id)sender
-{
-    self.shouldRememberPassword.enabled = self.shouldRememberMe.on;
-    self.shouldRememberPassword.on = self.shouldRememberMe.on ? self.shouldRememberPassword.on : NO;
 }
 
 #pragma mark - UITextFieldDelefate protocol implementation
@@ -184,6 +182,7 @@
 - (BOOL) textFieldShouldReturn: (UITextField *)textField
 {
     [textField resignFirstResponder];
+    
     return YES;
 }
 
@@ -195,16 +194,6 @@
 {
     [self configureCredentialFields];
     [self configureLoginButton];
-
-    self.projectViewController = [[EXProjectViewController alloc] initWithProjectMetadata: nil];
-    self.projectViewController.apperyService = self.apperyService;
-    self.projectViewController.wwwFolderName = @"www";
-    self.projectViewController.startPage = @"index.html";
-    
-    EXProjectsMetadataViewController *projectsMetadataViewController = [[EXProjectsMetadataViewController alloc]
-            initWithNibName:NSStringFromClass([EXProjectsMetadataViewController class]) bundle:nil];
-    projectsMetadataViewController.apperyService = self.apperyService;
-    self.projectViewController.projectsMetadataViewController = projectsMetadataViewController;
     
     //For ios 7 and later
     if([self respondsToSelector:@selector(setEdgesForExtendedLayout:)]) {
@@ -236,19 +225,13 @@
 {
     self.userName.text = @"";
     self.userPassword.text = @"";
-
-    EXUserSettings *lastUserSettings = [self.userSettingsStorage retreiveLastStoredSettings];
+    
+    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
+    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
 
     if (lastUserSettings) {
         self.shouldRememberMe.on = lastUserSettings.shouldRememberMe;
-        self.shouldRememberPassword.enabled = lastUserSettings.shouldRememberMe;
-        self.shouldRememberPassword.on = lastUserSettings.shouldRememberPassword;
-        if (lastUserSettings.shouldRememberMe) {
-            self.userName.text = lastUserSettings.userName;
-            if (lastUserSettings.shouldRememberPassword) {
-                self.userPassword.text = [self.credentialsManager retreivePasswordForUser: lastUserSettings.userName];
-            }
-        }
+        self.userName.text = lastUserSettings.userName;
     }
 }
 

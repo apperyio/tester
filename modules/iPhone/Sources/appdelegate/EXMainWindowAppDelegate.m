@@ -18,19 +18,13 @@
 
 #import "IIViewDeckController.h"
 
-/**
- * Fix for Cordova library version 1.9.0 and higher.
- */
-NSString * const NSURLIsExcludedFromBackupKey = @"NSURLIsExcludedFromBackupKey";
-
 #pragma mark - Private interface declaration
 
 @interface EXMainWindowAppDelegate ()
 
 @property (nonatomic, strong) EXApperyService *apperyService;
-@property (nonatomic, strong) EXUserSettingsStorage *userSettingsStorage;
-@property (nonatomic, strong) EXCredentialsManager *credentialsManager;
-@property (nonatomic, strong) UINavigationController *rootNavigationController;
+@property (nonatomic, strong) EXLoginViewController *loginViewController;
+@property (nonatomic, strong) IIViewDeckController *viewDeckController;
 
 @end
 
@@ -38,28 +32,38 @@ NSString * const NSURLIsExcludedFromBackupKey = @"NSURLIsExcludedFromBackupKey";
 
 #pragma mark - UIApplicationDelegate protocol - Monitoring Application State Changes
 
-- (BOOL) application: (UIApplication *)application didFinishLaunchingWithOptions: (NSDictionary *) launchOptions
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    [self createApperyService];
-    [self configureApperyService];
-    [self createAndConfigureUserSettingsStorage];
-    [self createCredentialsManager];
+    [self createAndConfigureApperyService];
     
-    EXLoginViewController *loginViewController = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ?
+    self.loginViewController = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ?
             [[EXLoginViewController_iPad alloc] initWithNibName: @"EXLoginViewController~iPad" bundle: nil] :
             [[EXLoginViewController alloc] initWithNibName: @"EXLoginViewController" bundle: nil];
     
-    loginViewController.apperyService = self.apperyService;
-    loginViewController.userSettingsStorage = self.userSettingsStorage;
-    loginViewController.credentialsManager = self.credentialsManager;
+    self.loginViewController.apperyService = self.apperyService;
     
-    self.rootNavigationController = [[UINavigationController alloc] initWithRootViewController: loginViewController];
-    IIViewDeckController *viewDeckController = [[IIViewDeckController alloc] initWithCenterViewController: self.rootNavigationController];
-    viewDeckController.navigationControllerBehavior = IIViewDeckNavigationControllerContained;
-    viewDeckController.elastic = NO;
-    viewDeckController.sizeMode = IIViewDeckLedgeSizeMode;
+    self.loginViewController.projectViewController = [[EXProjectViewController alloc] initWithProjectMetadata: nil];
+    self.loginViewController.projectViewController.apperyService = self.apperyService;
+    self.loginViewController.projectViewController.wwwFolderName = @"www";
+    self.loginViewController.projectViewController.startPage = @"index.html";
     
-    self.window.rootViewController = viewDeckController;
+    EXProjectsMetadataViewController *projectsMetadataViewController = [[EXProjectsMetadataViewController alloc]
+                                                                        initWithNibName:NSStringFromClass([EXProjectsMetadataViewController class]) bundle:nil];
+    projectsMetadataViewController.apperyService = self.apperyService;
+    self.loginViewController.projectViewController.projectsMetadataViewController = projectsMetadataViewController;
+    
+    UINavigationController *rootNavigationController = [[UINavigationController alloc] initWithRootViewController: self.loginViewController];
+    
+    self.viewDeckController = [[IIViewDeckController alloc] initWithCenterViewController: rootNavigationController];
+    self.viewDeckController.navigationControllerBehavior = IIViewDeckNavigationControllerContained;
+    self.viewDeckController.elastic = NO;
+    self.viewDeckController.sizeMode = IIViewDeckLedgeSizeMode;
+    
+    if ([self shouldLoginToAppery]) {
+        [self loginLastUserToAppery];
+    }
+    
+    self.window.rootViewController = self.viewDeckController;
     [self.window makeKeyAndVisible];
     
     return YES;
@@ -67,72 +71,102 @@ NSString * const NSURLIsExcludedFromBackupKey = @"NSURLIsExcludedFromBackupKey";
 
 #pragma mark - UIApplicationDelegate protocol - Responding to System Notifications
 
-- (void) applicationDidReceiveMemoryWarning: (UIApplication *)application
+- (void)applicationDidBecomeActive:(UIApplication *)application
 {
     
 }
 
-- (void) applicationDidEnterBackground: (UIApplication *)application
+- (void)applicationWillResignActive:(UIApplication *)application
 {
-    [self hideAllHuds];
-    [self cancelApperyServiceActivity];
-    [self navigateToStartPage];
+
 }
 
-- (void) applicationWillEnterForeground: (UIApplication *)application
+- (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    [self configureApperyService];
+    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
+    if (!usStorage.retreiveLastStoredSettings.shouldRememberMe) {
+        [self navigateToStartPage];
+    }
+    
+    [self hideAllHuds];
+    [self cancelApperyServiceActivity];
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+    if ([self shouldLoginToAppery]) {
+        [self loginLastUserToAppery];
+    }
+}
+
+- (void)applicationWillTerminate:(UIApplication *)application
+{
+    
 }
 
 #pragma mark - Private interface implementation
 
-- (void) createApperyService
+- (void)createAndConfigureApperyService
 {
     NSAssert(self.apperyService == nil, @"self.apperyService is already initialized");
+    
     self.apperyService = [[EXApperyService alloc] init];
-}
-
-- (void) configureApperyService
-{
     self.apperyService.baseUrl = [[NSUserDefaults standardUserDefaults] valueForKey: @"baseURL"];
+    
     NSLog(@"Appery service base URL: %@", self.apperyService.baseUrl);
 }
 
-- (void) createAndConfigureUserSettingsStorage
+- (BOOL)shouldLoginToAppery
 {
-    NSAssert(self.userSettingsStorage == nil, @"self.userSettingsStorage is already initialized");
-    self.userSettingsStorage = [[EXUserSettingsStorage alloc] init];
+    NSString *newBaseUrl = [[NSUserDefaults standardUserDefaults] valueForKey: @"baseURL"];
+    BOOL urlNotChanged = ![self.apperyService.baseUrl isEqualToString:newBaseUrl];
+    
+    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
+    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
+    
+    return lastUserSettings.shouldRememberMe && urlNotChanged;
 }
 
-- (void) createCredentialsManager
+- (void)loginLastUserToAppery
 {
-    NSAssert(self.credentialsManager == nil, @"self.credentialsManager is already initialized");
-    self.credentialsManager = [[EXCredentialsManager alloc] init];
+    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
+    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
+    NSString *password = [EXCredentialsManager retreivePasswordForUser: lastUserSettings.userName];
+    
+    [self.apperyService loginWithUsername: lastUserSettings.userName
+                                 password: password
+                                  succeed: ^(void) {
+                                       NSLog(@"User %@ login to %@", lastUserSettings.userName, self.apperyService.baseUrl);
+                                  }
+                                   failed:^(NSError *error) {
+                                       [self navigateToStartPage];
+                                       
+                                       NSLog(@"User %@ can't login to %@", lastUserSettings.userName, self.apperyService.baseUrl);
+                                   }];
 }
 
-- (void) hideAllHuds
+- (void)hideAllHuds
 {
     [MBProgressHUD hideAllHUDsForView: self.window.rootViewController.view animated: NO];
 }
 
-- (void) navigateToStartPage
+- (void)cancelApperyServiceActivity
 {
-    [self.rootNavigationController popToRootViewControllerAnimated: NO];
+    [self.apperyService cancelCurrentOperation];
+    
+    if (self.apperyService.isLoggedIn) {
+        [self.apperyService quickLogout];
+    }
+}
 
+- (void)navigateToStartPage
+{
     IIViewDeckController *rootDeckViewController = (IIViewDeckController *)self.window.rootViewController;
+    [(UINavigationController *)rootDeckViewController.centerController popToRootViewControllerAnimated:NO];
     [rootDeckViewController closeLeftView];
     rootDeckViewController.leftController = nil;
     [rootDeckViewController closeRightView];
     rootDeckViewController.rightController = nil;
-}
-
-- (void) cancelApperyServiceActivity
-{
-    [self.apperyService cancelCurrentOperation];
-
-    if (self.apperyService.isLoggedIn) {
-        [self.apperyService quickLogout];
-    }
 }
 
 @end

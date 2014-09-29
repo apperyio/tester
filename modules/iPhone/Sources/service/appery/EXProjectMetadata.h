@@ -18,7 +18,7 @@
 @property (nonatomic, retain) NSNumber *featured;       // Project featured
 @property (nonatomic, retain) NSString *modifier;       // User name of the last modifier/owner
 @property (nonatomic, retain) NSString *link;           // Link to Project
-@property (nonatomic, retain) NSString *description;    // Project description
+@property (nonatomic, retain) NSString *prjDescription; // Project description
 @property (nonatomic, retain) NSString *htmlBundle;     // Link to the project bundle
 @property (nonatomic, retain) NSString *showcaseLink;   // Link to the project showcase
 @property (nonatomic, retain) NSNumber *isDisabled;     // Project is disabled

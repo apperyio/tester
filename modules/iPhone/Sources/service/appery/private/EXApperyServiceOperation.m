@@ -55,6 +55,7 @@
 - (void) start
 {
     NSAssert(self.connection != nil, @"Connection was not initialized");
+    
     [self.connection start];
 }
 
@@ -76,6 +77,7 @@
 - (void) connection: (NSURLConnection *)connection didReceiveResponse: (NSURLResponse *)response
 {
     NSAssert(self.receivedData != nil, @"receivedData property was not initialized");
+    
     self.receivedData.length = 0;
 }
 
@@ -95,17 +97,17 @@
 }
 
 
-- (BOOL) connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace: (NSURLProtectionSpace *)protectionSpace
+- (BOOL) connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace
 {
     return YES;
 }
 
-- (void) connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:( NSURLAuthenticationChallenge *)challenge
+- (void) connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
     [self connection: connection willSendRequestForAuthenticationChallenge: challenge];
 }
 
-- (void) connection: (NSURLConnection *) connection willSendRequestForAuthenticationChallenge: (NSURLAuthenticationChallenge *)challenge
+- (void) connection: (NSURLConnection *) connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
     if ([challenge previousFailureCount] == 0) {
         NSURLCredential *credential = [NSURLCredential credentialWithUser: self.userName
@@ -123,9 +125,7 @@
     self.isSuccessfull = NO;
     
     if (error.code == kCFURLErrorUserCancelledAuthentication) {
-        NSString *loginErrorDomain = NSLocalizedString(@"User name or password are incorrect",
-                                                       @"Login failed message due to illegal credentials");
-        self.error = [NSError errorWithDomain: loginErrorDomain code: 0 userInfo: nil];
+        self.error = [NSError errorWithDomain: NSLocalizedString(@"User name or password are incorrect", nil) code: 0 userInfo: nil];
     } else {
         self.error = error;
     }

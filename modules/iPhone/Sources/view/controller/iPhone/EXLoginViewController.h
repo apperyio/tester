@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import "EXViewControllerProvider.h"
+#import "EXProjectViewController.h"
 #import "EXApperyService.h"
 #import "EXUserSettingsStorage.h"
 #import "EXCredentialsManager.h"
@@ -19,8 +20,9 @@
 @property (retain, nonatomic) IBOutlet UITextField *userName;
 @property (retain, nonatomic) IBOutlet UITextField *userPassword;
 @property (retain, nonatomic) IBOutlet UISwitch *shouldRememberMe;
-@property (retain, nonatomic) IBOutlet UISwitch *shouldRememberPassword;
 @property (retain, nonatomic) IBOutlet GradientButton *loginButton;
+
+@property (nonatomic, retain) EXProjectViewController *projectViewController;
 
 /**
  * Reference to the appery.io web service.
@@ -29,25 +31,8 @@
 @property (nonatomic, retain) EXApperyService *apperyService;
 
 /**
- * Contains reference to user settings storage.
- * @required
- */
-@property (nonatomic, retain) EXUserSettingsStorage *userSettingsStorage;
-
-/**
- * Contains reference to user credentials manager.
- * @required
- */
-@property (nonatomic, retain) EXCredentialsManager *credentialsManager;
-
-/**
  * Provides login action, when user taps to correspond button.
  */
 - (IBAction) login:(id)sender;
-
-/**
- * Handler for shouldRememberMe switch change event.
- */
-- (IBAction) onShouldRememberMeValueChanged: (id)sender;
 
 @end

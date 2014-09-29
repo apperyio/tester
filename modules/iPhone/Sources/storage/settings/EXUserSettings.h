@@ -17,15 +17,15 @@
  * @name Properties
  */
 
-/** Defines user name. */
+/**
+ * Defines user name
+ */
 @property (nonatomic, retain) NSString *userName;
+
 /**
  * Defines if application should to remember current user
  *   to make possible to restore his settings after application launching or not.
  */
 @property (nonatomic, assign) BOOL shouldRememberMe;
-
-/** Defines if application should to remember password between application launching or not. */
-@property (nonatomic, assign) BOOL shouldRememberPassword;
 
 @end

@@ -10,8 +10,11 @@
 
 @implementation EXCredentialsManager
 
-- (BOOL) addPassword: (NSString *)password forUser: (NSString *)userName
++ (BOOL) addPassword: (NSString *)password forUser: (NSString *)userName
 {
+    NSAssert(userName != nil, @"Invalid user name");
+    NSAssert(password != nil, @"Invalid password");
+    
     NSMutableDictionary *itemAttributesForSearching = [[NSMutableDictionary alloc] init];
     
     [itemAttributesForSearching setObject: (id)kSecClassGenericPassword forKey: (id)kSecClass];
@@ -20,7 +23,7 @@
     NSMutableDictionary *foundedItem = nil;
     
     if(SecItemCopyMatching((CFDictionaryRef) itemAttributesForSearching,(CFTypeRef *) &foundedItem) == noErr) {
-        // updating existing item
+        //updating existing item
         NSMutableDictionary *attributesToUpdate = [[NSMutableDictionary alloc] init];
         [attributesToUpdate setObject: (id)(CFDataRef) [userName dataUsingEncoding:NSUTF8StringEncoding]
                                forKey: (id)kSecAttrAccount];
@@ -37,9 +40,8 @@
         
         return updateStatus == noErr;
     } else {
-    
-         //deleting option for result of searhing
-        [itemAttributesForSearching removeObjectForKey: (id) kSecReturnAttributes];     
+        //deleting option for result of searhing
+        [itemAttributesForSearching removeObjectForKey: (id)kSecReturnAttributes];     
         [itemAttributesForSearching setObject: (id)(CFDataRef)[userName dataUsingEncoding:NSUTF8StringEncoding]
                                        forKey: (id)kSecAttrAccount];
         [itemAttributesForSearching setObject: (id)(CFDataRef)[password dataUsingEncoding:NSUTF8StringEncoding]
@@ -52,13 +54,16 @@
     }
 }
 
-- (BOOL) removePasswordForUser: (NSString *)userName
++ (BOOL) removePasswordForUser: (NSString *)userName
 {
+    NSAssert(userName != nil, @"Invalid user name");
+    
     return NO;
 }
 
-- (NSString *) retreivePasswordForUser: (NSString *)userName
++ (NSString *) retreivePasswordForUser: (NSString *)userName
 {
+    NSAssert(userName != nil, @"Invalid user name");
     
     NSMutableDictionary *itemAttributesForSearching = [[NSMutableDictionary alloc] init];
     [itemAttributesForSearching setObject: (id)kSecClassGenericPassword
@@ -80,7 +85,6 @@
     @finally {
         [itemAttributesForSearching release];
     }
-    
 }
 
 @end

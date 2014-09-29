@@ -52,7 +52,7 @@ typedef void(^EXProjectsMetadataViewControllerCompletionBlock)(BOOL succeeded);
 - (IBAction)sortByDateButtonPressed:(id)sender;
 - (IBAction)sortByNameButtonPressed:(id)sender;
 - (IBAction)selectFolderButtonPressed:(id)sender;
-- (void)reloadButtonPressed:(id)sender;
+- (void)reloadProjects;
 
 /**
  * Reference to the appery.io web service.

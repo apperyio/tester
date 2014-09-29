@@ -11,7 +11,9 @@
 #import "MainCommandQueue.h"
 #import "MBProgressHUD.h"
 #import "IIViewDeckController.h"
-#import "EXProjectsMetadataViewController.h"
+
+#import "EXUserSettingsStorage.h"
+#import "EXCredentialsManager.h"
 
 #pragma mark - UI constants
 
@@ -66,8 +68,7 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     [super viewDidLoad];
     
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRotate:)
-            name:UIDeviceOrientationDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRotate:) name:UIDeviceOrientationDidChangeNotification object:nil];
         
     [self configureNavigationBar];
 }
@@ -156,53 +157,76 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     if (self._projectMetadata) {
         [self loadProjectForMetadata: self._projectMetadata];
     } else {
-        NSString *infoTitle = NSLocalizedString(@"Info", @"Title for Info alert");
-        NSString *infoCancelButtonTitle = NSLocalizedString(@"Ok", @"Info alert cancel button");
-        NSString *infoMessage = 
-                NSLocalizedString(@"No one project was loaded. Please select some project from Projects menu.",
-                                  @"Info message if was attemt to reload project if it was not loaded");
-        UIAlertView *infoAlert = [[UIAlertView alloc] initWithTitle: infoTitle message: infoMessage
-                delegate: nil cancelButtonTitle: infoCancelButtonTitle otherButtonTitles: nil];
-        [infoAlert show];
+        [[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"Info", nil)
+                                    message: NSLocalizedString(@"No one project was loaded. Please select some project from Projects menu.", nil)
+                                   delegate: nil
+                          cancelButtonTitle: NSLocalizedString(@"Ok", nil)
+                          otherButtonTitles: nil] show];
+        
+        NSLog(@"Project list was reloaded");
     }
 }
 
 - (void) loadProjectForMetadata: (EXProjectMetadata *)projectMetadata
 {
     NSAssert(projectMetadata != nil, @"projectMetadata is not defined");
+    NSAssert(self.apperyService != nil, @"apperyService property is not defined");
+    
     [self.viewDeckController closeLeftViewAnimated:YES];
     
     UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
     MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
     progressHud.labelText = NSLocalizedString(@"Loading project", @"Loading project progress hud title");
-
-    NSAssert(self.apperyService != nil, @"apperyService property is not defined");
-    [self.apperyService loadProjectForMetadata: projectMetadata
-        succeed:^(NSString *projectLocation, NSString *startPageName) {
-            [progressHud hide: NO];
-            EXProjectViewController *projectViewController = [[EXProjectViewController alloc]
-                    initWithProjectMetadata: projectMetadata];
-            projectViewController.apperyService = self.apperyService;
-            projectViewController.projectsMetadataViewController = self.projectsMetadataViewController;
-            projectViewController.wwwFolderName = projectLocation;
-            projectViewController.startPage = startPageName;
-            
-            NSMutableArray *controllers = [NSMutableArray arrayWithArray: self.navigationController.viewControllers];
-            [controllers removeLastObject];
-            [controllers addObject: projectViewController];
-            
-            [self.navigationController setViewControllers: controllers animated: NO];
+    
+    void(^reloadProject)(void) = ^{
+        [self.apperyService loadProjectForMetadata: projectMetadata
+            succeed:^(NSString *projectLocation, NSString *startPageName) {
+                [progressHud hide: NO];
+                
+                EXProjectViewController *projectViewController = [[EXProjectViewController alloc] initWithProjectMetadata: projectMetadata];
+                projectViewController.apperyService = self.apperyService;
+                projectViewController.projectsMetadataViewController = self.projectsMetadataViewController;
+                projectViewController.wwwFolderName = projectLocation;
+                projectViewController.startPage = startPageName;
+                
+                NSMutableArray *controllers = [NSMutableArray arrayWithArray: self.navigationController.viewControllers];
+                [controllers removeLastObject];
+                [controllers addObject: projectViewController];
+                
+                [self.navigationController setViewControllers: controllers animated: NO];
+                
+                NSLog(@"Project %@ was load", projectMetadata.name);
+            } failed:^(NSError *error) {
+                [progressHud hide: NO];
+                
+                [[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"Failed", nil)
+                                            message: error.localizedDescription
+                                           delegate: nil
+                                  cancelButtonTitle: NSLocalizedString(@"Ok", nil)
+                                  otherButtonTitles: nil] show];
+                
+                NSLog(@"Project loading failed due to: %@", error.localizedDescription);
+            }
+         ];
+    };
+    
+    if(self.apperyService.isLoggedOut) {
+        
+        EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
+        EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
+        NSString *password = [EXCredentialsManager retreivePasswordForUser: lastUserSettings.userName];
+        
+        [self.apperyService loginWithUsername:lastUserSettings.userName password:password succeed:^{
+            reloadProject();
         } failed:^(NSError *error) {
             [progressHud hide: NO];
-            NSString *errorTitle = NSLocalizedString(@"Failed", @"Title for Failed alert");
-            NSString *errorCancelButtonTitle = NSLocalizedString(@"Ok", @"Failed alert cancel button");
-            UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle: errorTitle
-                    message: [error localizedDescription] delegate: nil
-                    cancelButtonTitle: errorCancelButtonTitle otherButtonTitles: nil];
-            [errorAlert show];
-            NSLog(@"Project loading failed due to: %@", [error localizedDescription]);
-        }
-     ];
+            
+            [self.apperyService quickLogout];
+            [self logoutCompleted];
+        }];
+    } else {
+        reloadProject();
+    }
 }
 
 - (void) didRotate:(NSNotification *)notification

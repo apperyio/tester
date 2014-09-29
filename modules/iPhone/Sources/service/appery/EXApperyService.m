@@ -18,8 +18,8 @@
 #pragma mark - Service configure constants
 
 static NSString * const BASE_URL_STRING = @"https://appery.io";
-static NSString * const PROJECTS_PATH_URL_STRING = @"/app/rest/user/projects";
 static NSString * const LOGIN_PATH_URL_STRING = @"/app/rest/user/login";
+static NSString * const PROJECTS_PATH_URL_STRING = @"/app/rest/user/projects";
 static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
 
 #pragma mark - Private interface declaration
@@ -32,18 +32,8 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
     EXApperyServiceOperation *_currentOperation;
 }
 
-@property (nonatomic, retain) NSString *_userName;
-@property (nonatomic, retain) NSString *_userPassword;
-
-/**
- * @throw NSException if current service state is logged out.
- */
-- (void) throwExceptionIfServiceIsLoggedOut;
-
-/**
- * @throw NSException if current service state is logged in.
- */
-- (void) throwExceptionIfServiceIsLoggedIn;
+@property (nonatomic, retain) NSString *userName;
+@property (nonatomic, retain) NSString *userPassword;
 
 /**
  * Removes local autentication data.
@@ -75,8 +65,8 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
 
 #pragma mark - Private properties synthesize
 
-@synthesize _userName = __userName;
-@synthesize _userPassword = __userPassword;
+@synthesize userName = _userName;
+@synthesize userPassword = _userPassword;
 
 #pragma mark - Lifecycle
 
@@ -90,8 +80,8 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
 
 - (void) dealloc
 {
-    self._userName = nil;
-    self._userPassword = nil;
+    self.userName = nil;
+    self.userPassword = nil;
     
     [super dealloc];
 }
@@ -125,7 +115,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
 
 - (NSString *)loggedUserName
 {
-    return self._userName;
+    return self.userName;
 }
 
 #pragma mark - Public interface implementation
@@ -134,8 +124,6 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
 {
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");
-    
-    [self throwExceptionIfServiceIsLoggedIn];
     
     NSString *loginString = [self.baseUrl URLByAddingResourceComponent: LOGIN_PATH_URL_STRING];
     EXApperyServiceOperation *loginOperation = [[EXApperyServiceOperation alloc]
@@ -160,7 +148,6 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
 
 - (void) quickLogout
 {
-    [self throwExceptionIfServiceIsLoggedOut];
     [self removeLocalAuthentication];
     [self changeLoggedStatusTo: NO];
 }
@@ -172,11 +159,9 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
 
 - (void) logoutSucceed: (void (^)(void))succeed failed: (void (^)(NSError *))failed
 {
-    [self throwExceptionIfServiceIsLoggedOut];
-
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");
-
+    
     NSURL *logoutOperationUrl = [NSURL URLWithString:[self.baseUrl URLByAddingResourceComponent: LOGOUT_PATH_URL_STRING]];
     EXApperyServiceOperation *logoutOperation = [[EXApperyServiceOperation alloc] initWithURL: logoutOperationUrl
         completion:^(EXApperyServiceOperation *operation) {
@@ -188,22 +173,21 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
             [operation release];
             _currentOperation = nil;
         }];
-
+    
     _currentOperation = logoutOperation;
-
-    logoutOperation.userName = self._userName;
-    logoutOperation.userPassword = self._userPassword;
+    
+    logoutOperation.userName = self.userName;
+    logoutOperation.userPassword = self.userPassword;
     [logoutOperation start];
+    
     [self quickLogout];
 }
 
 - (void) loadProjectsMetadata: (void (^)(NSArray *))succeed failed: (void (^)(NSError *))failed
 {
-    [self throwExceptionIfServiceIsLoggedOut];
-
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");
-    
+
     NSURL *loadProjectsUrl = [NSURL URLWithString:[self.baseUrl URLByAddingResourceComponent: PROJECTS_PATH_URL_STRING]];
     EXApperyServiceOperationLoadProjectsMetadata *loadProjectsMetadataOperation =
             [[EXApperyServiceOperationLoadProjectsMetadata alloc] initWithURL:  loadProjectsUrl
@@ -216,11 +200,11 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
                 [operation release];
                 _currentOperation = nil;
             }];
-    
+
     _currentOperation = loadProjectsMetadataOperation;
-    
-    loadProjectsMetadataOperation.userName = self._userName;
-    loadProjectsMetadataOperation.userPassword = self._userPassword;
+
+    loadProjectsMetadataOperation.userName = self.userName;
+    loadProjectsMetadataOperation.userPassword = self.userPassword;
     [loadProjectsMetadataOperation start];
 }
 
@@ -228,8 +212,6 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
                         succeed: (void (^)(NSString *projectLocation, NSString *startPageName)) succeed
                          failed: (void (^)(NSError *error)) failed
 {
-    [self throwExceptionIfServiceIsLoggedOut];
-    
     NSAssert(projectMetadata != nil, @"projectMetadata is undefined");
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");
@@ -252,30 +234,14 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
     
     _currentOperation = loadProjectOperation;
     
-    loadProjectOperation.userName = self._userName;
-    loadProjectOperation.userPassword = self._userPassword;
+    loadProjectOperation.userName = self.userName;
+    loadProjectOperation.userPassword = self.userPassword;
     loadProjectOperation.projectMetadata = projectMetadata;
     
     [loadProjectOperation start];
 }
 
 #pragma mark - Private interface implementation
-
-- (void) throwExceptionIfServiceIsLoggedOut
-{
-    if (self.isLoggedOut) {
-        @throw [NSException exceptionWithName: @"IllegalStateException"
-                                       reason: @"Service is already logged out" userInfo: nil];
-    }
-}
-
-- (void) throwExceptionIfServiceIsLoggedIn
-{
-    if (self.isLoggedIn) {
-        @throw [NSException exceptionWithName: @"IllegalStateException"
-                                       reason: @"Service is already logged in" userInfo: nil];
-    }
-}
 
 - (void) changeLoggedStatusTo: (BOOL)status
 {
@@ -287,14 +253,14 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
     NSAssert(userName != nil, @"userName is not specified");
     NSAssert(password != nil, @"password is not specified");
     
-    self._userName = userName;
-    self._userPassword = password;
+    self.userName = userName;
+    self.userPassword = password;
 }
 
 - (void) removeLocalAuthentication
 {
-    self._userName = nil;
-    self._userPassword = nil;
+    self.userName = nil;
+    self.userPassword = nil;
     
     [self removeAutenticationCookies];
 }

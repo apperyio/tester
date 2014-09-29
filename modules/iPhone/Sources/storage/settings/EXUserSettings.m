@@ -19,12 +19,6 @@ static NSString *const kShouldRememberPassword = @"shouldRememberPassword";
 
 @implementation EXUserSettings
 
-#pragma mark - Public Properties sinthesize
-
-@synthesize userName;
-@synthesize shouldRememberMe;
-@synthesize shouldRememberPassword;
-
 #pragma mark - NSCoding protocol implementation
 
 - (id) initWithCoder: (NSCoder *)decoder
@@ -33,7 +27,6 @@ static NSString *const kShouldRememberPassword = @"shouldRememberPassword";
     if (self) {
         self.userName = [decoder decodeObjectForKey: kUserName];
         self.shouldRememberMe = [decoder decodeBoolForKey: kShouldRememberMe];
-        self.shouldRememberPassword = [decoder decodeBoolForKey: kShouldRememberPassword];
     }
     return self;
 }
@@ -42,7 +35,6 @@ static NSString *const kShouldRememberPassword = @"shouldRememberPassword";
 {
     [encoder encodeObject: self.userName forKey: kUserName];
     [encoder encodeBool: self.shouldRememberMe forKey: kShouldRememberMe];
-    [encoder encodeBool: self.shouldRememberPassword forKey: kShouldRememberPassword];
 }
 
 @end
