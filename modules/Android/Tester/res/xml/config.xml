@@ -10,6 +10,7 @@
     <preference name="LoadUrlTimeoutValue" value="10000"/>
     <preference name="loadInWebView" value="false"/>
     <preference name="InAppBrowserStorageEnabled" value="false"/>
+	<preference name="splashscreen" value="splash" />
     
     <feature name="App">
         <param name="android-package" value="org.apache.cordova.App" />
