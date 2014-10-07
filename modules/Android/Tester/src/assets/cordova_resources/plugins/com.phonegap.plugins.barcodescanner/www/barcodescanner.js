@@ -88,11 +88,4 @@ cordova.define("com.phonegap.plugins.BarcodeScanner",
 
         var barcodeScanner = new BarcodeScanner();
         module.exports = barcodeScanner;
-
-        //Add barcodeScanner to window.plugins
-        var plugins = window.plugins;
-        if(plugins === undefined) {
-        	plugins = window.plugins = {};
-        }
-        plugins.barcodeScanner = barcodeScanner;
     });
