@@ -5,15 +5,18 @@
 	android:orientation="vertical">
 
 	<LinearLayout android:layout_width="fill_parent"
-		android:layout_height="fill_parent" android:orientation="horizontal"
-		android:gravity="center_vertical" android:layout_weight="1">
+		android:layout_height="fill_parent" android:orientation="vertical"
+		android:gravity="center_vertical|center_horizontal" android:layout_weight="1">
 
 		<ImageView android:id="@+id/logo" android:layout_height="wrap_content"
 			android:layout_width="wrap_content" android:src="@drawable/logo"
-			android:layout_marginLeft="20dp" android:layout_marginRight="20dp"></ImageView>
+			android:layout_marginLeft="20dp" android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"></ImageView>
 
 		<LinearLayout android:layout_width="fill_parent"
-			android:layout_height="fill_parent" android:layout_weight="1">
+			android:layout_height="fill_parent" android:layout_weight="1"
+            android:layout_marginLeft="36dp"
+            android:layout_marginRight="36dp">
 
 			<LinearLayout android:id="@+id/loading_ll"
 				android:layout_width="fill_parent" android:layout_height="fill_parent"
