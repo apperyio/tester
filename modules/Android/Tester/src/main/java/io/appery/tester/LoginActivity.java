@@ -32,6 +32,12 @@ public class LoginActivity extends BaseActivity implements LoginCallback, UserId
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+            // Activity was brought to front and not created,
+            // Thus finishing this will get us to the last viewed activity
+            finish();
+            return;
+        }
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -73,7 +79,7 @@ public class LoginActivity extends BaseActivity implements LoginCallback, UserId
     protected void onResume() {
         super.onResume();
 
-        Logout logout = new Logout(getRestManager());
+        /*Logout logout = new Logout(getRestManager());
        	logout.execute();
 
         int views[] = new int[] { R.id.login_et, R.id.password_et, R.id.sign_in_btn };
@@ -89,7 +95,7 @@ public class LoginActivity extends BaseActivity implements LoginCallback, UserId
             }
         }
         focusView.setFocusableInTouchMode(true);
-        focusView.requestFocusFromTouch();
+        focusView.requestFocusFromTouch();*/
     }
 
     @Override

@@ -67,8 +67,8 @@
         <activity
             android:name=".LoginActivity"
             android:configChanges="keyboardHidden"
-            android:label="@string/application_name"
-            android:launchMode="singleTask" >
+            android:label="@string/application_name" 
+            android:launchMode="singleTop" >>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
