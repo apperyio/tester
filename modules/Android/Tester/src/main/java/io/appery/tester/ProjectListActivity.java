@@ -4,6 +4,8 @@ import io.appery.tester.adaptors.FolderAdapter;
 import io.appery.tester.adaptors.ProjectListAdapter;
 import io.appery.tester.comparators.ProjectComparator;
 import io.appery.tester.data.Project;
+import io.appery.tester.data.SerializedCookie;
+import io.appery.tester.net.RestManager;
 import io.appery.tester.net.api.BaseResponse;
 import io.appery.tester.net.api.GetProjectList;
 import io.appery.tester.net.api.callback.ProjectListCallback;
@@ -21,6 +23,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -35,6 +38,7 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -51,6 +55,9 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 import com.slidingmenu.lib.SlidingMenu;
+
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.cookie.BasicClientCookie;
 
 /**
  * @author Daniel Lukashevich
@@ -93,6 +100,10 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
     private final ColorMatrix matrix = new ColorMatrix();
     private ImageView  mIndicatorView;
 
+    private static List<String> savedCookiesName = Arrays.asList(new String[]{"JSESSIONID", "JSESSIONIDSSO"});
+    private static List<Cookie> savedCookieList = new ArrayList<Cookie>();
+    private static final String UNAUTHORIZED_RESPONSE_MESSAGE = "Unauthorized";
+
     @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +117,18 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
             sortBy = savedInstanceState.getInt(Constants.EXTRAS.SORT_BY, ProjectComparator.BY_EDIT_DATE);
             projectList = (List<Project>) savedInstanceState.get(Constants.EXTRAS.PROJECTS_LIST);
             selectedProject = (Project) savedInstanceState.get(Constants.EXTRAS.SELECTED_PROJECT);
+            for (String cookieName : savedCookiesName){
+                if (savedInstanceState.containsKey(cookieName)){
+                    SerializedCookie cookie = (SerializedCookie) savedInstanceState.getSerializable(cookieName);
+                    BasicClientCookie savedCookie = new BasicClientCookie(cookie.getName(), cookie.getValue());
+                    savedCookie.setDomain(cookie.getDomain());
+                    savedCookie.setPath(cookie.getPath());
+                    savedCookieList.add(savedCookie);
+                    Log.d("MY", "saved instance cookie"+ cookieName +" = "+ cookie);
+
+                }
+            }
+
         }
 
         mProjectListView = (ListView) findViewById(R.id.project_list);
@@ -123,6 +146,12 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         userId = getIntent().getLongExtra(Constants.EXTRAS.USER_ID, -1);
 
         // request for projects
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        ((TesterApplication) getApplication()).setBaseURL(getServerURL());
+        for (Cookie cookie : savedCookieList) {
+            getRestManager().getCookieStore().addCookie(cookie);
+        }
+
         GetProjectList getProjectList = new GetProjectList(getRestManager(), this);
         showDialog(Constants.DIALOGS.PROGRESS);
         getProjectList.execute();
@@ -320,6 +349,12 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        List<Cookie> cookies = getRestManager().getCookieStore().getCookies();
+        for (Cookie cookie : cookies){
+            if (savedCookiesName.contains(cookie.getName())) {
+                outState.putSerializable(cookie.getName(), new SerializedCookie(cookie));
+            }
+        }
         if (selectedProject != null) {
             outState.putSerializable(Constants.EXTRAS.SELECTED_PROJECT, selectedProject);
             outState.putSerializable(Constants.EXTRAS.PROJECTS_LIST, (Serializable) projectList);
@@ -336,8 +371,13 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
             public void run() {
 
                 try {
-                    dismissDialog(Constants.DIALOGS.PROGRESS);
+                    removeDialog(Constants.DIALOGS.PROGRESS);
                 } catch (Exception e) {
+                }
+
+                if (response.hasError() && UNAUTHORIZED_RESPONSE_MESSAGE.equals(response.getMessage())) {
+                    startActivity(LoginActivity.class);
+                    return;
                 }
 
                 if (response.hasError()) {

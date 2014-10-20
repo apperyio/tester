@@ -1,5 +1,6 @@
 package io.appery.tester.net;
 
+import java.io.Serializable;
 import java.security.KeyStore;
 
 import org.apache.http.client.CookieStore;
@@ -74,6 +75,10 @@ public class RestManager {
         } else {
             httpClient = new DefaultHttpClient(httpParameters);
         }
+    }
+
+    public BasicCookieStore getCookieStore() {
+        return (BasicCookieStore)cookieStore;
     }
 
     /**

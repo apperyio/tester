@@ -48,21 +48,7 @@ public class LoginActivity extends BaseActivity implements LoginCallback, UserId
 
     }
 
-    private String getServerURL() {
-        String fixVersion = getPreferenceAsString(Constants.PREFERENCES.FIX_VERSION, "-1");
-        if (fixVersion.equals("-1") || fixVersion.equals("1")) {
-            setPreference(Constants.PREFERENCES.FIX_VERSION, "2");
-            String serverURL = getPreferenceAsString(Constants.PREFERENCES.BASE_URL, "");
-            if (serverURL.equals(Constants.SERVER_CONSTANTS.OLD_APPERY_URL_HTTPS)
-                    || serverURL.equals(Constants.SERVER_CONSTANTS.OLD_APPERY_URL_HTTP)) {
-                // updating server url to https://appery.io
-                setPreference(Constants.PREFERENCES.BASE_URL, Constants.SERVER_CONSTANTS.NEW_APPERY_URL_HTTPS);
-                return Constants.SERVER_CONSTANTS.NEW_APPERY_URL_HTTPS;
-            }
-        }
-        return getPreferenceAsString(Constants.PREFERENCES.BASE_URL, "");
 
-    }
 
     @Override
     protected void onStart() {
