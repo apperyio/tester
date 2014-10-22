@@ -63,7 +63,6 @@ static NSString * const kDefaultStartPageName = @"index.html";
         // Not critical so just log it.
         NSLog(@"Cannot prevent CSS and JS caching due to error: %@", processError);
     }
-    
     self.projectLocation = [projectLocation stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     self.projectStartPageName = [projectStartPageName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
@@ -109,9 +108,9 @@ static NSString * const kDefaultStartPageName = @"index.html";
     if ([zippedProject writeToFile: zippedProjectFileFullPath atomically: YES] == NO) {
         NSLog(@"Error was occured during file saving to location: %@", location);
         if (error) {
-            NSString *errorDomain = NSLocalizedString(@"Error was occured during saving project file",
-                                                      @"Saving file error");
-            *error = [[NSError alloc] initWithDomain: errorDomain code: 0 userInfo: nil];
+            NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
+                                      NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Error was occured during saving project file", nil)};
+            *error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
         }
         return NO;
     }
@@ -187,7 +186,7 @@ static NSString * const kDefaultStartPageName = @"index.html";
 - (BOOL) preventCSSandJSCachingForProject: (NSString *)projectLocation error: (NSError **)error
 {
     NSDirectoryEnumerator *dirEnum = [[NSFileManager defaultManager] enumeratorAtPath: projectLocation];
-    NSString *versionStrign = [NSString stringWithFormat:@"?version=%lu\"", (uLong)[[NSDate date] timeIntervalSince1970]];
+    NSString *versionStrign = [NSString stringWithFormat:@"?version=%lu\"", (unsigned long)[[NSDate date] timeIntervalSince1970]];
     NSString *file = nil;
     
     while (file = [dirEnum nextObject]) {
@@ -223,8 +222,9 @@ static NSString * const kDefaultStartPageName = @"index.html";
     
     if (resourceFullPath == nil) {
         if (error != nil) {
-            NSString *errorDomain = NSLocalizedString(@"Resource: was not found", @"Resource not found error domain");
-            *error = [NSError errorWithDomain: errorDomain code: 0 userInfo: nil];
+            NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
+                                      NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Resource: was not found", nil)};
+            *error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
         }
         return NO;
     }
@@ -259,8 +259,9 @@ static NSString * const kDefaultStartPageName = @"index.html";
     
     if (resourceFullPath == nil) {
         if (error != nil) {
-            NSString *errorDomain = NSLocalizedString(@"Resource: was not found", @"Resource not found error domain");
-            *error = [NSError errorWithDomain: errorDomain code: 0 userInfo: nil];
+            NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
+                                      NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Resource: was not found", nil)};
+            *error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
         }
         return NO;
     }

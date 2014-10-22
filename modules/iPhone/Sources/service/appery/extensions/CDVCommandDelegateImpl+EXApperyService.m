@@ -16,7 +16,7 @@
 
 - (NSString *) pathForResource: (NSString *)resourcepath
 {
-    return [[_viewController.wwwFolderName stringByAppendingPathComponent: resourcepath] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    return [[_viewController.wwwFolderName stringByAppendingPathComponent: resourcepath] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 }
 
 #pragma clang diagnostic pop

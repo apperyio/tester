@@ -35,7 +35,7 @@
 - (NSString *) removeTrailingSlashes
 {
     if (self.length > 0) {
-        int nonSlashSymbolPos = self.length;
+        NSUInteger nonSlashSymbolPos = self.length;
         for (nonSlashSymbolPos = self.length; nonSlashSymbolPos > 0; --nonSlashSymbolPos) {
             if ([self characterAtIndex: nonSlashSymbolPos - 1] != '/') {
                 break;

@@ -8,8 +8,6 @@
 
 #import "EXApperyService.h"
 
-#import "EXApperyServiceException.h"
-
 #import "EXApperyServiceOperationLoadProjectsMetadata.h"
 #import "EXApperyServiceOperationLoadProject.h"
 
@@ -120,7 +118,9 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
 
 #pragma mark - Public interface implementation
 
-- (void)loginWithUsername: (NSString *)userName password: (NSString *)password succeed: (void (^)(void))succeed failed: (void (^)(NSError *))failed
+- (void)loginWithUsername: (NSString *)userName password: (NSString *)password
+                  succeed: (void (^)(void))succeed
+                   failed: (void (^)(NSError *))failed
 {
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");

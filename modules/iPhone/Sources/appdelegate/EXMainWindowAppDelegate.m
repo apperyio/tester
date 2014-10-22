@@ -7,15 +7,10 @@
 //
 
 #import "EXMainWindowAppDelegate.h"
-
 #import "EXLoginViewController.h"
-#import "EXLoginViewController~ipad.h"
-
 #import "EXApperyService.h"
 #import "EXUserSettingsStorage.h"
-
 #import "MBProgressHUD.h"
-
 #import "IIViewDeckController.h"
 
 #pragma mark - Private interface declaration
@@ -36,9 +31,8 @@
 {
     [self createAndConfigureApperyService];
     
-    self.loginViewController = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ?
-            [[EXLoginViewController_iPad alloc] initWithNibName: @"EXLoginViewController~iPad" bundle: nil] :
-            [[EXLoginViewController alloc] initWithNibName: @"EXLoginViewController" bundle: nil];
+    self.loginViewController = [[EXLoginViewController alloc] initWithNibName:UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ?
+                                @"EXLoginViewController~iPad" : @"EXLoginViewController" bundle: nil];
     
     self.loginViewController.apperyService = self.apperyService;
     

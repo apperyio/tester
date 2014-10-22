@@ -125,7 +125,9 @@
     self.isSuccessfull = NO;
     
     if (error.code == kCFURLErrorUserCancelledAuthentication) {
-        self.error = [NSError errorWithDomain: NSLocalizedString(@"User name or password are incorrect", nil) code: 0 userInfo: nil];
+        NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
+                                  NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Incorrect email address or password", nil)};
+        self.error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
     } else {
         self.error = error;
     }
