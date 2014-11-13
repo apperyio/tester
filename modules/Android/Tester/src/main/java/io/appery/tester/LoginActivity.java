@@ -65,7 +65,7 @@ public class LoginActivity extends BaseActivity implements LoginCallback, UserId
     protected void onResume() {
         super.onResume();
 
-        /*Logout logout = new Logout(getRestManager());
+        Logout logout = new Logout(getRestManager());
        	logout.execute();
 
         int views[] = new int[] { R.id.login_et, R.id.password_et, R.id.sign_in_btn };
@@ -81,7 +81,7 @@ public class LoginActivity extends BaseActivity implements LoginCallback, UserId
             }
         }
         focusView.setFocusableInTouchMode(true);
-        focusView.requestFocusFromTouch();*/
+        focusView.requestFocusFromTouch();
     }
 
     @Override

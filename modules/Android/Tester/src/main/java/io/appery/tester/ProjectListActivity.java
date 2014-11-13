@@ -128,6 +128,9 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
 
                 }
             }
+            for (Cookie cookie : savedCookieList) {
+                getRestManager().getCookieStore().addCookie(cookie);
+            }
 
         }
 
@@ -148,9 +151,6 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         // request for projects
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         ((TesterApplication) getApplication()).setBaseURL(getServerURL());
-        for (Cookie cookie : savedCookieList) {
-            getRestManager().getCookieStore().addCookie(cookie);
-        }
 
         GetProjectList getProjectList = new GetProjectList(getRestManager(), this);
         showDialog(Constants.DIALOGS.PROGRESS);
@@ -376,7 +376,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
                 }
 
                 if (response.hasError() && UNAUTHORIZED_RESPONSE_MESSAGE.equals(response.getMessage())) {
-                    startActivity(LoginActivity.class);
+                    finish();
                     return;
                 }
 
