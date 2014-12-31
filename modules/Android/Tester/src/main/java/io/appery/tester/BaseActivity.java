@@ -119,6 +119,7 @@ public abstract class BaseActivity extends SherlockActivity {
      * Logout.
      */
     protected void logout() {
+        getRestManager().setBaseURL(getRestManager().getIdpURL());
         Logout logout = new Logout(getRestManager());
         logout.execute();
     }

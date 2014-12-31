@@ -26,6 +26,10 @@ public class RestManager {
 
     private String baseURL = "https://appery.io";
 
+    private String idpURL;
+
+    private String baseURLConstant;
+
     // Cookie store
     private CookieStore cookieStore;
 
@@ -39,6 +43,8 @@ public class RestManager {
      */
     public RestManager(String baseURL) {
         this.baseURL = baseURL;
+        this.baseURLConstant = baseURL;
+        this.idpURL = new StringBuilder(baseURL).insert("https://".length(), "idp.").toString();
 
         cookieStore = new BasicCookieStore();
         httpContext = new BasicHttpContext();
@@ -77,6 +83,10 @@ public class RestManager {
         }
     }
 
+    public void setBaseURL(String baseURL) {
+        this.baseURL = baseURL;
+    }
+
     public BasicCookieStore getCookieStore() {
         return (BasicCookieStore)cookieStore;
     }
@@ -100,4 +110,11 @@ public class RestManager {
         return new RestClient(httpClient, httpContext, sbUrl.toString());
     }
 
+    public String getBaseURLConstant() {
+        return baseURLConstant;
+    }
+
+    public String getIdpURL() {
+        return idpURL;
+    }
 }

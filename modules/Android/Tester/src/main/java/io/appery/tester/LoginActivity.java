@@ -2,10 +2,16 @@ package io.appery.tester;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.sun.xml.internal.bind.v2.TODO;
+
 import io.appery.tester.net.api.BaseResponse;
+import io.appery.tester.net.api.DoSAML;
+import io.appery.tester.net.api.GetSAML;
 import io.appery.tester.net.api.GetUserId;
 import io.appery.tester.net.api.Login;
 import io.appery.tester.net.api.Logout;
+import io.appery.tester.net.api.callback.DoSAMLCallback;
+import io.appery.tester.net.api.callback.GetSAMLCallback;
 import io.appery.tester.net.api.callback.LoginCallback;
 import io.appery.tester.net.api.callback.UserIdCallback;
 import io.appery.tester.utils.Constants;
@@ -21,7 +27,10 @@ import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 
-public class LoginActivity extends BaseActivity implements LoginCallback, UserIdCallback {
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class LoginActivity extends BaseActivity implements LoginCallback, GetSAMLCallback, DoSAMLCallback {
 
     protected static final int PREFERENCES = 0;
 
@@ -65,8 +74,8 @@ public class LoginActivity extends BaseActivity implements LoginCallback, UserId
     protected void onResume() {
         super.onResume();
 
-        Logout logout = new Logout(getRestManager());
-       	logout.execute();
+        //Logout logout = new Logout(getRestManager());
+       	//logout.execute();
 
         int views[] = new int[] { R.id.login_et, R.id.password_et, R.id.sign_in_btn };
 
@@ -102,7 +111,7 @@ public class LoginActivity extends BaseActivity implements LoginCallback, UserId
     }
 
     @Override
-    public void onLoginSuccess(final String hash) {
+    public void onLoginSuccess(final String location) {
         setPreference(Constants.PREFERENCES.USERNAME, username);
         setPreference(Constants.PREFERENCES.PASSWORD, password);
 
@@ -115,12 +124,16 @@ public class LoginActivity extends BaseActivity implements LoginCallback, UserId
             }
         });
 
-        GetUserId getUserId = new GetUserId(getRestManager(), this);
-        getUserId.execute();
+        getRestManager().setBaseURL(location);
+        GetSAML samlAPI = new GetSAML(getRestManager(), this);
+        samlAPI.execute();
+
+        //GetUserId getUserId = new GetUserId(getRestManager(), this);
+        //getUserId.execute();
     }
 
     @Override
-    public void onGetUserId(final BaseResponse response) {
+    public void onDoSAMLComplete(final BaseResponse response) {
 
         runOnUiThread(new Runnable() {
 
@@ -128,10 +141,11 @@ public class LoginActivity extends BaseActivity implements LoginCallback, UserId
             public void run() {
 
                 try {
-                    String message = response.getMessage().trim();
-                    Long userId = Long.parseLong(message);
+                    //String message = response.getMessage().trim();
+                    //Long userId = Long.parseLong(message);
+                    getRestManager().setBaseURL(getRestManager().getBaseURLConstant());
                     Intent intent = new Intent(LoginActivity.this, ProjectListActivity.class);
-                    intent.putExtra(Constants.EXTRAS.USER_ID, userId);
+                    //intent.putExtra(Constants.EXTRAS.USER_ID, userId);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                 } catch (NumberFormatException e) {
@@ -188,8 +202,25 @@ public class LoginActivity extends BaseActivity implements LoginCallback, UserId
         username = WidgetUtils.getText(LoginActivity.this, R.id.login_et);
         password = WidgetUtils.getText(LoginActivity.this, R.id.password_et);
 
-        Login loginApi = new Login(getRestManager(), username, password, LoginActivity.this);
+        getRestManager().setBaseURL(getRestManager().getIdpURL());
+        String loginTarget = getRestManager().getBaseURLConstant() + Constants.API.LOGIN_TARGET;
+        Login loginApi = new Login(getRestManager(), username, password, loginTarget, LoginActivity.this);
         showDialog(Constants.DIALOGS.SIGN_IN);
         loginApi.execute();
+    }
+
+    @Override
+    public void onGetSAMLComplete(BaseResponse response) {
+        String saml = response.getMessage().substring(response.getMessage().indexOf("VALUE=\"") + 7, response.getMessage().indexOf("\"/>"));
+        String url = response.getMessage().substring(response.getMessage().indexOf("ACTION=\"") + 8, response.getMessage().indexOf("\"><I"));
+        //TODO do regex
+        /*Pattern pattern = Pattern.compile("/value=\"([^\"]+)\"/i");
+        Matcher matcher = pattern.matcher(hash);
+        if (matcher.find()) {
+            saml = matcher.group(1);
+        }*/
+        getRestManager().setBaseURL(url);
+        DoSAML samlAPI = new DoSAML(getRestManager(), this, saml);
+        samlAPI.execute();
     }
 }

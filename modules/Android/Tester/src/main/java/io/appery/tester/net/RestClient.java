@@ -15,8 +15,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.params.HttpParams;
 
 import android.util.Log;
 
@@ -124,7 +126,9 @@ public class RestClient {
         if (httpRequest == null) {
             return null; // TODO: Return error message
         }
-
+        HttpParams params = new BasicHttpParams();
+        params.setParameter("http.protocol.handle-redirects",false);
+        httpRequest.setParams(params);
         Log.d("RestClient", "URL: " + httpRequest.getURI().toString());
 
          HttpResponse httpResponse = httpClient.execute(httpRequest, httpContext);

@@ -24,6 +24,9 @@ public class TesterApplication extends Application {
         if (serverUrl == null) {
             throw new RuntimeException();
         }
+        if (!serverUrl.startsWith("https")){
+            serverUrl = serverUrl.replaceFirst("http", "https");
+        }
         if ((restManager == null) || (!serverUrl.equals(restManager.getBaseURL()))) {
             restManager = new RestManager(serverUrl);
         }

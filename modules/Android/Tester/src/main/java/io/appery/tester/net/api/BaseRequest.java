@@ -101,7 +101,7 @@ public abstract class BaseRequest implements RequestCallback {
      *            <code>true</code> if request failed
      * @param response
      */
-    private void notifyCallback(final boolean failed, final String response) {
+    protected void notifyCallback(final boolean failed, final String response) {
         BaseResponse baseResponse = new BaseResponse(failed);
         baseResponse.setMessage(response);
 

@@ -6,15 +6,17 @@ package io.appery.tester.utils;
 public interface Constants {
 
     public interface API {
-        public static final String LOGIN = "/app/rest/user/login";
+        public static final String LOGIN = "/idp/doLogin";
 
-        public static final String GET_PROJECTLIST = "/app/rest/user/projects";
+        public static final String GET_PROJECTLIST = "/app/rest/projects";
 
         public static final String GET_PROJECT_RESOURCE = "/app/rest/user/project/%1$d/" + FILENAME_ZIP;
 
-        public static final String LOGOUT = "/app/logout";
+        public static final String LOGOUT = "/idp/doLogout";
 
         public static final String GET_USER_ID = "/app/rest/user/user-id";
+
+        public static final String LOGIN_TARGET = "/app/";
     }
 
     public interface DIALOGS {

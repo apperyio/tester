@@ -100,7 +100,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
     private final ColorMatrix matrix = new ColorMatrix();
     private ImageView  mIndicatorView;
 
-    private static List<String> savedCookiesName = Arrays.asList(new String[]{"JSESSIONID", "JSESSIONIDSSO"});
+    private static List<String> savedCookiesName = Arrays.asList(new String[]{"JSESSIONID", "APPSSO"});
     private static List<Cookie> savedCookieList = new ArrayList<Cookie>();
     private static final String UNAUTHORIZED_RESPONSE_MESSAGE = "Unauthorized";
 
