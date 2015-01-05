@@ -14,6 +14,7 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.params.ClientPNames;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.protocol.HTTP;
@@ -29,6 +30,7 @@ import android.util.Log;
  */
 public class RestClient {
 
+    private boolean followRedirects = false;
     /**
      * Request methods enumeration
      */
@@ -127,11 +129,12 @@ public class RestClient {
             return null; // TODO: Return error message
         }
         HttpParams params = new BasicHttpParams();
-        params.setParameter("http.protocol.handle-redirects",false);
+        params.setParameter(ClientPNames.HANDLE_REDIRECTS, followRedirects);
+        params.setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, true);
         httpRequest.setParams(params);
         Log.d("RestClient", "URL: " + httpRequest.getURI().toString());
 
-         HttpResponse httpResponse = httpClient.execute(httpRequest, httpContext);
+        HttpResponse httpResponse = httpClient.execute(httpRequest, httpContext);
         // httpResponse = httpClient.execute(httpRequest);
         return httpResponse;
 
@@ -212,5 +215,9 @@ public class RestClient {
             httpPost.setEntity(new UrlEncodedFormEntity(parameters, HTTP.UTF_8));
 
         return httpPost;
+    }
+
+    public void setFollowRedirects(boolean followRedirects) {
+        this.followRedirects = followRedirects;
     }
 }

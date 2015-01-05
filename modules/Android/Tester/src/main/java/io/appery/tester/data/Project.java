@@ -72,9 +72,9 @@ public class Project implements Serializable {
             if (json.has("lasteditor")) {
                 lastEditor = json.getString("lasteditor");
             }
-            if (json.has("lastedited")) {
+            if (json.has("modifiedDate")) {
                 try {
-                    lastEditDate = new Date(json.getLong("lastedited"));
+                    lastEditDate = new Date(json.getLong("modifiedDate"));
                 } catch (Exception e) {
                     /* do nothing. */
                 }

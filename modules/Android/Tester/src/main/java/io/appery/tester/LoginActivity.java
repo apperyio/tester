@@ -2,7 +2,6 @@ package io.appery.tester;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.sun.xml.internal.bind.v2.TODO;
 
 import io.appery.tester.net.api.BaseResponse;
 import io.appery.tester.net.api.DoSAML;
@@ -74,8 +73,9 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
     protected void onResume() {
         super.onResume();
 
-        //Logout logout = new Logout(getRestManager());
-       	//logout.execute();
+        getRestManager().setBaseURL(getRestManager().getIdpURL());
+        Logout logout = new Logout(getRestManager());
+       	logout.execute();
 
         int views[] = new int[] { R.id.login_et, R.id.password_et, R.id.sign_in_btn };
 

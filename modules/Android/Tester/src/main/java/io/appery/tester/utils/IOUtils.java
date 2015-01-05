@@ -108,6 +108,7 @@ public class IOUtils {
     }
 
     public static InputStream getInputStream(RestClient restClient) throws IllegalStateException, Exception {
+        restClient.setFollowRedirects(true);
         return restClient.execute().getEntity().getContent();
     }
 

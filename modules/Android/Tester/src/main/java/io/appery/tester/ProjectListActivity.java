@@ -98,7 +98,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
     // used to anabled hardware acceleration for sliding menu
     private final Paint paint = new Paint();
     private final ColorMatrix matrix = new ColorMatrix();
-    private ImageView  mIndicatorView;
+    //private ImageView  mIndicatorView;
 
     private static List<String> savedCookiesName = Arrays.asList(new String[]{"JSESSIONID", "APPSSO"});
     private static List<Cookie> savedCookieList = new ArrayList<Cookie>();
@@ -167,7 +167,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
 
         mFolderAdapter  = new FolderAdapter(this, mFolders ,getResources().getColor(android.R.color.holo_blue_light));
         customizeActionBar();
-        mSlidingMenu = addSlidingMenu();
+        //mSlidingMenu = addSlidingMenu();
 
     }
 
@@ -210,7 +210,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
             }
         });
 
-        menu.setOnOpenListener(new SlidingMenu.OnOpenListener() {
+        /*menu.setOnOpenListener(new SlidingMenu.OnOpenListener() {
             @Override
             public void onOpen() {
                 mIndicatorView.setImageResource(R.drawable.icon_menu_open_unpressed);
@@ -221,7 +221,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
             public void onClosed() {
                 mIndicatorView.setImageResource(R.drawable.icon_menu_closed_unpressed);
             }
-        });
+        });*/
         return menu;
     }
 
@@ -262,10 +262,10 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         boolean layer = percentOpen > 0.0f && percentOpen < 1.0f;
         int layerType = layer ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE;
 
-        if (layerType != mSlidingMenu.getContent().getLayerType()) {
+        /*if (layerType != mSlidingMenu.getContent().getLayerType()) {
             mSlidingMenu.getContent().setLayerType(layerType, null);
             mSlidingMenu.getMenu().setLayerType(layerType, Build.VERSION.SDK_INT <= 16 ? paint : null);
-        }
+        }*/
     }
 
     private static boolean sHackReady;
@@ -316,13 +316,13 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
     private void customizeActionBar(){
         ActionBar bar = getSupportActionBar();
         View title = LayoutInflater.from(this).inflate(R.layout.actionbar_tittle , null , false);
-        mIndicatorView = (ImageView)title.findViewById(R.id.im_indicator);
+        /*mIndicatorView = (ImageView)title.findViewById(R.id.im_indicator);
         mIndicatorView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                    mSlidingMenu.toggle(true);
             }
-        });
+        });*/
 
         FrameLayout.LayoutParams prms = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER_VERTICAL);
@@ -503,7 +503,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
 
         SubMenu subMenu = menu.addSubMenu(getString(R.string.sort_mi));
         subMenu.add(0, Constants.MENU_OPTIONS.REFRESH, Menu.NONE, R.string.refresh_mi);
-        subMenu.add(0, Constants.MENU_OPTIONS.SELECT_FOLDER,Menu.NONE, R.string.folders);
+        //subMenu.add(0, Constants.MENU_OPTIONS.SELECT_FOLDER,Menu.NONE, R.string.folders);
         subMenu.add(0, Constants.MENU_OPTIONS.SORT_BY_NAME, Menu.NONE, R.string.sort_by_name);
         subMenu.add(0, Constants.MENU_OPTIONS.SORT_BY_CREATE,Menu.NONE, R.string.sort_by_createdate);
         subMenu.add(0, Constants.MENU_OPTIONS.SORT_BY_EDIT,Menu.NONE, R.string.sort_by_modifydate);
@@ -536,10 +536,10 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         case Constants.MENU_OPTIONS.SORT_BY_CREATE:
             updateProjectsList(ProjectComparator.BY_CREATE_DATE);
             break;
-        case  Constants.MENU_OPTIONS.SELECT_FOLDER:
+        /*case  Constants.MENU_OPTIONS.SELECT_FOLDER:
             mSlidingMenu.showMenu(true);
-            break;
-         case Constants.MENU_OPTIONS.LOGOUT :
+            break;*/
+        case Constants.MENU_OPTIONS.LOGOUT :
              // for action logout we simply go on login activity
              // in login activity onresume there is action to perform logout
             finish();

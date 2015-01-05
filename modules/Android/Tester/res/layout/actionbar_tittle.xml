@@ -4,20 +4,20 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:paddingLeft="10dp">
 
-    <ImageView
+    <!--<ImageView
         android:id="@+id/im_indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/icon_menu_closed_unpressed"
         android:paddingRight="3dp"
-    />
+    />-->
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/logo_list"
-    />
+        android:src="@drawable/logo_list" />
 
 </LinearLayout>
