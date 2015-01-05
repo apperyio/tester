@@ -136,6 +136,14 @@ static NSString * const kDefaultStartPageName = @"index.html";
         NSLog(@"Error was occured during zip archive deleting");
     }
     
+    // Validation of the archive
+    if (![fileManager fileExistsAtPath: [location stringByAppendingString:@"/index.html"]]) {
+        NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
+                                  NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Incorrect resources", nil)};
+        *error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
+        return NO;
+    }
+    
     return YES;
 }
 
@@ -158,11 +166,13 @@ static NSString * const kDefaultStartPageName = @"index.html";
                 return NO;
             }
         }
+        
         NSString *src = [wwwResource stringByAppendingPathComponent:entity];
         if ([fileManager copyItemAtPath:src toPath:dst error:error] == NO) {
             return NO;
         }
     }
+    
     return YES;
 }
 
@@ -211,6 +221,7 @@ static NSString * const kDefaultStartPageName = @"index.html";
             }
         }
     }
+    
     return YES;
 }
 
@@ -226,6 +237,7 @@ static NSString * const kDefaultStartPageName = @"index.html";
                                       NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Resource: was not found", nil)};
             *error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
         }
+        
         return NO;
     }
     
@@ -250,6 +262,7 @@ static NSString * const kDefaultStartPageName = @"index.html";
         
         break;
     }
+    
     return YES;
 }
 

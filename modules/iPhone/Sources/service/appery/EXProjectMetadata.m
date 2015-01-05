@@ -8,19 +8,16 @@
 
 #import "EXProjectMetadata.h"
 
-static NSString *const kProjectId = @"id";
+static NSString *const kProjectCreationDate = @"creationDate";
+static NSString *const kProjectCreator = @"creator";
+static NSString *const kProjectDisabled = @"disabled";
+static NSString *const kProjectGuid = @"guid";
 static NSString *const kProjectName = @"name";
-static NSString *const kProjectFeatured = @"featured";
-static NSString *const kProjectModifyDate = @"lastedited";
-static NSString *const kProjectCreationDate = @"created";
-static NSString *const kProjectSubmissionDate = @"submissionDate";
-static NSString *const kProjectModifier = @"lasteditor";
-static NSString *const kProjectOwner = @"owner";
-static NSString *const kProjectLink = @"link";
-static NSString *const kProjectShowcaseLink = @"showcaselink";
-static NSString *const kProjectDescription = @"description";
-static NSString *const kProjectHtmlBundle = @"htmlBundle";
-static NSString *const kProjectIsDisabled = @"isDisabled";
+static NSString *const kProjectOpenWith = @"openWith";
+static NSString *const kProjectPushNotification = @"pushNotification";
+static NSString *const kProjectSharedWithSupport = @"sharedWithSupport";
+static NSString *const kProjectSharedWithSupportBy = @"sharedWithSupportBy";
+static NSString *const kProjectType = @"type";
 
 #pragma mark - Private interface declaration
 
@@ -50,22 +47,19 @@ static NSString *const kProjectIsDisabled = @"isDisabled";
 
 - (id) initWithMetadata: (NSDictionary *) metadata
 {
-    self = [super init];
-    if (self) {
-        self.identifier =  [self getCorrectValue:[metadata objectForKey: kProjectId]];
+    if (self = [super init]) {
+        self.creationDate =  [self getCorrectValue:[metadata objectForKey: kProjectCreationDate]];
+        self.creator = [self getCorrectValue:[metadata objectForKey: kProjectCreator]];
+        self.disabled = [self getCorrectValue:[metadata objectForKey: kProjectDisabled]];
+        self.guid = [self getCorrectValue:[metadata objectForKey: kProjectGuid]];
         self.name = [self getCorrectValue:[metadata objectForKey: kProjectName]];
-        self.owner = [self getCorrectValue:[metadata objectForKey: kProjectOwner]];
-        self.featured = [self getCorrectValue:[metadata objectForKey: kProjectFeatured]];
-        self.modifier = [self getCorrectValue:[metadata objectForKey: kProjectModifier]];
-        self.link = [self getCorrectValue:[metadata objectForKey: kProjectLink]];
-        self.prjDescription = [self getCorrectValue:[metadata objectForKey: kProjectDescription]];
-        self.htmlBundle = [self getCorrectValue:[metadata objectForKey: kProjectHtmlBundle]];
-        self.showcaseLink = [self getCorrectValue:[metadata objectForKey: kProjectShowcaseLink]];
-        self.creationDate = [self getCorrectValue:[metadata objectForKey: kProjectCreationDate]];
-        self.modifyDate = [self getCorrectValue:[metadata objectForKey: kProjectModifyDate]];
-        self.submissionDate = [self getCorrectValue:[metadata objectForKey: kProjectSubmissionDate]];
-        self.isDisabled = [self getCorrectValue:[metadata objectForKey: kProjectIsDisabled]];
+        self.openWith = [self getCorrectValue:[metadata objectForKey: kProjectOpenWith]];
+        self.pushNotification = [self getCorrectValue:[metadata objectForKey: kProjectPushNotification]];
+        self.sharedWithSupport = [self getCorrectValue:[metadata objectForKey: kProjectSharedWithSupport]];
+        self.sharedWithSupportBy = [self getCorrectValue:[metadata objectForKey: kProjectSharedWithSupportBy]];
+        self.type = [self getCorrectValue:[metadata objectForKey: kProjectType]];
     }
+    
     return self;
 }
 
@@ -76,21 +70,11 @@ static NSString *const kProjectIsDisabled = @"isDisabled";
     return [self formatDateFromMiliseconds: self.creationDate];
 }
 
-- (NSString *) formattedModifyDate
-{
-    return [self formatDateFromMiliseconds: self.modifyDate];
-}
-
-- (NSString *) formattedSubmissionDate
-{
-    return [self formatDateFromMiliseconds: self.submissionDate];
-}
-
 #pragma mark - Override
 
 - (NSString *) description
 {
-    return [NSString stringWithFormat: @"id = %@, name = %@", self.identifier, self.name];
+    return [NSString stringWithFormat: @"guid = %@, name = %@", self.guid, self.name];
 }
 
 #pragma mark - Private interface implementation

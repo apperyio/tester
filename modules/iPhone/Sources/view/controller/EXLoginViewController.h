@@ -35,4 +35,9 @@
  */
 - (IBAction) login:(id)sender;
 
+/**
+ *
+ */
+- (void) updateProjectsMetadata:(NSArray *)projectsMetadata;
+
 @end

@@ -16,15 +16,20 @@
 
 /**
  * @name Credential properties
+@property (nonatomic, strong) NSString *userName;
+@property (nonatomic, strong) NSString *userPassword;
  */
-@property (nonatomic, retain) NSString *userName;
-@property (nonatomic, retain) NSString *userPassword;
 
 /**
- * @name Operation execution result access properties
+ * @name Operation properties
  */
 @property (nonatomic, assign, readonly) BOOL isSuccessfull;
-@property (nonatomic, retain) NSError *error;
+@property (nonatomic, strong) NSURLRequest *request;
+@property (nonatomic, strong) NSURLResponse *responce;
+@property (nonatomic, strong) NSError *error;
+
+/** Accumulator for received data from appery.io service */
+@property (nonatomic, strong) NSMutableData *receivedData;
 
 /**
  * Initialize service operation with specified code blocks.
@@ -32,7 +37,7 @@
  * @param url - full operation URL
  * @param finished - block of code invoked when operation performing is finished
  */
-- (id) initWithURL: (NSURL *) url completion: (void (^)(EXApperyServiceOperation *operation)) completion;
+- (id) initWithCompletionHendler: (void (^)(EXApperyServiceOperation *operation)) completion;
 
 /**
  *  Starts operation asynchronously.

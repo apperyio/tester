@@ -6,7 +6,7 @@
 	<array>
 		<dict>
 			<key>DefaultValue</key>
-			<string>https://appery.io/</string>
+			<string>appery.io</string>
 			<key>Key</key>
 			<string>baseURL</string>
 			<key>Title</key>

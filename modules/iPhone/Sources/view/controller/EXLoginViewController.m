@@ -7,7 +7,6 @@
 //
 
 #import "EXLoginViewController.h"
-
 #import "MBProgressHUD.h"
 
 #pragma mark - Private interface declaration
@@ -49,12 +48,70 @@
     [self configureCredentialFields];
 }
 
+#pragma mark - UI action handlers
+
+- (IBAction) login: (id)sender
+{
+    NSAssert(self.apperyService != nil, @"apperyService property is not specified");
+
+    [self hideKeyboard];
+  
+    UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
+    MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
+    progressHud.labelText = NSLocalizedString(@"Login", @"Login progress hud title");
+    
+    [self.apperyService quickLogout];
+    
+    [self.apperyService loginWithUsername: self.userName.text password: self.userPassword.text succeed: ^(NSArray *projectsMetadata) {
+        [progressHud hide: YES];
+    
+        [self saveUserSettings];
+        [self navigateToNextViewController];
+        [self updateProjectsMetadata:projectsMetadata];
+    
+        NSLog(@"User %@ login to %@", self.userName.text, self.apperyService.baseUrl);
+    }
+    failed:^(NSError *error) {
+        [progressHud hide: YES];
+        
+        [[[UIAlertView alloc] initWithTitle: error.localizedDescription
+                                    message: error.localizedRecoverySuggestion
+                                   delegate: nil
+                          cancelButtonTitle: NSLocalizedString(@"Ok", nil)
+                          otherButtonTitles: nil] show];
+        
+        NSLog(@"User %@ can't login to %@", self.userName.text, self.apperyService.baseUrl);
+    }];
+}
+
+#pragma mark - Public interface implementation
+
+- (void) updateProjectsMetadata:(NSArray *)projectsMetadata
+{
+    EXProjectViewController *nextViewController = (EXProjectViewController *)[self nextViewController];
+    
+    if ([nextViewController.projectsMetadataViewController respondsToSelector: @selector(initializeProjectsMetadata:)]) {
+        [nextViewController.projectsMetadataViewController initializeProjectsMetadata:projectsMetadata];
+    }
+}
+
 #pragma mark - EXViewControllerProvider protocol implementation
 
 - (UIViewController *) nextViewController
 {
     return self.projectViewController;
 }
+
+#pragma mark - UITextFieldDelefate protocol implementation
+
+- (BOOL) textFieldShouldReturn: (UITextField *)textField
+{
+    [textField resignFirstResponder];
+    
+    return YES;
+}
+
+#pragma mark - Private
 
 #pragma mark - Private interface implementation
 
@@ -81,7 +138,7 @@
             // not critical
             NSLog(@"Can not add password for user: %@", self.userName.text);
         }
-
+        
     } else {
         // remove user settings if it was stored
         [usStorage removeSettingsForUser: self.userName.text];
@@ -103,64 +160,6 @@
         [self.navigationController pushViewController:nextViewController animated: YES];
     }
 }
-
-- (void) updateProjectsMetadataForNextViewController
-{
-    id nextViewController = [self nextViewController];
-    
-    if ([nextViewController respondsToSelector: @selector(loadProjectsMetadata)]) {
-        [nextViewController loadProjectsMetadata];
-    }
-}
-
-#pragma mark - UI action handlers
-
-- (IBAction) login: (id)sender
-{
-    NSAssert(self.apperyService != nil, @"apperyService property is not specified");
-
-    [self hideKeyboard];
-  
-    UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
-    MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
-    progressHud.labelText = NSLocalizedString(@"Login", @"Login progress hud title");
-   
-    NSAssert(self.apperyService != nil, @"apperyService property is not defined");
-    
-    [self.apperyService quickLogout];
-    
-    [self.apperyService loginWithUsername: self.userName.text password: self.userPassword.text succeed: ^{
-            [progressHud hide: YES];
-        
-            [self saveUserSettings];
-            [self navigateToNextViewController];
-            [self updateProjectsMetadataForNextViewController];
-        
-            NSLog(@"User %@ login to %@", self.userName.text, self.apperyService.baseUrl);
-        }
-        failed:^(NSError *error) {
-            [progressHud hide: YES];
-            
-            [[[UIAlertView alloc] initWithTitle: error.localizedDescription
-                                        message: error.localizedRecoverySuggestion
-                                       delegate: nil
-                              cancelButtonTitle: NSLocalizedString(@"Ok", nil)
-                              otherButtonTitles: nil] show];
-            
-            NSLog(@"User %@ can't login to %@", self.userName.text, self.apperyService.baseUrl);
-        }];
-}
-
-#pragma mark - UITextFieldDelefate protocol implementation
-
-- (BOOL) textFieldShouldReturn: (UITextField *)textField
-{
-    [textField resignFirstResponder];
-    
-    return YES;
-}
-
-#pragma mark - Private
 
 #pragma mark - Configuration helpers
 

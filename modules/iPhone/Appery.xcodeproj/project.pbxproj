@@ -108,6 +108,7 @@
 		D4B59F4719F7CB2F00649292 /* EXProjectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B59F3B19F7CB2F00649292 /* EXProjectViewController.m */; };
 		D4B59F4819F7CB2F00649292 /* EXSelectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B59F3D19F7CB2F00649292 /* EXSelectViewController.m */; };
 		D4B59F4919F7CB2F00649292 /* EXSelectViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D4B59F3E19F7CB2F00649292 /* EXSelectViewController.xib */; };
+		D4D5C18C1A516C610069A40F /* libxml2.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 378012EF1907DC8F002A1B88 /* libxml2.2.dylib */; };
 		D6394493152B13EE00C1A267 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6394492152B13EE00C1A267 /* Security.framework */; };
 /* End PBXBuildFile section */
 
@@ -295,6 +296,10 @@
 		D4B59F3D19F7CB2F00649292 /* EXSelectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSelectViewController.m; sourceTree = "<group>"; };
 		D4B59F3E19F7CB2F00649292 /* EXSelectViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EXSelectViewController.xib; sourceTree = "<group>"; };
 		D4B59F3F19F7CB2F00649292 /* EXViewControllerProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXViewControllerProvider.h; sourceTree = "<group>"; };
+		D4D5C1851A51677A0069A40F /* Ono.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Ono.h; sourceTree = "<group>"; };
+		D4D5C1861A51677A0069A40F /* ONOXMLDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ONOXMLDocument.h; sourceTree = "<group>"; };
+		D4D5C1871A51677A0069A40F /* ONOXMLDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ONOXMLDocument.m; sourceTree = "<group>"; };
+		D4D5C18A1A516C0B0069A40F /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		D6394492152B13EE00C1A267 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -306,6 +311,7 @@
 				D4271F2019D9D92200B7DA2D /* libCordova.a in Frameworks */,
 				37AEF2291891828000ABC0E5 /* libz.dylib in Frameworks */,
 				6F597AF114B4F8AF00E80565 /* libiconv.dylib in Frameworks */,
+				D4D5C18C1A516C610069A40F /* libxml2.2.dylib in Frameworks */,
 				D4271EFF19D9AF2300B7DA2D /* libGoogleAnalyticsServices.a in Frameworks */,
 				6F597AEE14B4F84D00E80565 /* AssetsLibrary.framework in Frameworks */,
 				6FAA013A139F8E4F00DD1FE7 /* AudioToolbox.framework in Frameworks */,
@@ -359,6 +365,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D4D5C18A1A516C0B0069A40F /* libxml2.dylib */,
 				378012EF1907DC8F002A1B88 /* libxml2.2.dylib */,
 				37AEF2281891828000ABC0E5 /* libz.dylib */,
 				6F597AF014B4F8AF00E80565 /* libiconv.dylib */,
@@ -576,6 +583,7 @@
 		68CB4C5B15BFE38C000D80C3 /* libs */ = {
 			isa = PBXGroup;
 			children = (
+				D4D5C1841A51677A0069A40F /* Ono */,
 				D4271EB119D9AF2300B7DA2D /* Plugins */,
 				683954C9174231CD001EC185 /* ViewDeck */,
 				687FBA7115E6492F008B956A /* GradientButtons */,
@@ -908,6 +916,16 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		D4D5C1841A51677A0069A40F /* Ono */ = {
+			isa = PBXGroup;
+			children = (
+				D4D5C1851A51677A0069A40F /* Ono.h */,
+				D4D5C1861A51677A0069A40F /* ONOXMLDocument.h */,
+				D4D5C1871A51677A0069A40F /* ONOXMLDocument.m */,
+			);
+			path = Ono;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1110,6 +1128,7 @@
 					"\"$(TARGET_BUILD_DIR)/usr/local/lib/include\"",
 					"\"$(OBJROOT)/UninstalledProducts/include\"",
 					"\"$(BUILT_PRODUCTS_DIR)\"",
+					"\"$(SDKROOT)/usr/include/libxml2\"",
 				);
 				INFOPLIST_FILE = "settings/Appery-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
@@ -1150,6 +1169,7 @@
 					"\"$(TARGET_BUILD_DIR)/usr/local/lib/include\"",
 					"\"$(OBJROOT)/UninstalledProducts/include\"",
 					"\"$(BUILT_PRODUCTS_DIR)\"",
+					"\"$(SDKROOT)/usr/include/libxml2\"",
 				);
 				INFOPLIST_FILE = "settings/Appery-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
@@ -1186,6 +1206,7 @@
 					"\"$(TARGET_BUILD_DIR)/usr/local/lib/include\"",
 					"\"$(OBJROOT)/UninstalledProducts/include\"",
 					"\"$(BUILT_PRODUCTS_DIR)\"",
+					"\"$(SDKROOT)/usr/include/libxml2\"",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
@@ -1215,6 +1236,7 @@
 					"\"$(TARGET_BUILD_DIR)/usr/local/lib/include\"",
 					"\"$(OBJROOT)/UninstalledProducts/include\"",
 					"\"$(BUILT_PRODUCTS_DIR)\"",
+					"\"$(SDKROOT)/usr/include/libxml2\"",
 				);
 				INFOPLIST_FILE = "settings/Appery-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
@@ -1252,6 +1274,7 @@
 					"\"$(TARGET_BUILD_DIR)/usr/local/lib/include\"",
 					"\"$(OBJROOT)/UninstalledProducts/include\"",
 					"\"$(BUILT_PRODUCTS_DIR)\"",
+					"\"$(SDKROOT)/usr/include/libxml2\"",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1275,6 +1298,7 @@
 					"\"$(TARGET_BUILD_DIR)/usr/local/lib/include\"",
 					"\"$(OBJROOT)/UninstalledProducts/include\"",
 					"\"$(BUILT_PRODUCTS_DIR)\"",
+					"\"$(SDKROOT)/usr/include/libxml2\"",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
@@ -1300,6 +1324,7 @@
 					"\"$(TARGET_BUILD_DIR)/usr/local/lib/include\"",
 					"\"$(OBJROOT)/UninstalledProducts/include\"",
 					"\"$(BUILT_PRODUCTS_DIR)\"",
+					"\"$(SDKROOT)/usr/include/libxml2\"",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
@@ -1329,6 +1354,7 @@
 					"\"$(TARGET_BUILD_DIR)/usr/local/lib/include\"",
 					"\"$(OBJROOT)/UninstalledProducts/include\"",
 					"\"$(BUILT_PRODUCTS_DIR)\"",
+					"\"$(SDKROOT)/usr/include/libxml2\"",
 				);
 				INFOPLIST_FILE = "settings/Appery-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;

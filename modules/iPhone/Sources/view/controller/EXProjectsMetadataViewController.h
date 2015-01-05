@@ -77,6 +77,11 @@ typedef void(^EXProjectsMetadataViewControllerCompletionBlock)(BOOL succeeded);
 - (void) removeProjectsObserver: (id<EXProjectsObserver>) observer;
 
 /**
+ * Initialize Projects Metadata
+ */
+- (void) initializeProjectsMetadata:(NSArray *) projectsMetadata;
+
+/**
  * Loads projects metadata.
  */
 - (void) loadProjectsMetadataCompletion:(EXProjectsMetadataViewControllerCompletionBlock)completion;

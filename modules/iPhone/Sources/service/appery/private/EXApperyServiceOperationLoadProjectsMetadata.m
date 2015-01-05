@@ -23,16 +23,22 @@
 
 - (BOOL) processReceivedData: (NSData *)data
 {
+    if (![super processReceivedData:data]) {
+        NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
+                                  NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Incorrect email address or password", nil)};
+        self.error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
+        
+        return NO;
+    }
+    
     NSLog(@"Projects metadata was loaded");
     
     NSString *serializedResponseString = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
-    NSDictionary *serializedResponseDictionary = [serializedResponseString JSONObject];
-    NSArray *serializedProjectsMetadata = [serializedResponseDictionary objectForKey: @"projects"];
+    NSArray *serializedProjectsMetadata = [serializedResponseString JSONObject];
     NSMutableArray *projectsMetadata = [[NSMutableArray alloc] initWithCapacity: serializedProjectsMetadata.count];
     
     for (NSDictionary *serializedProjectMetadata in serializedProjectsMetadata) {
-        EXProjectMetadata *projectMetadata = [[EXProjectMetadata alloc]
-                                              initWithMetadata: serializedProjectMetadata];
+        EXProjectMetadata *projectMetadata = [[EXProjectMetadata alloc] initWithMetadata: serializedProjectMetadata];
         [projectsMetadata addObject: projectMetadata];
     }
     

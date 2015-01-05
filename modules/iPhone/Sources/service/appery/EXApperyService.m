@@ -10,28 +10,29 @@
 
 #import "EXApperyServiceOperationLoadProjectsMetadata.h"
 #import "EXApperyServiceOperationLoadProject.h"
-
+#import "EXProjectMetadata.h"
+#import <Cordova/CDVJSON.h>
 #import "NSString+URLUtility.h"
 
 #pragma mark - Service configure constants
 
-static NSString * const BASE_URL_STRING = @"https://appery.io";
-static NSString * const LOGIN_PATH_URL_STRING = @"/app/rest/user/login";
-static NSString * const PROJECTS_PATH_URL_STRING = @"/app/rest/user/projects";
-static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
+static NSString * const BASE_URL_STRING = @"appery.io";
+static NSString * const LOGIN_PATH_URL_STRING = @"/idp/doLogin";
+static NSString * const PROJECTS_PATH_URL_STRING = @"/app/rest/projects";
+static NSString * const PROJECT_PATH_URL_STRING = @"/app/project/%@/export/sources/web_resources/";
+static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
 
 #pragma mark - Private interface declaration
 
 @interface EXApperyService ()
-{
-    /**
-     * Contains current executing operation reference. Used be cancelCurrentOperation method.
-     */
-    EXApperyServiceOperation *_currentOperation;
-}
 
 @property (nonatomic, retain) NSString *userName;
 @property (nonatomic, retain) NSString *userPassword;
+
+/**
+ * Contains current executing operation reference. Used be cancelCurrentOperation method.
+ */
+@property (nonatomic, retain) EXApperyServiceOperation *currentOperation;
 
 /**
  * Removes local autentication data.
@@ -119,31 +120,35 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
 #pragma mark - Public interface implementation
 
 - (void)loginWithUsername: (NSString *)userName password: (NSString *)password
-                  succeed: (void (^)(void))succeed
+                  succeed: (void (^)(NSArray *))succeed
                    failed: (void (^)(NSError *))failed
 {
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");
     
-    NSString *loginString = [self.baseUrl URLByAddingResourceComponent: LOGIN_PATH_URL_STRING];
-    EXApperyServiceOperation *loginOperation = [[EXApperyServiceOperation alloc]
-            initWithURL: [NSURL URLWithString: loginString] completion: ^(EXApperyServiceOperation *operation) {
-                if (operation.isSuccessfull) {
-                    [self changeLoggedStatusTo: YES];
-                    [self rememberUserName: userName password: password];
-                    succeed();
-                } else {
-                    failed(operation.error);
-                }
-                [operation release];
-                _currentOperation = nil;
-            }];
+    self.currentOperation = [[EXApperyServiceOperationLoadProjectsMetadata alloc] initWithCompletionHendler: ^(EXApperyServiceOperation *operation) {
+        if (operation.isSuccessfull) {
+            [self changeLoggedStatusTo: YES];
+            [self rememberUserName: userName password: password];
+            
+            succeed(((EXApperyServiceOperationLoadProjectsMetadata *)operation).projectsMetadata);
+        } else {
+            failed(operation.error);
+        }
+        
+        self.currentOperation = nil;
+    }];
     
-    _currentOperation = loginOperation;
+    NSString *loginString = [[@"https://idp." stringByAppendingString: self.baseUrl] URLByAddingResourceComponent: LOGIN_PATH_URL_STRING];
+    NSString *eTarget = [[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent: PROJECTS_PATH_URL_STRING];
+    NSString *requestUrlStr = [NSString stringWithFormat:@"%@?cn=%@&pwd=%@&TARGET=%@", loginString, userName, password, eTarget];
+    NSURL *loginUrl = [NSURL URLWithString:requestUrlStr];
+    NSMutableURLRequest *loginRequest = [NSMutableURLRequest requestWithURL:loginUrl
+                                                                cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                                            timeoutInterval:60.0];
+    self.currentOperation.request = loginRequest;
     
-    loginOperation.userName = userName;
-    loginOperation.userPassword = password;
-    [loginOperation start];
+    [self.currentOperation start];
 }
 
 - (void) quickLogout
@@ -162,9 +167,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");
     
-    NSURL *logoutOperationUrl = [NSURL URLWithString:[self.baseUrl URLByAddingResourceComponent: LOGOUT_PATH_URL_STRING]];
-    EXApperyServiceOperation *logoutOperation = [[EXApperyServiceOperation alloc] initWithURL: logoutOperationUrl
-        completion:^(EXApperyServiceOperation *operation) {
+    EXApperyServiceOperation *logoutOperation = [[EXApperyServiceOperation alloc] initWithCompletionHendler: ^(EXApperyServiceOperation *operation) {
             if (operation.isSuccessfull) {
                 succeed();
             } else {
@@ -176,8 +179,11 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
     
     _currentOperation = logoutOperation;
     
-    logoutOperation.userName = self.userName;
-    logoutOperation.userPassword = self.userPassword;
+    NSURL *logoutUrl = [NSURL URLWithString:[[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent: LOGOUT_PATH_URL_STRING]];
+    NSMutableURLRequest *logoutRequest = [NSMutableURLRequest requestWithURL:logoutUrl
+                                                                 cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                                             timeoutInterval:60.0];
+    logoutOperation.request = logoutRequest;
     [logoutOperation start];
     
     [self quickLogout];
@@ -187,25 +193,24 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
 {
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");
-
-    NSURL *loadProjectsUrl = [NSURL URLWithString:[self.baseUrl URLByAddingResourceComponent: PROJECTS_PATH_URL_STRING]];
-    EXApperyServiceOperationLoadProjectsMetadata *loadProjectsMetadataOperation =
-            [[EXApperyServiceOperationLoadProjectsMetadata alloc] initWithURL:  loadProjectsUrl
-            completion:^(EXApperyServiceOperation *operation) {
-                if (operation.isSuccessfull) {
-                    succeed(((EXApperyServiceOperationLoadProjectsMetadata *)operation).projectsMetadata);
-                } else {
-                    failed(operation.error);
-                }
-                [operation release];
-                _currentOperation = nil;
-            }];
-
-    _currentOperation = loadProjectsMetadataOperation;
-
-    loadProjectsMetadataOperation.userName = self.userName;
-    loadProjectsMetadataOperation.userPassword = self.userPassword;
-    [loadProjectsMetadataOperation start];
+    
+    self.currentOperation = [[EXApperyServiceOperationLoadProjectsMetadata alloc] initWithCompletionHendler: ^(EXApperyServiceOperation *operation) {
+        if (operation.isSuccessfull) {
+            succeed(((EXApperyServiceOperationLoadProjectsMetadata *)operation).projectsMetadata);
+        } else {
+            failed(operation.error);
+        }
+        
+        self.currentOperation = nil;
+    }];
+    
+    NSURL *loadProjectsUrl = [NSURL URLWithString:[[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent: PROJECTS_PATH_URL_STRING]];
+    NSMutableURLRequest *loadProjectsRequest = [NSMutableURLRequest requestWithURL:loadProjectsUrl
+                                                                cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                                            timeoutInterval:60.0];
+    self.currentOperation.request = loadProjectsRequest;
+    
+    [self.currentOperation start];
 }
 
 - (void) loadProjectForMetadata: (EXProjectMetadata *) projectMetadata
@@ -216,29 +221,27 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");
     
-    NSURL *loadProjectUrl = [NSURL URLWithString: projectMetadata.htmlBundle];
+    EXApperyServiceOperationLoadProject *loadProjectOperation = [[EXApperyServiceOperationLoadProject alloc] initWithCompletionHendler: ^(EXApperyServiceOperation *operation) {
+        EXApperyServiceOperationLoadProject *loadProjectOperation = (EXApperyServiceOperationLoadProject *)operation;
+        
+        if (operation.isSuccessfull) {
+            succeed(loadProjectOperation.projectLocation, loadProjectOperation.projectStartPageName);
+        } else {
+            failed (operation.error);
+        }
+        
+        self.currentOperation = nil;
+    }];
     
-    EXApperyServiceOperationLoadProject *loadProjectOperation =
-            [[EXApperyServiceOperationLoadProject alloc] initWithURL: loadProjectUrl
-             completion: ^(EXApperyServiceOperation *operation) {
-                 EXApperyServiceOperationLoadProject *loadProjectOperation = 
-                        (EXApperyServiceOperationLoadProject *)operation;
-                 if (operation.isSuccessfull) {
-                     succeed(loadProjectOperation.projectLocation, loadProjectOperation.projectStartPageName);
-                 } else {
-                     failed (operation.error);
-                 }
-                 [operation release];
-                 _currentOperation = nil;
-             }];
-    
-    _currentOperation = loadProjectOperation;
-    
-    loadProjectOperation.userName = self.userName;
-    loadProjectOperation.userPassword = self.userPassword;
+    NSURL *loadProjectUrl = [NSURL URLWithString:[[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent: [NSString stringWithFormat:PROJECT_PATH_URL_STRING, projectMetadata.guid]]];
+    NSMutableURLRequest *loadProjectRequest = [NSMutableURLRequest requestWithURL:loadProjectUrl
+                                                                       cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                                                   timeoutInterval:60.0];
     loadProjectOperation.projectMetadata = projectMetadata;
+    self.currentOperation = loadProjectOperation;
+    self.currentOperation.request = loadProjectRequest;
     
-    [loadProjectOperation start];
+    [self.currentOperation start];
 }
 
 #pragma mark - Private interface implementation
@@ -280,7 +283,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/rest/user/logout";
     NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
     
     for (NSHTTPCookie *cookie in [cookieStorage cookies]) {
-        if ([cookie.name isEqualToString: @"JSESSIONID"] || [cookie.name isEqualToString: @"JSESSIONIDSSO"]) {
+        if ([cookie.name isEqualToString: @"JSESSIONID"] || [cookie.name isEqualToString: @"APPSSO"]) {
             [authenticationCookies addObject: cookie];
         }
     }

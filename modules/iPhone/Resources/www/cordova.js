@@ -1171,6 +1171,16 @@ function replaceNavigator(origNavigator) {
         for (var key in origNavigator) {
             if (typeof origNavigator[key] == 'function') {
                 newNavigator[key] = origNavigator[key].bind(origNavigator);
+            } else {
+                (function(k) {
+                        Object.defineProperty(newNavigator, k, {
+                            get: function() {
+                                return origNavigator[k];
+                            },
+                            configurable: true,
+                            enumerable: true
+                        });
+                    })(key);
             }
         }
     }
@@ -1290,6 +1300,16 @@ function replaceNavigator(origNavigator) {
         for (var key in origNavigator) {
             if (typeof origNavigator[key] == 'function') {
                 newNavigator[key] = origNavigator[key].bind(origNavigator);
+            } else {
+                (function(k) {
+                        Object.defineProperty(newNavigator, k, {
+                            get: function() {
+                                return origNavigator[k];
+                            },
+                            configurable: true,
+                            enumerable: true
+                        });
+                    })(key);
             }
         }
     }

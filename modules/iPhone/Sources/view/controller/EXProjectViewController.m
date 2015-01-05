@@ -190,7 +190,7 @@ static NSString *const kDefaultWebResourceFolder = @"www";
         EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
         NSString *password = [EXCredentialsManager retreivePasswordForUser: lastUserSettings.userName];
         
-        [self.apperyService loginWithUsername:lastUserSettings.userName password:password succeed:^{
+        [self.apperyService loginWithUsername:lastUserSettings.userName password:password succeed:^(NSArray *projectsMetadata) {
             reloadProject();
         } failed:^(NSError *error) {
             [progressHud hide: NO];

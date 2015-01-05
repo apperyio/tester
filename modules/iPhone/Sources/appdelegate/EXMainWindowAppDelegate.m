@@ -53,10 +53,6 @@
     self.viewDeckController.elastic = NO;
     self.viewDeckController.sizeMode = IIViewDeckLedgeSizeMode;
     
-    if ([self shouldLoginToAppery]) {
-        [self loginLastUserToAppery];
-    }
-    
     self.window.rootViewController = self.viewDeckController;
     [self.window makeKeyAndVisible];
     
@@ -77,25 +73,24 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
-    if (!usStorage.retreiveLastStoredSettings.shouldRememberMe) {
-        [self navigateToStartPage];
-    }
-    
     [self hideAllHuds];
     [self cancelApperyServiceActivity];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    if ([self shouldLoginToAppery]) {
+    
+    
+    if ([self shouldLoginToAppery] && ![self updateBaseUrl]) {
         [self loginLastUserToAppery];
+    } else {
+        [self navigateToStartPage];
     }
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-    
+
 }
 
 #pragma mark - Private interface implementation
@@ -110,15 +105,20 @@
     NSLog(@"Appery service base URL: %@", self.apperyService.baseUrl);
 }
 
+- (BOOL)updateBaseUrl
+{
+    NSString *oldBaseUrl = self.apperyService.baseUrl;
+    self.apperyService.baseUrl = [[NSUserDefaults standardUserDefaults] valueForKey: @"baseURL"];
+    
+    return ![self.apperyService.baseUrl isEqualToString:oldBaseUrl];
+}
+
 - (BOOL)shouldLoginToAppery
 {
-    NSString *newBaseUrl = [[NSUserDefaults standardUserDefaults] valueForKey: @"baseURL"];
-    BOOL urlNotChanged = ![self.apperyService.baseUrl isEqualToString:newBaseUrl];
-    
     EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
     EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
     
-    return lastUserSettings.shouldRememberMe && urlNotChanged;
+    return lastUserSettings.shouldRememberMe;
 }
 
 - (void)loginLastUserToAppery
@@ -129,8 +129,13 @@
     
     [self.apperyService loginWithUsername: lastUserSettings.userName
                                  password: password
-                                  succeed: ^(void) {
-                                       NSLog(@"User %@ login to %@", lastUserSettings.userName, self.apperyService.baseUrl);
+                                  succeed: ^(NSArray *projectsMetadata) {
+                                      EXProjectsMetadataViewController *pmvc = ((EXProjectsMetadataViewController *)self.loginViewController.projectViewController.projectsMetadataViewController);
+                                      pmvc.rootTableView.userInteractionEnabled = NO;
+                                      [self.loginViewController updateProjectsMetadata:projectsMetadata];
+                                      pmvc.rootTableView.userInteractionEnabled = YES;
+                                      
+                                      NSLog(@"User %@ login to %@", lastUserSettings.userName, self.apperyService.baseUrl);
                                   }
                                    failed:^(NSError *error) {
                                        [self navigateToStartPage];

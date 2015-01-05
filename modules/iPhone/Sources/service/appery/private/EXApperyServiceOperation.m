@@ -16,9 +16,6 @@
 
 /** Reference to connection */
 @property (nonatomic, strong) NSURLConnection *connection;
-
-/** Accumulator for received data from appery.io service */
-@property (nonatomic, strong) NSMutableData *receivedData;
     
 /**
  * Finished code block reference
@@ -31,21 +28,16 @@
 
 #pragma mark - Life cycle
 
-- (id) initWithURL:(NSURL *)url completion: (void (^)(EXApperyServiceOperation *))completion
+- (id) initWithCompletionHendler: (void (^)(EXApperyServiceOperation *))completion
 {
-    NSAssert(url != nil, @"Operation URL is udefined");
     NSAssert(completion != nil, @"completion callback block is not defined");
 
-    self = [super init];
-    if (self) {
+    if (self = [super init]) {
         self.completion = [completion copy];
-        NSURLRequest *operationRequest = [NSURLRequest requestWithURL: url
-                                                          cachePolicy: NSURLRequestUseProtocolCachePolicy 
-                                                      timeoutInterval: 60.0];
-        self.connection = [[NSURLConnection alloc] initWithRequest: operationRequest delegate: self startImmediately: NO];
-        self.receivedData = [[NSMutableData alloc] init];
-
+        self.request = nil;
+        self.responce = nil;
     }
+    
     return self;
 }
 
@@ -64,29 +56,48 @@
     [self.connection cancel];
 }
 
+- (NSMutableData *) receivedData
+{
+    if (!_receivedData) {
+        _receivedData = [[NSMutableData alloc] init];
+    }
+    
+    return _receivedData;
+}
+
+- (void) setRequest:(NSURLRequest *)request
+{
+    if (request != _request) {
+        self.connection = [[NSURLConnection alloc] initWithRequest: request delegate: self startImmediately: NO];
+        self.responce = nil;
+        _request = request;
+    }
+}
+
 #pragma mark - Protected interface
 
 - (BOOL) processReceivedData: (NSData *)data
 {
     // Do nothing for operations wich do not need data processing
-    return YES;
+    return (((NSHTTPURLResponse *)self.responce).statusCode == 200) ? YES : NO;
 }
 
-#pragma mark - NSURLConnectionDelegate protocol implementation
+#pragma mark - NSURLConnectionDataDelegate protocol implementation
 
-- (void) connection: (NSURLConnection *)connection didReceiveResponse: (NSURLResponse *)response
+- (void) connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
     NSAssert(self.receivedData != nil, @"receivedData property was not initialized");
     
     self.receivedData.length = 0;
+    self.responce = response;
 }
 
-- (void) connection: (NSURLConnection *)connection didReceiveData: (NSData *)data
+- (void) connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
     [self.receivedData appendData: data];
 }
 
-- (void) connectionDidFinishLoading: (NSURLConnection *)connection
+- (void) connectionDidFinishLoading:(NSURLConnection *)connection
 {
     self.connection = nil;
     self.isSuccessfull = [self processReceivedData: self.receivedData];
@@ -96,41 +107,13 @@
     }
 }
 
-
-- (BOOL) connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace
-{
-    return YES;
-}
-
-- (void) connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
-{
-    [self connection: connection willSendRequestForAuthenticationChallenge: challenge];
-}
-
-- (void) connection: (NSURLConnection *) connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
-{
-    if ([challenge previousFailureCount] == 0) {
-        NSURLCredential *credential = [NSURLCredential credentialWithUser: self.userName
-                                                                 password: self.userPassword
-                                                              persistence: NSURLCredentialPersistenceNone];
-        [[challenge sender] useCredential: credential forAuthenticationChallenge: challenge];
-    } else {
-        [[challenge sender] cancelAuthenticationChallenge:challenge];
-    }
-}
+#pragma mark - NSURLConnectionDelegate protocol implementation
 
 - (void) connection: (NSURLConnection *)connection didFailWithError: (NSError *)error
 {
     self.connection = nil;
     self.isSuccessfull = NO;
-    
-    if (error.code == kCFURLErrorUserCancelledAuthentication) {
-        NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
-                                  NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Incorrect email address or password", nil)};
-        self.error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
-    } else {
-        self.error = error;
-    }
+    self.error = error;
     
     if(self.completion) {
         self.completion(self);

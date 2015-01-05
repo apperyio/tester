@@ -48,7 +48,8 @@
  *
  * @exception NSException - if user has already made login
  */
-- (void) loginWithUsername: (NSString *)userName password: (NSString *) password succeed: (void (^)(void)) succeed
+- (void) loginWithUsername: (NSString *)userName password: (NSString *) password
+                   succeed: (void (^)(NSArray *projectsMetadata)) succeed
                     failed: (void (^)(NSError *error)) failed;
 
 /**

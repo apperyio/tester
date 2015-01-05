@@ -125,7 +125,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
         EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
         NSString *password = [EXCredentialsManager retreivePasswordForUser: lastUserSettings.userName];
         
-        [self.apperyService loginWithUsername:lastUserSettings.userName password:password succeed:^{
+        [self.apperyService loginWithUsername:lastUserSettings.userName password:password succeed:^(NSArray *projectsMetadata) {
             reloadProjectsInfo();
         } failed:^(NSError *error) {
             self.rootTableView.userInteractionEnabled = YES;
@@ -209,37 +209,40 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [self.projectsObservers removeObject: observer];
 }
 
+- (void) initializeProjectsMetadata:(NSArray *) projectsMetadata
+{
+    NSArray *enabledProjectsMetadata = [self getEnabledProjectsMetadata:projectsMetadata];
+    self.projectsMetadata = enabledProjectsMetadata;
+    [self.filteredProjectsMetadata removeAllObjects];
+    [self.filteredProjectsMetadata addObjectsFromArray:enabledProjectsMetadata];
+    [self redefineAvailableFolders];
+    [self configureSelectFolderViewController];
+    [self reverseSortProjectsByDate];
+}
+
 - (void) loadProjectsMetadataCompletion:(EXProjectsMetadataViewControllerCompletionBlock)completion
 {
     NSAssert(self.apperyService != nil, @"apperyService property is not defined");
     
     [self.apperyService loadProjectsMetadata: ^(NSArray *projectsMetadata) {
-        
-         NSArray *enabledProjectsMetadata = [self getEnabledProjectsMetadata:projectsMetadata];
-        
-         self.projectsMetadata = enabledProjectsMetadata;
-         [self.filteredProjectsMetadata removeAllObjects];
-         [self.filteredProjectsMetadata addObjectsFromArray:enabledProjectsMetadata];
-         [self redefineAvailableFolders];
-         [self configureSelectFolderViewController];
-         [self reverseSortProjectsByDate];
-        
-         if (completion) {
-             completion(YES);
-         }
-     } failed:^(NSError *error) {
-         [[[UIAlertView alloc] initWithTitle: error.localizedDescription
-                                     message: error.localizedRecoverySuggestion
-                                    delegate: nil
-                           cancelButtonTitle: NSLocalizedString(@"Ok", nil)
-                           otherButtonTitles: nil] show];
-         
-         NSLog(@"Projects loading failed due to: %@", error.localizedDescription);
-         
-         if (completion) {
-             completion(NO);
-         }
-     }];
+        [self initializeProjectsMetadata:projectsMetadata];
+
+        if (completion) {
+            completion(YES);
+        }
+    } failed:^(NSError *error) {
+        [[[UIAlertView alloc] initWithTitle: error.localizedDescription
+                                 message: error.localizedRecoverySuggestion
+                                delegate: nil
+                       cancelButtonTitle: NSLocalizedString(@"Ok", nil)
+                       otherButtonTitles: nil] show];
+
+        NSLog(@"Projects loading failed due to: %@", error.localizedDescription);
+
+        if (completion) {
+            completion(NO);
+        }
+    }];
 }
 
 - (void) logoutFromService
@@ -277,13 +280,12 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 {
     NSAssert(self.filteredProjectsMetadata != nil, @"No data to feed EXProjectsViewController");
     NSAssert(indexPath.row < self.filteredProjectsMetadata.count , @"No data for the specified indexPath");
-
-    EXProjectMetadata *projectMetadata = [self.filteredProjectsMetadata objectAtIndex: indexPath.row];
     
+    EXProjectMetadata *projectMetadata = [self.filteredProjectsMetadata objectAtIndex: indexPath.row];
     EXProjectMetadataCell *cell = [self getCustomTableViewCell];
     cell.projectNameLabel.text = projectMetadata.name;
-    cell.authorLabel.text = projectMetadata.owner;
-    cell.modificationDateLabel.text = projectMetadata.formattedModifyDate;
+    cell.authorLabel.text = projectMetadata.creator;
+    cell.modificationDateLabel.text = projectMetadata.formattedCreationDate;
     
 	return cell;
 }
@@ -293,6 +295,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 - (CGFloat) tableView: (UITableView *)tableView heightForRowAtIndexPath: (NSIndexPath *)indexPath
 {
     EXProjectMetadataCell *cell = [self getCustomTableViewCell];
+    
     return cell.bounds.size.height;
 }
 
@@ -301,7 +304,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     NSAssert(indexPath.row < self.filteredProjectsMetadata.count , @"No data for the specified indexPath");
     
     EXProjectMetadata *projectMetadata = [self.filteredProjectsMetadata objectAtIndex: indexPath.row];
-    
     [self fireProjectsObserversMetadataWasSelected: projectMetadata];
     
     [tableView deselectRowAtIndexPath: indexPath animated: YES];
@@ -345,7 +347,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 - (EXProjectMetadataCell *) getCustomTableViewCell
 {
     static NSString *cellIdentifier = @"ProjectMetadataCellIdentifier";
-    
     EXProjectMetadataCell *cell = (EXProjectMetadataCell *)[self.rootTableView dequeueReusableCellWithIdentifier: cellIdentifier];
     
 	if(cell == nil) {
@@ -405,7 +406,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 - (void)redefineAvailableFolders
 {
-    NSArray *availableFolders = [self.projectsMetadata valueForKeyPath:@"@distinctUnionOfObjects.owner"];
+    NSArray *availableFolders = [self.projectsMetadata valueForKeyPath:@"@distinctUnionOfObjects.creator"];
     NSString *allFolderName = NSLocalizedString(@"All", @"Projects list | Toolbar | Folder button possible value");
     self.folders = [[NSArray arrayWithObject:allFolderName] arrayByAddingObjectsFromArray:availableFolders];
     self.folderButton.title = allFolderName;
@@ -426,7 +427,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     if ([self.folders indexOfObject:owner] == 0) {
         [self.filteredProjectsMetadata addObjectsFromArray:self.projectsMetadata];
     } else {
-        NSPredicate *filterByOwnerPredicate = [NSPredicate predicateWithFormat:@"owner like[cd] %@", owner];
+        NSPredicate *filterByOwnerPredicate = [NSPredicate predicateWithFormat:@"creator like[cd] %@", owner];
         [self.filteredProjectsMetadata addObjectsFromArray:[self.projectsMetadata filteredArrayUsingPredicate:filterByOwnerPredicate]];
     }
     
@@ -476,17 +477,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 - (NSArray *)getEnabledProjectsMetadata:(NSArray *)projectsMetadata
 {
-    NSPredicate *enabledProjectsPredicate = [NSPredicate predicateWithFormat:@"isDisabled == %@", @0];
+    NSPredicate *enabledProjectsPredicate = [NSPredicate predicateWithFormat:@"disabled == %@", @0];
     return [projectsMetadata filteredArrayUsingPredicate:enabledProjectsPredicate];
-}
-
-- (void)sortProjectsByFeatured
-{
-    [self.filteredProjectsMetadata sortUsingComparator: ^NSComparisonResult(id obj1, id obj2) {
-        EXProjectMetadata *first = (EXProjectMetadata *)obj1;
-        EXProjectMetadata *second = (EXProjectMetadata *)obj2;
-        return [first.featured compare: second.featured];
-    }];
 }
 
 - (void)reverseSortProjectsByDate
@@ -514,18 +506,17 @@ static const NSString * kArrowDownSymbol = @"\u2193";
         EXProjectMetadata *first = (EXProjectMetadata *)obj1;
         EXProjectMetadata *second = (EXProjectMetadata *)obj2;
 
-        if (first.modifyDate == nil || second.modifyDate == nil) {
+        if (first.creationDate == nil || second.creationDate == nil) {
             NSLog(@"Oops: modify date is nil");
         }
         
         if (ascending) {
-            return [first.modifyDate compare: second.modifyDate];
+            return [first.creationDate compare: second.creationDate];
         } else {
-            return [second.modifyDate compare: first.modifyDate];
+            return [second.creationDate compare: first.creationDate];
         }
     }];
     
-    [self sortProjectsByFeatured];
     // UI changes
     [self setSortButtonsDefaultNames];
     
@@ -570,7 +561,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
         }
     }];
     
-    [self sortProjectsByFeatured];
     // UI changes
     [self setSortButtonsDefaultNames];
     
