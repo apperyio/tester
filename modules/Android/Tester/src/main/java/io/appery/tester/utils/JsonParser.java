@@ -43,27 +43,20 @@ public class JsonParser {
         List<Object> objList = new ArrayList<Object>();
 
         try {
-            JSONObject json = new JSONObject(response);
-            objList = getListFromJson(json, name);
+            JSONArray arr = new JSONArray(response);
+            objList = getListFromJson(arr, name);
         } catch (JSONException e) {
-            Log.e("JsonParser", "Can't parse list responce", e);
+            Log.e("JsonParser", "Can't parse list response", e);
         }
 
         return objList;
     }
 
-    private static List<Object> getListFromJson(JSONObject json, String name) throws JSONException {
+    private static List<Object> getListFromJson(JSONArray arr, String name) throws JSONException {
         List<Object> objList = new ArrayList<Object>();
 
-        if (json.has(name)) {
-            JSONArray jsonArr = getArrayOrObject(json, name); // Set JSON Array even if it is single object
-
-            for (int i = 0; i < jsonArr.length(); i++) {
-                JSONObject obj = (JSONObject) jsonArr.get(i);
-
-                // Just for project
-                objList.add(new Project(obj));
-            }
+        for (int i = 0; i < arr.length(); i++) {
+            objList.add(new Project((JSONObject) arr.get(i)));
         }
 
         return objList;

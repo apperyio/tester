@@ -20,6 +20,8 @@ public class Project implements Serializable {
 
     private int id;
 
+    private String guid;
+
     private String name;
 
     private String lastEditor = "";
@@ -49,18 +51,24 @@ public class Project implements Serializable {
             if (json.has("name")) {
                 name = json.getString("name");
             }
-            if (json.has("link")) {
-                link = json.getString("link");
 
-                // building resources link
-                try {
-                    String[] urlParts = TextUtils.split(link, "/");
-                    id = Integer.parseInt(urlParts[urlParts.length - 2]);
-                    resourcesLink = String.format(Constants.API.GET_PROJECT_RESOURCE, id);
-                } catch (Exception e) {
-                    Log.e("Project", "Can't compose a link to resources", e);
-                }
+            if (json.has("guid")) {
+                guid = json.getString("guid");
+                resourcesLink = String.format(Constants.API.GET_PROJECT_RESOURCE, guid);
             }
+
+//            if (json.has("link")) {
+//                link = json.getString("link");
+//
+//                // building resources link
+//                try {
+//                    String[] urlParts = TextUtils.split(link, "/");
+//                    id = Integer.parseInt(urlParts[urlParts.length - 2]);
+//                    resourcesLink = String.format(Constants.API.GET_PROJECT_RESOURCE, id);
+//                } catch (Exception e) {
+//                    Log.e("Project", "Can't compose a link to resources", e);
+//                }
+//            }
             if (json.has("lasteditor")) {
                 lastEditor = json.getString("lasteditor");
             }
@@ -71,15 +79,15 @@ public class Project implements Serializable {
                     /* do nothing. */
                 }
             }
-            if (json.has("created")) {
+            if (json.has("creationDate")) {
                 try {
-                    createdDate = new Date(json.getLong("created"));
+                    createdDate = new Date(json.getLong("creationDate"));
                 } catch (Exception e) {
                     /* do nothing. */
                 }
             }
-            if (json.has("owner")){
-                owner = json.getString("owner");
+            if (json.has("creator")){
+                owner = json.getString("creator"); // TODO get rid of owner
             }
         }
         Log.d("Project", toString());
@@ -95,6 +103,10 @@ public class Project implements Serializable {
 
     public int getId() {
         return this.id;
+    }
+
+    public String getGUID() {
+        return this.guid;
     }
 
     public String getLink() {

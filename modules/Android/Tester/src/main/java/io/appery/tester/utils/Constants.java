@@ -10,7 +10,7 @@ public interface Constants {
 
         public static final String GET_PROJECTLIST = "/app/rest/projects";
 
-        public static final String GET_PROJECT_RESOURCE = "/app/rest/user/project/%1$d/" + FILENAME_ZIP;
+        public static final String GET_PROJECT_RESOURCE = "/app/project/%s/export/sources/web_resources/";
 
         public static final String LOGOUT = "/idp/doLogout";
 
