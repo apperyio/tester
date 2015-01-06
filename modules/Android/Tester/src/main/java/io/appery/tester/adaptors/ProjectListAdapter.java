@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 
 /**
  * @author Daniel Lukashevich
@@ -67,6 +68,9 @@ public class ProjectListAdapter extends BaseAdapter {
         String lastEditDate = "";
         if (project.getLastEditDate() != null) {
             lastEditDate = DateFormat.getMediumDateFormat(mContext).format(project.getLastEditDate());
+        } else {
+            LinearLayout dateLayout = (LinearLayout) view.findViewById(R.id.lastEditDate_lo);
+            dateLayout.setVisibility(View.GONE);
         }
         WidgetUtils.setText(view, R.id.lastEditDate_tv, lastEditDate);
     }
