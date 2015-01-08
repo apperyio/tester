@@ -54,7 +54,6 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
-import com.slidingmenu.lib.SlidingMenu;
 
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
@@ -90,7 +89,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
 
 
     private ProjectListAdapter mProjectAdapter;
-    private SlidingMenu mSlidingMenu;
+    //private SlidingMenu mSlidingMenu;
     FolderAdapter mFolderAdapter;
 
     List<String> mFolders = new ArrayList<String>();
@@ -175,7 +174,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
      * add custom sliding menu
      * @return
      */
-    private SlidingMenu addSlidingMenu(){
+    /*private SlidingMenu addSlidingMenu(){
         SlidingMenu menu = new SlidingMenu(this);
         menu.setMode(SlidingMenu.LEFT);
         menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
@@ -210,7 +209,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
             }
         });
 
-        /*menu.setOnOpenListener(new SlidingMenu.OnOpenListener() {
+        *//*menu.setOnOpenListener(new SlidingMenu.OnOpenListener() {
             @Override
             public void onOpen() {
                 mIndicatorView.setImageResource(R.drawable.icon_menu_open_unpressed);
@@ -221,11 +220,11 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
             public void onClosed() {
                 mIndicatorView.setImageResource(R.drawable.icon_menu_closed_unpressed);
             }
-        });*/
+        });*//*
         return menu;
-    }
+    }*/
 
-    @TargetApi(17)
+    /*@TargetApi(17)
     private void updatePaint(boolean API_17, boolean API_16) {
         View backView = mSlidingMenu.getMenu();
         if (API_17) {
@@ -251,7 +250,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
             ((View) backView.getParent()).postInvalidate(backView.getLeft(), backView.getTop(),
                     backView.getRight(), backView.getBottom());
         }
-    }
+    }*/
     private void updateColorFilter(float percentOpen) {
         matrix.setSaturation(percentOpen);
         ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
@@ -297,7 +296,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
             mFolderAdapter.setSelected(i,view);
             updateProjectsList(sortBy);
-            mSlidingMenu.toggle();
+            //mSlidingMenu.toggle();
         }
     };
     View.OnClickListener onRefreshClick = new View.OnClickListener() {

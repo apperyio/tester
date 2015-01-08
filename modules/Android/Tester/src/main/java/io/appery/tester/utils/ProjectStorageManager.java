@@ -15,6 +15,10 @@ public class ProjectStorageManager {
     }
 
     public static String getWORK_DIRECTORY() {
+        return getBase_DIR() + "/.app_default";
+    }
+
+    public static String getOLD_WORK_DIRECTORY() {
         return getBase_DIR() + "/app_default";
     }
 }

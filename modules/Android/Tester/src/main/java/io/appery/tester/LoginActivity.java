@@ -14,6 +14,8 @@ import io.appery.tester.net.api.callback.GetSAMLCallback;
 import io.appery.tester.net.api.callback.LoginCallback;
 import io.appery.tester.net.api.callback.UserIdCallback;
 import io.appery.tester.utils.Constants;
+import io.appery.tester.utils.FileUtils;
+import io.appery.tester.utils.ProjectStorageManager;
 import io.appery.tester.utils.WidgetUtils;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -26,6 +28,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,7 +56,12 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         ((TesterApplication) getApplication()).setBaseURL(getServerURL());
-
+        try {
+            //clear old app_default dir for photolibrary trash issues (if exists)
+            FileUtils.clearDirectory(ProjectStorageManager.getOLD_WORK_DIRECTORY());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

@@ -32,12 +32,12 @@
 			<type>apklib</type>
 		</dependency>
 
-		<dependency>
+		<!--<dependency>
 			<groupId>slidingmenu</groupId>
 			<artifactId>slidingmenu</artifactId>
 			<version>1.0</version>
 			<type>apklib</type>
-		</dependency>
+		</dependency>-->
 
 		<dependency>
 			<groupId>org.apache.cordova</groupId>
