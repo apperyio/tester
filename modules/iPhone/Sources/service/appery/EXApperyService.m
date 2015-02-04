@@ -140,8 +140,9 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     }];
     
     NSString *loginString = [[@"https://idp." stringByAppendingString: self.baseUrl] URLByAddingResourceComponent: LOGIN_PATH_URL_STRING];
-    NSString *eTarget = [[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent: PROJECTS_PATH_URL_STRING];
-    NSString *requestUrlStr = [NSString stringWithFormat:@"%@?cn=%@&pwd=%@&TARGET=%@", loginString, userName, password, eTarget];
+    NSString *target = [[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent: PROJECTS_PATH_URL_STRING];
+    NSString *ePassword = [password encodedUrlString];
+    NSString *requestUrlStr = [NSString stringWithFormat:@"%@?cn=%@&pwd=%@&TARGET=%@", loginString, userName, ePassword, target];
     NSURL *loginUrl = [NSURL URLWithString:requestUrlStr];
     NSMutableURLRequest *loginRequest = [NSMutableURLRequest requestWithURL:loginUrl
                                                                 cachePolicy:NSURLRequestUseProtocolCachePolicy
