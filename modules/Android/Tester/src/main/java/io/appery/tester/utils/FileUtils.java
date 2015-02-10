@@ -73,6 +73,16 @@ public class FileUtils {
     }
 
     /**
+     * Is exists <code>dirPath</code> in filesystem
+     *
+     * @param dirPath
+     */
+    public static boolean isDirExists(String dirPath) {
+        File dir = new File(dirPath);
+        return dir.exists();
+    }
+
+    /**
      * Unzip file from <code>zipFilePath</code> to the current directory
      * 
      * @param zipFilePath

@@ -87,6 +87,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
     public static  final int ALL_FOLDERS_POSITION = 0;
     public static  final int MY_FOLDER_POSITION = 1;
     private String CORDOVA_LIB_DIR = "/files/resources/lib/";
+    private String CORDOVA_ANGULAR_LIB_DIR = "/libs/";
 
 
     private ProjectListAdapter mProjectAdapter;
@@ -485,7 +486,11 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
     
 	private void replaceCordovaResources(String dirPath) {		
 		String path = dirPath + this.CORDOVA_LIB_DIR;
-		String cordovaAssetArchiveFileName = "cordova_resources.zip";		
+        if (!FileUtils.isDirExists(path)) {
+            path = dirPath + this.CORDOVA_ANGULAR_LIB_DIR;
+        }
+
+		String cordovaAssetArchiveFileName = "cordova_resources.zip";
 		
 		FileUtils.copyAsset(this, cordovaAssetArchiveFileName, path	+ cordovaAssetArchiveFileName);
 		try{
