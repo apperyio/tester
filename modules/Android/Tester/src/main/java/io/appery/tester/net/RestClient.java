@@ -2,6 +2,7 @@ package io.appery.tester.net;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -169,12 +170,16 @@ public class RestClient {
 
         // Adding parameters
         for (NameValuePair pair : parameters) {
-            if (urlBuilder.length() > 1)
-                urlBuilder.append("&");
-            else
-                urlBuilder.append("?");
+            try {
+                if (urlBuilder.length() > 1)
+                    urlBuilder.append("&");
+                else
+                    urlBuilder.append("?");
 
-            urlBuilder.append(pair.getName() + "=" + pair.getValue());
+                urlBuilder.append(pair.getName() + "=" + URLEncoder.encode(pair.getValue(), "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
 
         HttpUriRequest httpUri = null;
