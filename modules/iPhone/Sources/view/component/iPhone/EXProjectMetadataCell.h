@@ -13,5 +13,6 @@
 @property (retain, nonatomic) IBOutlet UILabel *projectNameLabel;
 @property (retain, nonatomic) IBOutlet UILabel *authorLabel;
 @property (retain, nonatomic) IBOutlet UILabel *modificationDateLabel;
+@property (retain, nonatomic) IBOutlet UIImageView *projectTypeIcon;
 
 @end

@@ -45,9 +45,24 @@ static NSString * const kDefaultStartPageName = @"index.html";
         return NO;
     }
     
-    NSString *libsLocation = [NSString pathWithComponents:@[projectLocation, @"files/resources/lib"]];
+    NSString *libsLocation;
+    
+    switch ([self.projectMetadata.type intValue]) {
+        case 1:
+            libsLocation = [NSString pathWithComponents:@[projectLocation, @"files/resources/lib"]];
+            break;
+            
+        case 7:
+        case 8:
+            libsLocation = [NSString pathWithComponents:@[projectLocation, @"libs"]];
+            break;
+            
+        default:
+            break;
+    }
     
     if ([self copyCordovaLibsToLocation: libsLocation error: &processError] == NO) {
+        //ToDo: add error
         return NO;
     }
     
@@ -138,9 +153,11 @@ static NSString * const kDefaultStartPageName = @"index.html";
     
     // Validation of the archive
     if (![fileManager fileExistsAtPath: [location stringByAppendingString:@"/index.html"]]) {
-        NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
-                                  NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Incorrect resources", nil)};
-        *error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
+        if (error) {
+            NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
+                                      NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Incorrect resources", nil)};
+            *error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
+        }
         return NO;
     }
     

@@ -1,5 +1,5 @@
 //
-//  EXProjectViewController~iPad.m
+//  EXProjectViewController.m
 //  Appery
 //
 //  Created by Sergey Seroshtan on 22.08.12.

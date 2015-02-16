@@ -12,15 +12,14 @@
 
 - (NSString *) decodedUrlString
 {
-    return [(NSString *) CFURLCreateStringByReplacingPercentEscapes
-            (NULL, (CFStringRef)[[self mutableCopy] autorelease], CFSTR("")) autorelease];
+    return (NSString *)CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapes(NULL, (CFStringRef)[self mutableCopy], CFSTR("")));
 }
 
 - (NSString *) encodedUrlString
 {
-    return (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)[self mutableCopy], NULL, 
+    return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)[self mutableCopy], NULL, 
                                                                (CFStringRef)@"!*'();:@&=+$,/?%#[]",
-                                                               kCFStringEncodingUTF8 );
+                                                               kCFStringEncodingUTF8 ));
 }
 
 - (NSString *) URLByAddingResourceComponent: (NSString *)resourcePath
@@ -28,7 +27,7 @@
     if (self.length > 0) {
         return [self stringByAppendingString: resourcePath];
     } else {
-        return [[resourcePath copy] autorelease];
+        return [resourcePath copy];
     }
 }
 
@@ -36,14 +35,14 @@
 {
     if (self.length > 0) {
         NSUInteger nonSlashSymbolPos = self.length;
-        for (nonSlashSymbolPos = self.length; nonSlashSymbolPos > 0; --nonSlashSymbolPos) {
+        for (; nonSlashSymbolPos > 0; --nonSlashSymbolPos) {
             if ([self characterAtIndex: nonSlashSymbolPos - 1] != '/') {
                 break;
             }
         }
         return [self substringToIndex: nonSlashSymbolPos];
     } else {
-        return [[self copy] autorelease];
+        return [self copy];
     }
 }
 

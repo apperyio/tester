@@ -17,7 +17,7 @@
 /**
  * Configures service to the specified base address.
  */
-@property (nonatomic, retain) NSString *baseUrl;
+@property (nonatomic, strong) NSString *baseUrl;
 
 /**
  * Returns current logged in user name or nil otherwise.

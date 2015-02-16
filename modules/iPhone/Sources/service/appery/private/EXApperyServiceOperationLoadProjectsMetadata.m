@@ -35,7 +35,7 @@
     
     NSString *serializedResponseString = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
     NSArray *serializedProjectsMetadata = [serializedResponseString JSONObject];
-    if (![serializedResponseString isKindOfClass:[NSArray class]]) {
+    if (![serializedProjectsMetadata isKindOfClass:[NSArray class]]) {
         NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
                                   NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Bad request", nil)};
         self.error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];

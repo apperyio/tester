@@ -8,7 +8,9 @@
 
 #import "EXProjectMetadata.h"
 
+static NSString *const kProjectId = @"id";
 static NSString *const kProjectCreationDate = @"creationDate";
+static NSString *const kProjectModifiedDate = @"modifiedDate";
 static NSString *const kProjectCreator = @"creator";
 static NSString *const kProjectDisabled = @"disabled";
 static NSString *const kProjectGuid = @"guid";
@@ -48,7 +50,9 @@ static NSString *const kProjectType = @"type";
 - (id) initWithMetadata: (NSDictionary *) metadata
 {
     if (self = [super init]) {
+        self._id =  [self getCorrectValue:[metadata objectForKey: kProjectId]];
         self.creationDate =  [self getCorrectValue:[metadata objectForKey: kProjectCreationDate]];
+        self.modifiedDate =  [self getCorrectValue:[metadata objectForKey: kProjectModifiedDate]];
         self.creator = [self getCorrectValue:[metadata objectForKey: kProjectCreator]];
         self.disabled = [self getCorrectValue:[metadata objectForKey: kProjectDisabled]];
         self.guid = [self getCorrectValue:[metadata objectForKey: kProjectGuid]];
@@ -65,9 +69,9 @@ static NSString *const kProjectType = @"type";
 
 #pragma mark - Getters
 
-- (NSString *) formattedCreationDate
+- (NSString *) formattedModifiedDate
 {
-    return [self formatDateFromMiliseconds: self.creationDate];
+    return [self formatDateFromMiliseconds: self.modifiedDate];
 }
 
 #pragma mark - Override
@@ -82,7 +86,7 @@ static NSString *const kProjectType = @"type";
 - (NSString *) formatDateFromMiliseconds:(NSNumber *) milliseconds
 {
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:[milliseconds doubleValue] * 0.001];
-    NSDateFormatter *dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd kk:mm:ss"];
     
     return [dateFormatter stringFromDate: date];

@@ -26,13 +26,13 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
 
 @interface EXApperyService ()
 
-@property (nonatomic, retain) NSString *userName;
-@property (nonatomic, retain) NSString *userPassword;
+@property (nonatomic, strong) NSString *userName;
+@property (nonatomic, strong) NSString *userPassword;
 
 /**
  * Contains current executing operation reference. Used be cancelCurrentOperation method.
  */
-@property (nonatomic, retain) EXApperyServiceOperation *currentOperation;
+@property (nonatomic, strong) EXApperyServiceOperation *currentOperation;
 
 /**
  * Removes local autentication data.
@@ -71,9 +71,10 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
 
 - (id) init
 {
-    self = [super init];
-    if (self) {
+    if (self = [super init]) {
+    
     }
+    
     return self;
 }
 
@@ -81,8 +82,6 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
 {
     self.userName = nil;
     self.userPassword = nil;
-    
-    [super dealloc];
 }
 
 #pragma mark - Getters/Setters
@@ -94,11 +93,10 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
 
 - (void) setBaseUrl: (NSString *)baseUrl
 {
-    [_baseUrl release];
     _baseUrl = nil;
 
     if (baseUrl != nil) {
-        _baseUrl = [[baseUrl removeTrailingSlashes] retain];
+        _baseUrl = [baseUrl removeTrailingSlashes];
     }
 }
 
@@ -174,7 +172,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
             } else {
                 failed(operation.error);
             }
-            [operation release];
+            operation = nil;
             _currentOperation = nil;
         }];
     
@@ -289,7 +287,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
         }
     }
     
-    return [authenticationCookies autorelease];
+    return authenticationCookies;
 }
 
 @end

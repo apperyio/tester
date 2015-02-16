@@ -285,7 +285,24 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     EXProjectMetadataCell *cell = [self getCustomTableViewCell];
     cell.projectNameLabel.text = projectMetadata.name;
     cell.authorLabel.text = projectMetadata.creator;
-    cell.modificationDateLabel.text = projectMetadata.formattedCreationDate;
+    cell.modificationDateLabel.text = projectMetadata.formattedModifiedDate;
+    
+    switch ([projectMetadata.type intValue]) {
+        case 1:
+            [cell.projectTypeIcon setImage:[UIImage imageNamed: @"icon_jqm"]];
+            break;
+        
+        case 7:
+            [cell.projectTypeIcon setImage:[UIImage imageNamed: @"icon_bootsrap"]];
+            break;
+        
+        case 8:
+            [cell.projectTypeIcon setImage:[UIImage imageNamed: @"icon_ionic"]];
+            break;
+        
+        default:
+            break;
+    }
     
 	return cell;
 }
@@ -506,14 +523,14 @@ static const NSString * kArrowDownSymbol = @"\u2193";
         EXProjectMetadata *first = (EXProjectMetadata *)obj1;
         EXProjectMetadata *second = (EXProjectMetadata *)obj2;
 
-        if (first.creationDate == nil || second.creationDate == nil) {
+        if (first.modifiedDate == nil || second.modifiedDate == nil) {
             NSLog(@"Oops: modify date is nil");
         }
         
         if (ascending) {
-            return [first.creationDate compare: second.creationDate];
+            return [first.modifiedDate compare: second.modifiedDate];
         } else {
-            return [second.creationDate compare: first.creationDate];
+            return [second.modifiedDate compare: first.modifiedDate];
         }
     }];
     
