@@ -52,7 +52,13 @@ static NSString *const kProjectType = @"type";
     if (self = [super init]) {
         self._id =  [self getCorrectValue:[metadata objectForKey: kProjectId]];
         self.creationDate =  [self getCorrectValue:[metadata objectForKey: kProjectCreationDate]];
+        if (self.creationDate == nil) {
+            self.creationDate = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSinceReferenceDate]];
+        }
         self.modifiedDate =  [self getCorrectValue:[metadata objectForKey: kProjectModifiedDate]];
+        if (self.modifiedDate == nil) {
+            self.modifiedDate = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSinceReferenceDate]];
+        }
         self.creator = [self getCorrectValue:[metadata objectForKey: kProjectCreator]];
         self.disabled = [self getCorrectValue:[metadata objectForKey: kProjectDisabled]];
         self.guid = [self getCorrectValue:[metadata objectForKey: kProjectGuid]];

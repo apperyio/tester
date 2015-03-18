@@ -522,10 +522,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [self.filteredProjectsMetadata sortUsingComparator: ^NSComparisonResult(id obj1, id obj2) {
         EXProjectMetadata *first = (EXProjectMetadata *)obj1;
         EXProjectMetadata *second = (EXProjectMetadata *)obj2;
-
-        if (first.modifiedDate == nil || second.modifiedDate == nil) {
-            NSLog(@"Oops: modify date is nil");
-        }
         
         if (ascending) {
             return [first.modifiedDate compare: second.modifiedDate];
