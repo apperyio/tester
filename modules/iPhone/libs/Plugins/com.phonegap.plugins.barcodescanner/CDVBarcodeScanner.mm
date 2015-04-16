@@ -292,8 +292,10 @@ parentViewController:(UIViewController*)parentViewController
 
 //--------------------------------------------------------------------------
 - (void)barcodeScanFailed:(NSString*)message {
-    [self barcodeScanDone];
-    [self.plugin returnError:message callback:self.callback];
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        [self barcodeScanDone];
+        [self.plugin returnError:message callback:self.callback];
+    });
 }
 
 //--------------------------------------------------------------------------
@@ -753,30 +755,28 @@ parentViewController:(UIViewController*)parentViewController
                        action:@selector(cancelButtonPressed:)
                        ];
     
-    
     id flexSpace = [[[UIBarButtonItem alloc] autorelease]
                     initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                     target:nil
                     action:nil
                     ];
     
+#if USE_SHUTTER
     id flipCamera = [[[UIBarButtonItem alloc] autorelease]
                        initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
                        target:(id)self
                        action:@selector(flipCameraButtonPressed:)
                        ];
-
     
-#if USE_SHUTTER
     id shutterButton = [[UIBarButtonItem alloc]
                         initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
                         target:(id)self
                         action:@selector(shutterButtonPressed)
                         ];
     
-    toolbar.items = [NSArray arrayWithObjects:flexSpace,cancelButton,flexSpace, flipCamera ,shutterButton,nil];
+    toolbar.items = [NSArray arrayWithObjects:flexSpace, cancelButton, flexSpace, flipCamera, shutterButton, nil];
 #else
-    toolbar.items = [NSArray arrayWithObjects:flexSpace,cancelButton,flexSpace, flipCamera,nil];
+    toolbar.items = [NSArray arrayWithObjects:flexSpace, cancelButton, flexSpace, nil];
 #endif
     bounds = overlayView.bounds;
     

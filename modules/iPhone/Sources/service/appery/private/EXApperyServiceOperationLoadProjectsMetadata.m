@@ -32,9 +32,9 @@
     }
     
     NSLog(@"Projects metadata was loaded");
-    
-    NSString *serializedResponseString = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
-    NSArray *serializedProjectsMetadata = [serializedResponseString JSONObject];
+
+    NSError *err = nil;
+    NSArray *serializedProjectsMetadata = [NSJSONSerialization JSONObjectWithData: data options: NSJSONReadingMutableContainers error: &err];
     if (![serializedProjectsMetadata isKindOfClass:[NSArray class]]) {
         NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
                                   NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Bad request", nil)};
