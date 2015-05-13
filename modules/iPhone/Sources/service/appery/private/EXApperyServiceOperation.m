@@ -114,7 +114,7 @@
     self.connection = nil;
     self.isSuccessfull = NO;
     self.error = error;
-    
+
     if(self.completion) {
         self.completion(self);
     }

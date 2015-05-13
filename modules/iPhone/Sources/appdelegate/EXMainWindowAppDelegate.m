@@ -61,16 +61,6 @@
 
 #pragma mark - UIApplicationDelegate protocol - Responding to System Notifications
 
-- (void)applicationDidBecomeActive:(UIApplication *)application
-{
-    
-}
-
-- (void)applicationWillResignActive:(UIApplication *)application
-{
-
-}
-
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     [self hideAllHuds];
@@ -79,18 +69,11 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    
-    
     if ([self shouldLoginToAppery] && ![self updateBaseUrl]) {
         [self loginLastUserToAppery];
     } else {
         [self navigateToStartPage];
     }
-}
-
-- (void)applicationWillTerminate:(UIApplication *)application
-{
-
 }
 
 #pragma mark - Private interface implementation

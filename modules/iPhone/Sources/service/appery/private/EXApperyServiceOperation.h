@@ -27,6 +27,7 @@
 @property (nonatomic, strong) NSURLRequest *request;
 @property (nonatomic, strong) NSURLResponse *responce;
 @property (nonatomic, strong) NSError *error;
+@property (nonatomic, strong) EXApperyServiceOperation *nextOperation;
 
 /** Accumulator for received data from appery.io service */
 @property (nonatomic, strong) NSMutableData *receivedData;

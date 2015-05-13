@@ -72,6 +72,7 @@
 		D4271EAE19D9ACD300B7DA2D /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = D4271EA619D9ACD300B7DA2D /* unzip.c */; };
 		D4271EAF19D9ACD300B7DA2D /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = D4271EA819D9ACD300B7DA2D /* zip.c */; };
 		D4271EB019D9ACD300B7DA2D /* ZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = D4271EAB19D9ACD300B7DA2D /* ZipArchive.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		D427B0F01AF227940086DC08 /* ONOXMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = D427B0EF1AF227940086DC08 /* ONOXMLDocument.m */; };
 		D4B59F4019F7CB2F00649292 /* EXLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B59F3119F7CB2F00649292 /* EXLoginViewController.m */; };
 		D4B59F4119F7CB2F00649292 /* EXLoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D4B59F3219F7CB2F00649292 /* EXLoginViewController.xib */; };
 		D4B59F4219F7CB2F00649292 /* EXLoginViewController~iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D4B59F3319F7CB2F00649292 /* EXLoginViewController~iPad.xib */; };
@@ -234,6 +235,9 @@
 		D4271EA919D9ACD300B7DA2D /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
 		D4271EAA19D9ACD300B7DA2D /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
 		D4271EAB19D9ACD300B7DA2D /* ZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZipArchive.m; sourceTree = "<group>"; };
+		D427B0ED1AF227940086DC08 /* Ono.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Ono.h; sourceTree = "<group>"; };
+		D427B0EE1AF227940086DC08 /* ONOXMLDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ONOXMLDocument.h; sourceTree = "<group>"; };
+		D427B0EF1AF227940086DC08 /* ONOXMLDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ONOXMLDocument.m; sourceTree = "<group>"; };
 		D4B59F3019F7CB2F00649292 /* EXLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLoginViewController.h; sourceTree = "<group>"; };
 		D4B59F3119F7CB2F00649292 /* EXLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLoginViewController.m; sourceTree = "<group>"; };
 		D4B59F3219F7CB2F00649292 /* EXLoginViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EXLoginViewController.xib; sourceTree = "<group>"; };
@@ -601,6 +605,7 @@
 		68CB4C5B15BFE38C000D80C3 /* libs */ = {
 			isa = PBXGroup;
 			children = (
+				D427B0EC1AF227940086DC08 /* Ono */,
 				D4F8769E1AB994B700CE2C6F /* Plugins */,
 				683954C9174231CD001EC185 /* ViewDeck */,
 				687FBA7115E6492F008B956A /* GradientButtons */,
@@ -716,6 +721,16 @@
 				D4271EA919D9ACD300B7DA2D /* zip.h */,
 			);
 			path = minizip;
+			sourceTree = "<group>";
+		};
+		D427B0EC1AF227940086DC08 /* Ono */ = {
+			isa = PBXGroup;
+			children = (
+				D427B0ED1AF227940086DC08 /* Ono.h */,
+				D427B0EE1AF227940086DC08 /* ONOXMLDocument.h */,
+				D427B0EF1AF227940086DC08 /* ONOXMLDocument.m */,
+			);
+			path = Ono;
 			sourceTree = "<group>";
 		};
 		D4F8769E1AB994B700CE2C6F /* Plugins */ = {
@@ -1081,6 +1096,7 @@
 				D4F877061AB994B700CE2C6F /* CDVReachability.m in Sources */,
 				D4F876F51AB994B700CE2C6F /* CDVLogger.m in Sources */,
 				D4271EAF19D9ACD300B7DA2D /* zip.c in Sources */,
+				D427B0F01AF227940086DC08 /* ONOXMLDocument.m in Sources */,
 				D4F877041AB994B700CE2C6F /* CDVCapture.m in Sources */,
 				687FBA5915E63DDF008B956A /* EXProjectMetadataCell.m in Sources */,
 				687FBA7415E6492F008B956A /* GradientButton.m in Sources */,
@@ -1142,8 +1158,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Exadel Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Exadel Inc.";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1171,7 +1187,7 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = Appery;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "59559205-91B2-4D67-8D6C-36184AB48281";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
@@ -1186,8 +1202,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Exadel Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Exadel Inc.";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1212,7 +1228,7 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = Appery;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "59559205-91B2-4D67-8D6C-36184AB48281";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
@@ -1224,8 +1240,8 @@
 		6F3037C7138A638E008FE68E /* AdHoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Exadel Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Exadel Inc.";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_VERSION = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -1239,8 +1255,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "59559205-91B2-4D67-8D6C-36184AB48281";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "59559205-91B2-4D67-8D6C-36184AB48281";
 				SDKROOT = iphoneos;
 				VALID_ARCHS = "arm64 armv7 armv7s";
 			};
@@ -1253,8 +1269,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Exadel Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Exadel Inc.";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1279,7 +1295,7 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = Appery;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "59559205-91B2-4D67-8D6C-36184AB48281";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
@@ -1291,8 +1307,8 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Exadel Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Exadel Inc.";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
 				GCC_VERSION = "";
@@ -1306,8 +1322,8 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "59559205-91B2-4D67-8D6C-36184AB48281";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "59559205-91B2-4D67-8D6C-36184AB48281";
 				SDKROOT = iphoneos;
 				VALID_ARCHS = "arm64 armv7 armv7s";
 			};
@@ -1316,8 +1332,8 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Exadel Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Exadel Inc.";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_VERSION = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -1331,8 +1347,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "59559205-91B2-4D67-8D6C-36184AB48281";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "59559205-91B2-4D67-8D6C-36184AB48281";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "arm64 armv7 armv7s";
@@ -1342,8 +1358,8 @@
 		D66B3A74154802C200C1134E /* AppStore */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Exadel Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Exadel Inc.";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_VERSION = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -1357,8 +1373,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "59559205-91B2-4D67-8D6C-36184AB48281";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "59559205-91B2-4D67-8D6C-36184AB48281";
 				SDKROOT = iphoneos;
 				VALID_ARCHS = "arm64 armv7 armv7s";
 			};
@@ -1371,8 +1387,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Exadel Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Exadel Inc.";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1397,7 +1413,7 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = Appery;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "59559205-91B2-4D67-8D6C-36184AB48281";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";

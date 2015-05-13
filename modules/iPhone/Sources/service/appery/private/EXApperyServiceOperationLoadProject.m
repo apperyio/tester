@@ -30,6 +30,14 @@ static NSString * const kDefaultStartPageName = @"index.html";
 
 - (BOOL) processReceivedData: (NSData *)data
 {
+    if (![super processReceivedData:data]) {
+        NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
+                                  NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Failed to load the project data", nil)};
+        self.error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
+        
+        return NO;
+    }
+    
     NSError *processError = nil;
     NSString * projectLocation = [self buildLocationForProjectMetadata: self.projectMetadata error: &processError];
     
@@ -62,7 +70,9 @@ static NSString * const kDefaultStartPageName = @"index.html";
     }
     
     if ([self copyCordovaLibsToLocation: libsLocation error: &processError] == NO) {
-        //ToDo: add error
+        NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
+                                  NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Failed to copy cordova files", nil)};
+        self.error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
         return NO;
     }
     
@@ -136,9 +146,9 @@ static NSString * const kDefaultStartPageName = @"index.html";
         if ([archiver UnzipFileTo: location overWrite: YES] == NO) {
             NSLog(@"Error was occured during unzipping project file");
             if (error) {
-                NSString *errorDomain = NSLocalizedString(@"Error was occured during unzipping project file",
-                                                          @"Unzipping file error");
-                *error = [[NSError alloc] initWithDomain: errorDomain code: 0 userInfo: nil];
+                NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
+                                          NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Unzipping file error", nil)};
+                *error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
             }
             return NO;
         } 
