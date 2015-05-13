@@ -8,6 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
+typedef enum {
+    EXSortingMethodType_None = 0,
+    EXSortingMethodType_DateAscending,
+    EXSortingMethodType_DateDescending,
+    EXSortingMethodType_NameAscending,
+    EXSortingMethodType_NameDescending,
+} EXSortingMethodType;
+
 /**
  * This class provides access to user settings which define this application's behaviour.
  */
@@ -27,5 +35,10 @@
  *   to make possible to restore his settings after application launching or not.
  */
 @property (nonatomic, assign) BOOL shouldRememberMe;
+
+/**
+ * Defines sort method type for projects list.
+ */
+@property (nonatomic, assign) EXSortingMethodType sortMethodType;
 
 @end

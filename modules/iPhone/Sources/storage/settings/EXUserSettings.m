@@ -15,7 +15,7 @@
  */
 static NSString *const kUserName = @"userName";
 static NSString *const kShouldRememberMe = @"shouldRememberMe";
-static NSString *const kShouldRememberPassword = @"shouldRememberPassword";
+static NSString *const kSortMethod = @"sortMethod";
 
 @implementation EXUserSettings
 
@@ -23,10 +23,10 @@ static NSString *const kShouldRememberPassword = @"shouldRememberPassword";
 
 - (id) initWithCoder: (NSCoder *)decoder
 {
-    self = [super init];
-    if (self) {
+    if (self = [super init]) {
         self.userName = [decoder decodeObjectForKey: kUserName];
         self.shouldRememberMe = [decoder decodeBoolForKey: kShouldRememberMe];
+        self.sortMethodType = [decoder decodeIntForKey:kSortMethod];
     }
     return self;
 }
@@ -35,6 +35,7 @@ static NSString *const kShouldRememberPassword = @"shouldRememberPassword";
 {
     [encoder encodeObject: self.userName forKey: kUserName];
     [encoder encodeBool: self.shouldRememberMe forKey: kShouldRememberMe];
+    [encoder encodeInteger:self.sortMethodType forKey:kSortMethod];
 }
 
 @end

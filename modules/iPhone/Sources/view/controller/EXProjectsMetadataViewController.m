@@ -18,16 +18,6 @@
 #import "EXProjectMetadataCell.h"
 #import "EXSelectViewController.h"
 
-#pragma mark - Additional types
-
-typedef enum {
-    EXProjectsMetadataSortingMethodType_None = 0,
-    EXProjectsMetadataSortingMethodType_DateAscending,
-    EXProjectsMetadataSortingMethodType_DateDescending,
-    EXProjectsMetadataSortingMethodType_NameAscending,
-    EXProjectsMetadataSortingMethodType_NameDescending,
-} EXProjectsMetadataSortingMethodType;
-
 #pragma mark - UI string constants
 
 static const NSString * kArrowUpSymbol = @"\u2191";
@@ -53,9 +43,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 /// Current selected folder name.
 @property (nonatomic, retain) NSString *currentFolder;
-
-/// Current selected sorting method for projects metadata.
-@property (nonatomic, assign) EXProjectsMetadataSortingMethodType currentProjectsSortingMethod;
 
 /// Defines wheter KVO is registered.
 @property (nonatomic, assign) BOOL isObservingRegistered;
@@ -92,6 +79,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [self configureToolbar];
     [self registerRotationObserving];
     
+    [self sortProjectsByCurrentSortingMethod];
+    
     [super viewDidLoad];
 }
 
@@ -109,8 +98,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 - (void)reloadProjects
 {
-    self.currentProjectsSortingMethod = EXProjectsMetadataSortingMethodType_None;
-    
     void(^reloadProjectsInfo)(void) = ^{
         [self loadProjectsMetadataCompletion:^(BOOL succeeded) {
             self.rootTableView.userInteractionEnabled = YES;
@@ -140,7 +127,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 - (IBAction)logoutButtonPressed:(id)sender
 {
-    self.currentProjectsSortingMethod = EXProjectsMetadataSortingMethodType_None;
     [self logoutFromService];
 }
 
@@ -217,7 +203,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [self.filteredProjectsMetadata addObjectsFromArray:enabledProjectsMetadata];
     [self redefineAvailableFolders];
     [self configureSelectFolderViewController];
-    [self reverseSortProjectsByDate];
+    [self sortProjectsByCurrentSortingMethod];
 }
 
 - (void) loadProjectsMetadataCompletion:(EXProjectsMetadataViewControllerCompletionBlock)completion
@@ -501,12 +487,14 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 - (void)reverseSortProjectsByDate
 {
     static BOOL ascending = NO;
+    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
+    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
     
-    switch (self.currentProjectsSortingMethod) {
-        case EXProjectsMetadataSortingMethodType_DateAscending:
+    switch (lastUserSettings.sortMethodType) {
+        case EXSortingMethodType_DateAscending:
             ascending = NO;
             break;
-        case EXProjectsMetadataSortingMethodType_DateDescending:
+        case EXSortingMethodType_DateDescending:
             ascending = YES;
             break;
         default:
@@ -536,9 +524,11 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     self.sortByDateButton.title = [self.sortByDateButton.title stringByAppendingFormat:@" %@",
             ascending ? kArrowUpSymbol : kArrowDownSymbol];
     
-    self.currentProjectsSortingMethod = ascending ?
-            EXProjectsMetadataSortingMethodType_DateAscending :
-            EXProjectsMetadataSortingMethodType_DateDescending;
+    
+    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
+    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
+    lastUserSettings.sortMethodType = ascending ? EXSortingMethodType_DateAscending : EXSortingMethodType_DateDescending;
+    [usStorage storeSettings:lastUserSettings];
     
     [self.rootTableView reloadData];
 }
@@ -546,11 +536,14 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 - (void)reverseSortProjectsByName
 {
     static BOOL ascending = NO;
-    switch (self.currentProjectsSortingMethod) {
-        case EXProjectsMetadataSortingMethodType_NameAscending:
+    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
+    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
+    
+    switch (lastUserSettings.sortMethodType) {
+        case EXSortingMethodType_NameAscending:
             ascending = NO;
             break;
-        case EXProjectsMetadataSortingMethodType_NameDescending:
+        case EXSortingMethodType_NameDescending:
             ascending = YES;
             break;
         default:
@@ -579,26 +572,31 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     
     self.sortByNameButton.title = [self.sortByNameButton.title stringByAppendingFormat:@" %@",
             ascending ? kArrowUpSymbol : kArrowDownSymbol];
-    self.currentProjectsSortingMethod = ascending ?
-            EXProjectsMetadataSortingMethodType_NameAscending :
-            EXProjectsMetadataSortingMethodType_NameDescending;
+    
+    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
+    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
+    lastUserSettings.sortMethodType = ascending ? EXSortingMethodType_NameAscending : EXSortingMethodType_NameDescending;
+    [usStorage storeSettings:lastUserSettings];
     
     [self.rootTableView reloadData];
 }
 
 - (void)sortProjectsByCurrentSortingMethod
 {
-    switch (self.currentProjectsSortingMethod) {
-        case EXProjectsMetadataSortingMethodType_DateAscending:
+    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
+    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
+    
+    switch (lastUserSettings.sortMethodType) {
+        case EXSortingMethodType_DateAscending:
             [self sortProjectsByDateAscending:YES];
             break;
-        case EXProjectsMetadataSortingMethodType_DateDescending:
+        case EXSortingMethodType_DateDescending:
             [self sortProjectsByDateAscending:NO];
             break;
-        case EXProjectsMetadataSortingMethodType_NameAscending:
+        case EXSortingMethodType_NameAscending:
             [self sortProjectsByNameAscending:YES];
             break;
-        case EXProjectsMetadataSortingMethodType_NameDescending:
+        case EXSortingMethodType_NameDescending:
             [self sortProjectsByNameAscending:NO];
             break;
         default:

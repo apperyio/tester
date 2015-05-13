@@ -128,8 +128,10 @@
     if (self.shouldRememberMe.on) {
         // save user settings
         EXUserSettings *userSettings = [[EXUserSettings alloc] init];
+        
         userSettings.userName = self.userName.text;
         userSettings.shouldRememberMe = self.shouldRememberMe.on;
+        userSettings.sortMethodType = [[usStorage retreiveLastStoredSettings] sortMethodType];
         
         [usStorage storeSettings: userSettings];
         
