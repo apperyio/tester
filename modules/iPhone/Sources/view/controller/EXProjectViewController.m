@@ -106,7 +106,7 @@ static NSString *const kDefaultWebResourceFolder = @"www";
 
 - (NSString *)defaultTitle
 {
-    return NSLocalizedString(@"Select project", @"Project view controller | Default title");
+    return NSLocalizedString(@"Select app", @"App view controller | Default title");
 }
 
 - (void) configureNavigationBar
@@ -132,12 +132,12 @@ static NSString *const kDefaultWebResourceFolder = @"www";
         [self loadProjectForMetadata: self._projectMetadata];
     } else {        
         [[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"Info", nil)
-                                    message: NSLocalizedString(@"No one project was loaded. Please select some project from Projects menu.", nil)
+                                    message: NSLocalizedString(@"Please select an app from the app list", nil)
                                    delegate: nil
                           cancelButtonTitle: NSLocalizedString(@"Ok", nil)
                           otherButtonTitles: nil] show];
         
-        NSLog(@"Project list was reloaded");
+        NSLog(@"App list was reloaded");
     }
 }
 
@@ -150,7 +150,7 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     
     UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
     MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
-    progressHud.labelText = NSLocalizedString(@"Loading project", @"Loading project progress hud title");
+    progressHud.labelText = NSLocalizedString(@"Loading app", @"Loading app progress hud title");
     
     void(^reloadProject)(void) = ^{
         [self.apperyService loadProjectForMetadata: projectMetadata
@@ -169,7 +169,7 @@ static NSString *const kDefaultWebResourceFolder = @"www";
                 
                 [self.navigationController setViewControllers: controllers animated: NO];
                 
-                NSLog(@"Project %@ was load", projectMetadata.name);
+                NSLog(@"App %@ was load", projectMetadata.name);
             } failed:^(NSError *error) {
                 [progressHud hide: NO];
                 
@@ -179,7 +179,7 @@ static NSString *const kDefaultWebResourceFolder = @"www";
                                   cancelButtonTitle: NSLocalizedString(@"Ok", nil)
                                   otherButtonTitles: nil] show];
                 
-                NSLog(@"Project loading failed due to: %@", error.localizedDescription);
+                NSLog(@"App loading failed due to: %@", error.localizedDescription);
             }
          ];
     };

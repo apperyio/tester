@@ -31,7 +31,7 @@
         return NO;
     }
     
-    NSLog(@"Projects metadata was loaded");
+    NSLog(@"Apps metadata was loaded");
 
     NSError *err = nil;
     NSArray *serializedProjectsMetadata = [NSJSONSerialization JSONObjectWithData: data options: NSJSONReadingMutableContainers error: &err];

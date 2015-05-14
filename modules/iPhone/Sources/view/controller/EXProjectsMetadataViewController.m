@@ -223,7 +223,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
                        cancelButtonTitle: NSLocalizedString(@"Ok", nil)
                        otherButtonTitles: nil] show];
 
-        NSLog(@"Projects loading failed due to: %@", error.localizedDescription);
+        NSLog(@"Apps loading failed due to: %@", error.localizedDescription);
 
         if (completion) {
             completion(NO);
@@ -318,10 +318,10 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 - (void)configureNavigationBar
 {
-    self.title = NSLocalizedString(@"Projects", @"EXProjectsViewController title");
+    self.title = NSLocalizedString(@"Apps", @"EXProjectsViewController title");
     
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
-    refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:@"Loading projects"];
+    refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:@"Loading apps"];
     [refreshControl addTarget:self action: @selector(reloadProjects) forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refreshControl;
     [self.rootTableView addSubview:self.refreshControl];
@@ -336,8 +336,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 - (void)setSortButtonsDefaultNames
 {
-    self.sortByDateButton.title = NSLocalizedString(@"Date", @"Projects list | Toolbar | Date button");
-    self.sortByNameButton.title = NSLocalizedString(@"Name", @"Projects list | Toolbar | Name button");
+    self.sortByDateButton.title = NSLocalizedString(@"Date", @"Apps list | Toolbar | Date button");
+    self.sortByNameButton.title = NSLocalizedString(@"Name", @"Apps list | Toolbar | Name button");
 }
 
 - (void)configureToolbar
@@ -410,7 +410,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 - (void)redefineAvailableFolders
 {
     NSArray *availableFolders = [self.projectsMetadata valueForKeyPath:@"@distinctUnionOfObjects.creator"];
-    NSString *allFolderName = NSLocalizedString(@"All", @"Projects list | Toolbar | Folder button possible value");
+    NSString *allFolderName = NSLocalizedString(@"All", @"Apps list | Toolbar | Folder button possible value");
     self.folders = [[NSArray arrayWithObject:allFolderName] arrayByAddingObjectsFromArray:availableFolders];
     self.folderButton.title = allFolderName;
     self.currentFolder = allFolderName;
