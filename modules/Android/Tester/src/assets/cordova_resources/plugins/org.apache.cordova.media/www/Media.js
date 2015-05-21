@@ -1,4 +1,4 @@
-cordova.define("org.apache.cordova.media.Media", function(require, exports, module) { /*
+cordova.define("org.apache.cordova.media.Media", function(require, exports, module) {/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -38,7 +38,7 @@ var mediaObjects = {};
  *                                  statusCallback(int statusCode) - OPTIONAL
  */
 var Media = function(src, successCallback, errorCallback, statusCallback) {
-    argscheck.checkArgs('SFFF', 'Media', arguments);
+    argscheck.checkArgs('sFFF', 'Media', arguments);
     this.id = utils.createUUID();
     mediaObjects[this.id] = this;
     this.src = src;
@@ -193,5 +193,26 @@ Media.onStatus = function(id, msgType, value) {
 };
 
 module.exports = Media;
+
+function onMessageFromNative(msg) {
+    if (msg.action == 'status') {
+        Media.onStatus(msg.status.id, msg.status.msgType, msg.status.value);
+    } else {
+        throw new Error('Unknown media action' + msg.action);
+    }
+}
+
+if (cordova.platformId === 'android' || cordova.platformId === 'amazon-fireos') {
+
+    var channel = require('cordova/channel');
+
+    channel.createSticky('onMediaPluginReady');
+    channel.waitForInitialization('onMediaPluginReady');
+
+    channel.onCordovaReady.subscribe(function() {
+        exec(onMessageFromNative, undefined, 'Media', 'messageChannel', []);
+        channel.initializationComplete('onMediaPluginReady');
+    });
+}
 
 });

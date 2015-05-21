@@ -1,4 +1,4 @@
-cordova.define("org.apache.cordova.file.resolveLocalFileSystemURI", function(require, exports, module) { /*
+cordova.define("org.apache.cordova.file.resolveLocalFileSystemURI", function(require, exports, module) {/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -53,6 +53,7 @@ module.exports.resolveLocalFileSystemURL = function(uri, successCallback, errorC
                 // create appropriate Entry object
                 var fsName = entry.filesystemName || (entry.filesystem && entry.filesystem.name) || (entry.filesystem == window.PERSISTENT ? 'persistent' : 'temporary');
                 fileSystems.getFs(fsName, function(fs) {
+                    // This should happen only on platforms that haven't implemented requestAllFileSystems (windows)
                     if (!fs) {
                         fs = new FileSystem(fsName, {name:"", fullPath:"/"});
                     }

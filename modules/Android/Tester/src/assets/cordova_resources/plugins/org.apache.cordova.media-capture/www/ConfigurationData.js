@@ -1,4 +1,4 @@
-cordova.define("org.apache.cordova.device-motion.Acceleration", function(require, exports, module) {/*
+cordova.define("org.apache.cordova.media-capture.ConfigurationData", function(require, exports, module) {/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,13 +19,20 @@ cordova.define("org.apache.cordova.device-motion.Acceleration", function(require
  *
 */
 
-var Acceleration = function(x, y, z, timestamp) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-    this.timestamp = timestamp || (new Date()).getTime();
-};
+/**
+ * Encapsulates a set of parameters that the capture device supports.
+ */
+function ConfigurationData() {
+    // The ASCII-encoded string in lower case representing the media type.
+    this.type = null;
+    // The height attribute represents height of the image or video in pixels.
+    // In the case of a sound clip this attribute has value 0.
+    this.height = 0;
+    // The width attribute represents width of the image or video in pixels.
+    // In the case of a sound clip this attribute has value 0
+    this.width = 0;
+}
 
-module.exports = Acceleration;
+module.exports = ConfigurationData;
 
 });

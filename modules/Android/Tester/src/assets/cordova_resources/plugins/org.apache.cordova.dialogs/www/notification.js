@@ -1,4 +1,4 @@
-cordova.define("org.apache.cordova.dialogs.notification", function(require, exports, module) { /*
+cordova.define("org.apache.cordova.dialogs.notification", function(require, exports, module) {/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -63,10 +63,11 @@ module.exports = {
         // Some platforms take an array of button label names.
         // Other platforms take a comma separated list.
         // For compatibility, we convert to the desired type based on the platform.
-        if (platform.id == "amazon-fireos" || platform.id == "android" || platform.id == "ios" || platform.id == "windowsphone" || platform.id == "firefoxos" || platform.id == "ubuntu") {
+        if (platform.id == "amazon-fireos" || platform.id == "android" || platform.id == "ios" ||
+            platform.id == "windowsphone" || platform.id == "firefoxos" || platform.id == "ubuntu" ||
+            platform.id == "windows8" || platform.id == "windows") {
 
             if (typeof _buttonLabels === 'string') {
-                var buttonLabelString = _buttonLabels;
                 _buttonLabels = _buttonLabels.split(","); // not crazy about changing the var type here
             }
         } else {

@@ -1,4 +1,4 @@
-cordova.define("org.apache.cordova.file-transfer.FileTransfer", function(require, exports, module) { /*
+cordova.define("org.apache.cordova.file-transfer.FileTransfer", function(require, exports, module) {/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -33,7 +33,7 @@ function newProgressEvent(result) {
 }
 
 function getUrlCredentials(urlString) {
-    var credentialsPattern = /^http\:\/\/((.*?)\:(.*?))@.*$/g,
+    var credentialsPattern = /^https?\:\/\/(?:(?:(([^:@\/]*)(?::([^@\/]*))?)?@)?([^:\/?#]*)(?::(\d*))?).*$/,
         credentials = credentialsPattern.exec(urlString);
 
     return credentials && credentials[1];
