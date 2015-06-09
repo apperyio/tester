@@ -184,7 +184,7 @@ static NSString *const kDefaultWebResourceFolder = @"www";
          ];
     };
     
-    if(self.apperyService.isLoggedOut) {
+    if (self.apperyService.isLoggedOut) {
         
         EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
         EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];

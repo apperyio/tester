@@ -14,7 +14,6 @@
 
 #import "EXCredentialsManager.h"
 #import "EXUserSettingsStorage.h"
-
 #import "EXProjectMetadataCell.h"
 #import "EXSelectViewController.h"
 
@@ -30,10 +29,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 /// Handles all projects metadata.
 @property (nonatomic, retain) NSArray *projectsMetadata;
 
-
 /// Handles filtered projects metadata.
 @property (nonatomic, retain) NSMutableArray *filteredProjectsMetadata;
-
 
 /// Contains projects observers list.
 @property (nonatomic, retain) NSMutableArray *projectsObservers;
@@ -43,6 +40,9 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 /// Current selected folder name.
 @property (nonatomic, retain) NSString *currentFolder;
+
+/// Current selected sorting method for projects metadata.
+@property (nonatomic, assign) EXSortingMethodType currentProjectsSortingMethod;
 
 /// Defines wheter KVO is registered.
 @property (nonatomic, assign) BOOL isObservingRegistered;
@@ -60,15 +60,17 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 @implementation EXProjectsMetadataViewController
 
+@synthesize currentProjectsSortingMethod = _currentProjectsSortingMethod;
+
 #pragma mark - Life cycle
 
-- (id) initWithNibName: (NSString *)nibNameOrNil bundle: (NSBundle *)nibBundleOrNil
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
-    self = [super initWithNibName: nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
+    if (self = [super initWithNibName: nibNameOrNil bundle:nibBundleOrNil]) {
         self.projectsObservers = [[NSMutableArray alloc] init];
         self.filteredProjectsMetadata = [[NSMutableArray alloc] init];
         self.selectFolderController = [[EXSelectViewController alloc] initWithTitle:@"Folders"];
+        _currentProjectsSortingMethod = EXSortingMethodType_DateDescending;
     }
     return self;
 }
@@ -84,7 +86,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [super viewDidLoad];
 }
 
-- (void) viewDidAppear:(BOOL)animated
+- (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
 }
@@ -127,6 +129,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 - (IBAction)logoutButtonPressed:(id)sender
 {
+    _currentProjectsSortingMethod = EXSortingMethodType_DateDescending;
+    
     [self logoutFromService];
 }
 
@@ -179,7 +183,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - Public interface implementation
 
-- (void) addProjectsObserver: (id<EXProjectsObserver>)observer
+- (void)addProjectsObserver:(id<EXProjectsObserver>)observer
 {
     NSAssert(observer != nil, @"added observer is not defined");
 
@@ -188,14 +192,14 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }
 }
 
-- (void) removeProjectsObserver: (id<EXProjectsObserver>)observer
+- (void)removeProjectsObserver:(id<EXProjectsObserver>)observer
 {
     NSAssert(observer != nil, @"removed observer is not defined");
     
     [self.projectsObservers removeObject: observer];
 }
 
-- (void) initializeProjectsMetadata:(NSArray *) projectsMetadata
+- (void)initializeProjectsMetadata:(NSArray *) projectsMetadata
 {
     NSArray *enabledProjectsMetadata = [self getEnabledProjectsMetadata:projectsMetadata];
     self.projectsMetadata = enabledProjectsMetadata;
@@ -206,7 +210,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [self sortProjectsByCurrentSortingMethod];
 }
 
-- (void) loadProjectsMetadataCompletion:(EXProjectsMetadataViewControllerCompletionBlock)completion
+- (void)loadProjectsMetadataCompletion:(EXProjectsMetadataViewControllerCompletionBlock)completion
 {
     NSAssert(self.apperyService != nil, @"apperyService property is not defined");
     
@@ -231,7 +235,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }];
 }
 
-- (void) logoutFromService
+- (void)logoutFromService
 {
     UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
     MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
@@ -252,17 +256,17 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - UITableViewDataSource protocol implementation
 
-- (NSInteger) numberOfSectionsInTableView: (UITableView *)tableView
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     return 1;
 }
 
-- (NSInteger) tableView: (UITableView *)tableView numberOfRowsInSection: (NSInteger)section
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return self.filteredProjectsMetadata != nil ? self.filteredProjectsMetadata.count : 0;
 }
 
-- (UITableViewCell *) tableView: (UITableView *)tableView cellForRowAtIndexPath: (NSIndexPath *)indexPath
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSAssert(self.filteredProjectsMetadata != nil, @"No data to feed EXProjectsViewController");
     NSAssert(indexPath.row < self.filteredProjectsMetadata.count , @"No data for the specified indexPath");
@@ -295,14 +299,14 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - UITableViewDelegete protocol implementation
 
-- (CGFloat) tableView: (UITableView *)tableView heightForRowAtIndexPath: (NSIndexPath *)indexPath
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     EXProjectMetadataCell *cell = [self getCustomTableViewCell];
     
     return cell.bounds.size.height;
 }
 
-- (void) tableView: (UITableView *)tableView didSelectRowAtIndexPath: (NSIndexPath *)indexPath
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSAssert(indexPath.row < self.filteredProjectsMetadata.count , @"No data for the specified indexPath");
     
@@ -347,7 +351,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - UI helpers
 
-- (EXProjectMetadataCell *) getCustomTableViewCell
+- (EXProjectMetadataCell *)getCustomTableViewCell
 {
     static NSString *cellIdentifier = @"ProjectMetadataCellIdentifier";
     EXProjectMetadataCell *cell = (EXProjectMetadataCell *)[self.rootTableView dequeueReusableCellWithIdentifier: cellIdentifier];
@@ -457,7 +461,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - Observers notification
 
-- (void) fireProjectsObserversMetadataWasSelected: (EXProjectMetadata *) projectMetadata
+- (void)fireProjectsObserversMetadataWasSelected: (EXProjectMetadata *) projectMetadata
 {
     for (id<EXProjectsObserver> observer in self.projectsObservers) {
         if ([observer respondsToSelector: @selector(projectMetadataWasSelected:)]) {
@@ -466,7 +470,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }
 }
 
-- (void) fireProjectsObserversLogoutCompleted
+- (void)fireProjectsObserversLogoutCompleted
 {
     for (id<EXProjectsObserver> observer in self.projectsObservers) {
         if ([observer respondsToSelector: @selector(logoutCompleted)]) {
@@ -478,6 +482,31 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - Projects sorting / filtering
 
+- (void)setCurrentProjectsSortingMethod:(EXSortingMethodType) type
+{
+    _currentProjectsSortingMethod = type;
+    
+    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
+    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
+    
+    if (lastUserSettings) {
+        lastUserSettings.sortMethodType = type;
+        [usStorage storeSettings:lastUserSettings];
+    }
+}
+
+- (EXSortingMethodType)currentProjectsSortingMethod
+{
+    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
+    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
+    
+    if (lastUserSettings) {
+        _currentProjectsSortingMethod = lastUserSettings.sortMethodType;
+    }
+    
+    return _currentProjectsSortingMethod;
+}
+
 - (NSArray *)getEnabledProjectsMetadata:(NSArray *)projectsMetadata
 {
     NSPredicate *enabledProjectsPredicate = [NSPredicate predicateWithFormat:@"disabled == %@", @0];
@@ -487,10 +516,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 - (void)reverseSortProjectsByDate
 {
     static BOOL ascending = NO;
-    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
-    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
     
-    switch (lastUserSettings.sortMethodType) {
+    switch (self.currentProjectsSortingMethod) {
         case EXSortingMethodType_DateAscending:
             ascending = NO;
             break;
@@ -521,14 +548,9 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     // UI changes
     [self setSortButtonsDefaultNames];
     
-    self.sortByDateButton.title = [self.sortByDateButton.title stringByAppendingFormat:@" %@",
-            ascending ? kArrowUpSymbol : kArrowDownSymbol];
+    self.sortByDateButton.title = [self.sortByDateButton.title stringByAppendingFormat:@" %@", ascending ? kArrowUpSymbol : kArrowDownSymbol];
     
-    
-    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
-    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
-    lastUserSettings.sortMethodType = ascending ? EXSortingMethodType_DateAscending : EXSortingMethodType_DateDescending;
-    [usStorage storeSettings:lastUserSettings];
+    self.currentProjectsSortingMethod = ascending ? EXSortingMethodType_DateAscending : EXSortingMethodType_DateDescending;
     
     [self.rootTableView reloadData];
 }
@@ -536,10 +558,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 - (void)reverseSortProjectsByName
 {
     static BOOL ascending = NO;
-    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
-    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
     
-    switch (lastUserSettings.sortMethodType) {
+    switch (self.currentProjectsSortingMethod) {
         case EXSortingMethodType_NameAscending:
             ascending = NO;
             break;
@@ -570,23 +590,16 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     // UI changes
     [self setSortButtonsDefaultNames];
     
-    self.sortByNameButton.title = [self.sortByNameButton.title stringByAppendingFormat:@" %@",
-            ascending ? kArrowUpSymbol : kArrowDownSymbol];
+    self.sortByNameButton.title = [self.sortByNameButton.title stringByAppendingFormat:@" %@", ascending ? kArrowUpSymbol : kArrowDownSymbol];
     
-    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
-    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
-    lastUserSettings.sortMethodType = ascending ? EXSortingMethodType_NameAscending : EXSortingMethodType_NameDescending;
-    [usStorage storeSettings:lastUserSettings];
+    self.currentProjectsSortingMethod = ascending ? EXSortingMethodType_NameAscending : EXSortingMethodType_NameDescending;
     
     [self.rootTableView reloadData];
 }
 
 - (void)sortProjectsByCurrentSortingMethod
 {
-    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
-    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
-    
-    switch (lastUserSettings.sortMethodType) {
+    switch (self.currentProjectsSortingMethod) {
         case EXSortingMethodType_DateAscending:
             [self sortProjectsByDateAscending:YES];
             break;

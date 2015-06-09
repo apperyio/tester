@@ -9,21 +9,16 @@
 #import <Foundation/Foundation.h>
 
 typedef enum {
-    EXSortingMethodType_None = 0,
+    EXSortingMethodType_DateDescending = 0,
     EXSortingMethodType_DateAscending,
-    EXSortingMethodType_DateDescending,
-    EXSortingMethodType_NameAscending,
     EXSortingMethodType_NameDescending,
+    EXSortingMethodType_NameAscending,
 } EXSortingMethodType;
 
 /**
  * This class provides access to user settings which define this application's behaviour.
  */
 @interface EXUserSettings : NSObject <NSCoding>
-
-/**
- * @name Properties
- */
 
 /**
  * Defines user name

@@ -18,7 +18,7 @@
 - (NSString *) encodedUrlString
 {
     return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)[self mutableCopy], NULL, 
-                                                               (CFStringRef)@"!*'();:@&=+$,/?%#[]",
+                                                               (CFStringRef)@"!*'();:@&=+$,/?%#[].",
                                                                kCFStringEncodingUTF8 ));
 }
 
