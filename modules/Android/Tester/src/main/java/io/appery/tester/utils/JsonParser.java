@@ -56,7 +56,10 @@ public class JsonParser {
         List<Object> objList = new ArrayList<Object>();
 
         for (int i = 0; i < arr.length(); i++) {
-            objList.add(new Project((JSONObject) arr.get(i)));
+            JSONObject projObject = (JSONObject) arr.get(i);
+            if (projObject.has("disabled") && !projObject.getBoolean("disabled")) {
+                objList.add(new Project(projObject));
+            }
         }
 
         return objList;
