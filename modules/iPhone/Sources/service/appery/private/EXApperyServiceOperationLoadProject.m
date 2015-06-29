@@ -22,6 +22,8 @@ static NSString * const kDefaultStartPageName = @"index.html";
 @property (nonatomic, retain) NSString *projectLocation;
 @property (nonatomic, retain) NSString *projectStartPageName;
 
+- (BOOL) removeFilesFromPath:(NSString *)path;
+
 @end
 
 @implementation EXApperyServiceOperationLoadProject
@@ -45,6 +47,9 @@ static NSString * const kDefaultStartPageName = @"index.html";
         self.error = processError;
         return NO;
     }
+    
+    // Remove all folders from project location
+    [self removeFilesFromPath:[self projectsLocation]];
     
     [self unzipProject: data toLocation: projectLocation error: &processError];
     
@@ -96,15 +101,43 @@ static NSString * const kDefaultStartPageName = @"index.html";
 
 #pragma mark - Private service methods
 
+- (BOOL) removeFilesFromPath:(NSString *)path
+{
+    NSFileManager *fileMgr = [[NSFileManager alloc] init];
+    NSError *error = nil;
+    NSArray *directoryContents = [fileMgr contentsOfDirectoryAtPath:path error:&error];
+    
+    if (error) {
+        NSLog(@"Can't remove files from path: %@ error: %@", path, [error localizedDescription]);
+        
+        return NO;
+    }
+    
+    for (NSString *filepath in directoryContents) {
+        NSString *fullPath = [path stringByAppendingPathComponent:filepath];
+        BOOL removeSuccess = [fileMgr removeItemAtPath:fullPath error:&error];
+        if (!removeSuccess || error) {
+            // Continue
+            NSLog(@"Can't remove file: %@ error: %@", fullPath, [error localizedDescription]);
+        }
+    }
+    return YES;
+}
+
+- (NSString *) projectsLocation
+{
+    NSArray *directoriesInDomain = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsFolderPath = [directoriesInDomain objectAtIndex: 0];
+    NSString *projectsLocation = [NSString pathWithComponents:@[documentsFolderPath, @"projects"]];
+    
+    return projectsLocation;
+}
+
 - (NSString *) buildLocationForProjectMetadata: (EXProjectMetadata *) projectMetadata error: (NSError **) error
 {
     NSAssert(projectMetadata != nil, @"projectMetadata is undefined");
-    
-    NSArray *directoriesInDomain = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsFolderPath = [directoriesInDomain objectAtIndex: 0];
-    NSString *projectLocation = [NSString pathWithComponents:@[documentsFolderPath, projectMetadata.name]];
-    
-    return projectLocation;
+
+    return [NSString pathWithComponents:@[[self projectsLocation], projectMetadata.name]];
 }
 
 - (BOOL) unzipProject: (NSData *) zippedProject toLocation: (NSString *) location error: (NSError **) error

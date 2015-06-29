@@ -21,6 +21,15 @@
 @property (nonatomic, strong) EXLoginViewController *loginViewController;
 @property (nonatomic, strong) IIViewDeckController *viewDeckController;
 
+- (BOOL)addSkipBackupAttributeToItemAtPath:(NSString *) filePathString;
+- (void)createAndConfigureApperyService;
+- (BOOL)updateBaseUrl;
+- (BOOL)shouldLoginToAppery;
+- (void)loginLastUserToAppery;
+- (void)hideAllHuds;
+- (void)cancelApperyServiceActivity;
+- (void)navigateToStartPage;
+
 @end
 
 @implementation EXMainWindowAppDelegate
@@ -29,6 +38,17 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    NSError  *error = nil;
+    NSArray  *directoriesInDomain = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsFolderPath = [directoriesInDomain objectAtIndex: 0];
+    NSString *projectsLocation    = [NSString pathWithComponents:@[documentsFolderPath, @"projects"]];
+    
+    // Create projects location directory if it's needed
+    if (![[NSFileManager defaultManager] fileExistsAtPath:projectsLocation])
+        [[NSFileManager defaultManager] createDirectoryAtPath:projectsLocation withIntermediateDirectories:NO attributes:nil error:&error];
+    
+    [self addSkipBackupAttributeToItemAtPath:projectsLocation];
+    
     [self createAndConfigureApperyService];
     
     self.loginViewController = [[EXLoginViewController alloc] initWithNibName:UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ?
@@ -77,6 +97,27 @@
 }
 
 #pragma mark - Private interface implementation
+
+- (BOOL)addSkipBackupAttributeToItemAtPath:(NSString *)filePathString
+{
+    NSURL* URL= [NSURL fileURLWithPath: filePathString];
+    assert([[NSFileManager defaultManager] fileExistsAtPath: [URL path]]);
+    
+    NSError *error = nil;
+    BOOL success = [URL setResourceValue:[NSNumber numberWithBool: YES]
+                                  forKey:NSURLIsExcludedFromBackupKey error: &error];
+    if(!success) {
+        NSLog(@"Error excluding %@ from backup %@", [URL lastPathComponent], error);
+    }
+    
+    //for test
+    id flag = nil;
+    [URL getResourceValue: &flag
+                   forKey: NSURLIsExcludedFromBackupKey error: &error];
+    NSLog (@"NSURLIsExcludedFromBackupKey flag value is %@", flag);
+    
+    return success;
+}
 
 - (void)createAndConfigureApperyService
 {
