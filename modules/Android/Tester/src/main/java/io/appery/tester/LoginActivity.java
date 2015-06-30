@@ -12,30 +12,44 @@ import io.appery.tester.net.api.Logout;
 import io.appery.tester.net.api.callback.DoSAMLCallback;
 import io.appery.tester.net.api.callback.GetSAMLCallback;
 import io.appery.tester.net.api.callback.LoginCallback;
-import io.appery.tester.net.api.callback.UserIdCallback;
+import io.appery.tester.tasks.DownloadFileTask;
+import io.appery.tester.tasks.callback.DownloadFileCallback;
 import io.appery.tester.utils.Constants;
+import io.appery.tester.utils.FileUtils;
+import io.appery.tester.utils.IntentUtils;
+import io.appery.tester.utils.ProjectStorageManager;
 import io.appery.tester.utils.WidgetUtils;
+
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.InputType;
 import android.util.Log;
 
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.Toast;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.io.File;
+import java.io.IOException;
 
-public class LoginActivity extends BaseActivity implements LoginCallback, GetSAMLCallback, DoSAMLCallback {
+public class LoginActivity extends BaseActivity implements LoginCallback, GetSAMLCallback, DoSAMLCallback, DownloadFileCallback {
 
     protected static final int PREFERENCES = 0;
 
     private String username;
 
     private String password;
+
+    private AlertDialog.Builder builder;
+
+    private String CORDOVA_LIB_DIR = "/files/resources/lib/";
+    private String CORDOVA_ANGULAR_LIB_DIR = "/libs/";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -209,6 +223,37 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
         loginApi.execute();
     }
 
+    public void openEnterCodeDialog(View target) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter share code");
+
+        final EditText input = new EditText(this);
+
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        final AlertDialog.Builder ok = builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                getRestManager().setBaseURL(getRestManager().getBaseURLConstant());
+                String codeText = input.getText().toString();
+                ProjectListActivity projListInstance = new ProjectListActivity();
+                DownloadFileTask getApkTask = new DownloadFileTask(LoginActivity.this,
+                        Constants.FILENAME_ZIP, LoginActivity.this);
+                getApkTask.execute(String.format(Constants.API.GET_PROJECT_RESOURCE_BY_CODE, codeText));
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                getRestManager().setBaseURL(getRestManager().getIdpURL());
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
     @Override
     public void onGetSAMLComplete(BaseResponse response) {
         String saml = response.getMessage().substring(response.getMessage().indexOf("VALUE=\"") + 7, response.getMessage().indexOf("\"/>"));
@@ -222,5 +267,59 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
         getRestManager().setBaseURL(url);
         DoSAML samlAPI = new DoSAML(getRestManager(), this, saml);
         samlAPI.execute();
+    }
+
+    @Override
+    public void onFileDownloaded(File file) {
+
+        if (file == null) {
+            Toast.makeText(this, getString(R.string.file_download_error_toast), Toast.LENGTH_LONG).show();
+            return;
+        }
+
+
+        //  TODO - Check filename and do what you need
+        // apk file - install
+        String fName = file.getName();
+        if (Constants.FILENAME_APK.equals(fName)) {
+            boolean install = new IntentUtils(this).installApk(file);
+            if (!install) {
+                showToast(getString(R.string.application_download_error_toast));
+            }
+        } else if (Constants.FILENAME_ZIP.equals(fName)) {
+            // Unzip
+            String dirPath = ProjectStorageManager.getWORK_DIRECTORY();
+
+            try {
+                FileUtils.checkDir(dirPath);
+                FileUtils.clearDirectory(dirPath);
+
+                FileUtils.unzip(ProjectStorageManager.getPROJECT_ZIP_FILE(), dirPath);
+                replaceCordovaResources(dirPath);
+                startActivity(ApperyActivity.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+                showToast(getString(R.string.preview_error_toast));
+            }
+        }
+    }
+
+    private void replaceCordovaResources(String dirPath) {
+        String path = dirPath + this.CORDOVA_LIB_DIR;
+        if (!FileUtils.isDirExists(path)) {
+            path = dirPath + this.CORDOVA_ANGULAR_LIB_DIR;
+        }
+
+        String cordovaAssetArchiveFileName = "cordova_resources.zip";
+
+        FileUtils.copyAsset(this, cordovaAssetArchiveFileName, path + cordovaAssetArchiveFileName);
+        try{
+            FileUtils.unzip(path + cordovaAssetArchiveFileName, path);
+            FileUtils.removeFile(path + cordovaAssetArchiveFileName);
+        }catch (IOException e) {
+            e.printStackTrace();
+            showToast(getString(R.string.preview_error_toast));
+        }
+
     }
 }

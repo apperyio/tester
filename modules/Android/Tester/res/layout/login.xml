@@ -49,6 +49,14 @@
 				<Button android:id="@+id/sign_in_btn" android:layout_width="fill_parent"
 					android:layout_height="wrap_content" android:text="@string/sign_in_btn"
 					android:layout_marginTop="22dp" android:onClick="signIn" />
+
+				<Button
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:text="Enter code"
+					android:id="@+id/enter_code_btn"
+					android:layout_marginTop="20dp"
+					android:onClick="openEnterCodeDialog" />
 			</LinearLayout>
 
 		</LinearLayout>

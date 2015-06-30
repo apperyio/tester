@@ -12,6 +12,8 @@ public interface Constants {
 
         public static final String GET_PROJECT_RESOURCE = "/app/project/%s/export/sources/web_resources/";
 
+        public static final String GET_PROJECT_RESOURCE_BY_CODE = "/app/rest/project/shared/%s/export/sources/WEB_RESOURCES";
+
         public static final String LOGOUT = "/idp/doLogout";
 
         public static final String GET_USER_ID = "/app/rest/user/user-id";
