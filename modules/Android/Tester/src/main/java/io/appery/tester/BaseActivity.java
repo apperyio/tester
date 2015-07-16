@@ -56,7 +56,7 @@ public abstract class BaseActivity extends SherlockActivity {
         super.onPrepareDialog(id, dialog);
     }
 
-    protected void startActivity(Class<?> _class) {
+    public void startActivity(Class<?> _class) {
         Intent intent = new Intent(this, _class);
         startActivity(intent);
     }

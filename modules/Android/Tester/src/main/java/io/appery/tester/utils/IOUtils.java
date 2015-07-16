@@ -12,6 +12,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import android.content.Context;
+import android.util.Log;
+
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
 
 /**
  * @author Daniel Lukashevich
@@ -103,13 +107,22 @@ public class IOUtils {
         return null;
     }
 
-    void downloadFileToDir(final Context ctx, String sUrl, String dirName) {
-
-    }
-
     public static InputStream getInputStream(RestClient restClient) throws IllegalStateException, Exception {
         restClient.setFollowRedirects(true);
-        return restClient.execute().getEntity().getContent();
+        HttpResponse httpResponse = restClient.execute();
+        if (httpResponse == null) {
+            throw new NoProjectSourceException();
+        }
+        int responseCode = httpResponse.getStatusLine().getStatusCode();
+        if (!((responseCode >= 200) && (responseCode <= 400))) {
+            throw new NoProjectSourceException(responseCode);
+        }
+        Header responceContentTypeHeader = httpResponse.getFirstHeader("content-type");
+        if (!(responceContentTypeHeader != null && responceContentTypeHeader.getValue() != null &&
+                (responceContentTypeHeader.getValue().contains("application/zip") || responceContentTypeHeader.getValue().contains("application/octet-stream")))) {
+            throw new NoProjectSourceException();
+        }
+        return httpResponse.getEntity().getContent();
     }
 
 }

@@ -55,6 +55,18 @@
 					<Button android:id="@+id/sign_in_btn" android:layout_width="fill_parent"
 						android:layout_height="wrap_content" android:text="@string/sign_in_btn"
 						android:layout_marginTop="22dp" android:onClick="signIn" />
+
+					<TextView
+						android:id="@+id/enter_code_btn"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center_horizontal"
+						android:layout_margin="20dp"
+						android:padding="10dp"
+						android:text="@string/entern_app_code_btn"
+						android:textSize="20sp"
+						android:textColor="@color/button_enabled_color"
+						/>
 				</LinearLayout>
 
 			</ScrollView>

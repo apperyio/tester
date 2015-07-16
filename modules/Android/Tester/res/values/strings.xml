@@ -7,7 +7,7 @@
     <string name="password_label">Password: </string>
     <string name="url_label">URL: </string>
     <string name="loading_label">Loading...</string>
-    <string name="rights">2014 Exadel Inc. All rights reserved</string>
+    <string name="rights">2015 Exadel Inc. All rights reserved</string>
     <string name="edited_label">Edited:</string>
     <string name="xmpp_server">XMPP server:</string>
     <string name="xmpp_port">XMPP port:</string>
@@ -17,6 +17,7 @@
     <string name="download_btn">Download</string>
     <string name="preview_btn">Preview</string>
     <string name="cancel_btn">Cancel</string>
+    <string name="entern_app_code_btn">Enter app code</string>
         
     <!-- DIALOGS -->
     <string name="please_wait">Please wait...</string>
@@ -32,6 +33,10 @@
     <string name="sort_by_name">Sort by name</string>
     <string name="sort_by_createdate">Sort by create date</string>
     <string name="sort_by_modifydate">Sort by edit date</string>
+    <string name="enter_app_code_dialog_title">Enter app code</string>
+    <string name="enter_app_code_pos_button">ENTER</string>
+    <string name="enter_app_code_cancel_button">CANCEL</string>
+
     <!-- MENU ITEMS -->
     <string name="logout_mi">Logout</string>
     <string name="preferences_mi">Preferences</string>
@@ -46,6 +51,8 @@
     <string name="file_download_error_toast">File could not be downloaded</string>
     <string name="application_download_error_toast">Error while downloading application</string>
     <string name="preview_error_toast">Not able to open preview. Try again later.</string>
+    <string name="preview_by_code_not_found_error_toast">No app is associated with this code.</string>
+    <string name="preview_by_code_expired_error_toast">The code you have entered has expired or no longer valid.</string>
     
     <!-- PREFERENCES CATEGORIES -->
     <string name="authorization_pc">Authorization</string>

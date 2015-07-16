@@ -28,10 +28,29 @@ public class DownloadFileTask extends AsyncTask<String, Void, File> {
 
     private DownloadFileCallback mCallback;
 
+    private DownloadFileErrorCallback errorCallback;
+
+    private Throwable downloadException;
+
+    private boolean isError = false;
+
     public DownloadFileTask(BaseActivity context, String fileName, DownloadFileCallback callback) {
         this.mContext = context;
         this.mFileName = fileName;
         this.mCallback = callback;
+    }
+
+    public DownloadFileTask(BaseActivity context, String fileName, DownloadFileCallback callback,DownloadFileErrorCallback errorCallback) {
+        this.mContext = context;
+        this.mFileName = fileName;
+        this.mCallback = callback;
+        this.errorCallback = errorCallback;
+    }
+
+    public interface DownloadFileErrorCallback{
+
+        public void onFileDownloadError(Throwable exception);
+
     }
 
     /**
@@ -55,6 +74,8 @@ public class DownloadFileTask extends AsyncTask<String, Void, File> {
             return file;
         } catch (Throwable e) {
             Log.e(TAG, "Can't download file", e);
+            this.downloadException = e;
+            this.isError = true;
         }
 
         return null;
@@ -63,8 +84,13 @@ public class DownloadFileTask extends AsyncTask<String, Void, File> {
     @Override
     protected void onPostExecute(File result) {
         mContext.removeDialog(Constants.DIALOGS.PROGRESS);
-        if (mCallback != null)
+        if (mCallback != null && !isError){
             mCallback.onFileDownloaded(result);
+        }
+        if (errorCallback != null && isError){
+            Log.d("IOUtils", "DownloadFileTask onFileDownloadError ");
+            errorCallback.onFileDownloadError(this.downloadException);
+        }
     }
 
 }

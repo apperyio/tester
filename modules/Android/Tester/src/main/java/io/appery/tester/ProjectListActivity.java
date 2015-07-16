@@ -5,38 +5,22 @@ import io.appery.tester.adaptors.ProjectListAdapter;
 import io.appery.tester.comparators.ProjectComparator;
 import io.appery.tester.data.Project;
 import io.appery.tester.data.SerializedCookie;
-import io.appery.tester.net.RestManager;
 import io.appery.tester.net.api.BaseResponse;
 import io.appery.tester.net.api.GetProjectList;
 import io.appery.tester.net.api.callback.ProjectListCallback;
-import io.appery.tester.tasks.DownloadFileTask;
-import io.appery.tester.tasks.callback.DownloadFileCallback;
+import io.appery.tester.preview.ProjectPreviewManager;
 import io.appery.tester.utils.Constants;
-import io.appery.tester.utils.FileUtils;
-import io.appery.tester.utils.IntentUtils;
-import io.appery.tester.utils.ProjectStorageManager;
-
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.graphics.Canvas;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Paint;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -46,23 +30,18 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Toast;
-
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
-import com.slidingmenu.lib.SlidingMenu;
-
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
 
 /**
  * @author Daniel Lukashevich
  */
-public class ProjectListActivity extends BaseActivity implements ProjectListCallback, DownloadFileCallback {
+public class ProjectListActivity extends BaseActivity implements ProjectListCallback{
 
     // UI
     private ListView mProjectListView;
@@ -77,43 +56,40 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
 
     private String[] PROJECTS_ACTIONS;
 
-    private String DEBUG_ON_SERVICE_PARAM = "debug=true";
-
-    private String DEBUG_OFF_SERVICE_PARAM = "debug=false";
-
     private String RUN_PROJECT_ACTION;
+
     public static  final String ALL_FOLDERS = "ALL";
+
     public static  final String MY_FOLDER = "My folder";
+
     public static  final int ALL_FOLDERS_POSITION = 0;
+
     public static  final int MY_FOLDER_POSITION = 1;
+
     private String CORDOVA_LIB_DIR = "/files/resources/lib/";
+
     private String CORDOVA_ANGULAR_LIB_DIR = "/libs/";
 
-
     private ProjectListAdapter mProjectAdapter;
-    private SlidingMenu mSlidingMenu;
+
     FolderAdapter mFolderAdapter;
 
     List<String> mFolders = new ArrayList<String>();
 
-    // used to anabled hardware acceleration for sliding menu
-    private final Paint paint = new Paint();
-    private final ColorMatrix matrix = new ColorMatrix();
-    //private ImageView  mIndicatorView;
-
     private static List<String> savedCookiesName = Arrays.asList(new String[]{"JSESSIONID", "APPSSO"});
+
     private static List<Cookie> savedCookieList = new ArrayList<Cookie>();
+
     private static final String UNAUTHORIZED_RESPONSE_MESSAGE = "Unauthorized";
+
+    private ProjectPreviewManager projectPreviewManager;
 
     @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       // requestWindowFeature(Window.FEATURE_NO_TITLE);
-        
         setContentView(R.layout.projects);
-
-
+        projectPreviewManager = new ProjectPreviewManager(getRestManager(),this);
         if (savedInstanceState != null) {
             sortBy = savedInstanceState.getInt(Constants.EXTRAS.SORT_BY, ProjectComparator.BY_EDIT_DATE);
             projectList = (List<Project>) savedInstanceState.get(Constants.EXTRAS.PROJECTS_LIST);
@@ -126,13 +102,11 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
                     savedCookie.setPath(cookie.getPath());
                     savedCookieList.add(savedCookie);
                     Log.d("MY", "saved instance cookie"+ cookieName +" = "+ cookie);
-
                 }
             }
             for (Cookie cookie : savedCookieList) {
                 getRestManager().getCookieStore().addCookie(cookie);
             }
-
         }
 
         mProjectListView = (ListView) findViewById(R.id.project_list);
@@ -168,137 +142,20 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
 
         mFolderAdapter  = new FolderAdapter(this, mFolders ,getResources().getColor(android.R.color.holo_blue_light));
         customizeActionBar();
-        //mSlidingMenu = addSlidingMenu();
-
     }
 
-    /***
-     * add custom sliding menu
-     * @return
-     */
-    private SlidingMenu addSlidingMenu(){
-        SlidingMenu menu = new SlidingMenu(this);
-        menu.setMode(SlidingMenu.LEFT);
-        menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-        menu.setShadowWidthRes(R.dimen.shadow_width);
-        menu.setShadowDrawable(R.drawable.shadow);
-        menu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
-        menu.setFadeDegree(0.35f);
-        menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
-        menu.setMenu(R.layout.slidingmenu);
-
-        ListView lwFolders = (ListView)findViewById(R.id.mn_lw_folders);
-        lwFolders.setAdapter(mFolderAdapter);
-        lwFolders.setOnItemClickListener(onFolderClick);
-
-        findViewById(R.id.mn_bt_refresh).setOnClickListener(onRefreshClick);
-
-        menu.setBehindCanvasTransformer(new SlidingMenu.CanvasTransformer() {
-            @Override
-            public void transformCanvas(Canvas canvas, float percentOpen) {
-                //TODO uncommit when 4.2 maven repository android released
-                //boolean API_17 = Build.VERSION.SDK_INT >= 17;
-                //boolean API_16 = Build.VERSION.SDK_INT == 16;
-                boolean API_17 = false;
-                boolean API_16 = Build.VERSION.SDK_INT >= 16;
-                boolean API_11 = Build.VERSION.SDK_INT >= 11;
-
-                if (API_16) prepareLayerHack();
-                if (API_11) manageLayers(percentOpen);
-
-                updateColorFilter(percentOpen);
-                updatePaint(API_17, API_16);
-            }
-        });
-
-        /*menu.setOnOpenListener(new SlidingMenu.OnOpenListener() {
-            @Override
-            public void onOpen() {
-                mIndicatorView.setImageResource(R.drawable.icon_menu_open_unpressed);
-            }
-        });
-        menu.setOnClosedListener(new SlidingMenu.OnClosedListener() {
-            @Override
-            public void onClosed() {
-                mIndicatorView.setImageResource(R.drawable.icon_menu_closed_unpressed);
-            }
-        });*/
-        return menu;
-    }
-
-    @TargetApi(17)
-    private void updatePaint(boolean API_17, boolean API_16) {
-        View backView = mSlidingMenu.getMenu();
-        if (API_17) {
-            //TODO uncommit when 4.2 maven repository android released
-            //   backView.setLayerPaint(paint);
-        } else {
-            if (API_16) {
-                if (sHackAvailable) {
-                    try {
-                        sRecreateDisplayList.setBoolean(backView, true);
-                        sGetDisplayList.invoke(backView, (Object[]) null);
-                    } catch (IllegalArgumentException e) {
-                    } catch (IllegalAccessException e) {
-                    } catch (InvocationTargetException e) {
-                    }
-                } else {
-                    // This solution is slow
-                    mSlidingMenu.getMenu().invalidate();
-                }
-            }
-
-            // API level < 16 doesn't need the hack above, but the invalidate is required
-            ((View) backView.getParent()).postInvalidate(backView.getLeft(), backView.getTop(),
-                    backView.getRight(), backView.getBottom());
-        }
-    }
-    private void updateColorFilter(float percentOpen) {
-        matrix.setSaturation(percentOpen);
-        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
-        paint.setColorFilter(filter);
-    }
-
-    private void manageLayers(float percentOpen) {
-        boolean layer = percentOpen > 0.0f && percentOpen < 1.0f;
-        int layerType = layer ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE;
-
-        /*if (layerType != mSlidingMenu.getContent().getLayerType()) {
-            mSlidingMenu.getContent().setLayerType(layerType, null);
-            mSlidingMenu.getMenu().setLayerType(layerType, Build.VERSION.SDK_INT <= 16 ? paint : null);
-        }*/
-    }
 
     private static boolean sHackReady;
     private static boolean sHackAvailable;
     private static Field sRecreateDisplayList;
     private static Method sGetDisplayList;
 
-    private static void prepareLayerHack() {
-        if (!sHackReady) {
-            try {
-                sRecreateDisplayList = View.class.getDeclaredField("mRecreateDisplayList");
-                sRecreateDisplayList.setAccessible(true);
-
-                sGetDisplayList = View.class.getDeclaredMethod("getDisplayList", (Class<?>) null);
-                sGetDisplayList.setAccessible(true);
-
-                sHackAvailable = true;
-            } catch (NoSuchFieldException e) {
-            } catch (NoSuchMethodException e) {
-            }
-            sHackReady = true;
-        }
-    }
-
-
-
     OnItemClickListener onFolderClick = new OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
             mFolderAdapter.setSelected(i,view);
             updateProjectsList(sortBy);
-            mSlidingMenu.toggle();
+            //mSlidingMenu.toggle();
         }
     };
     View.OnClickListener onRefreshClick = new View.OnClickListener() {
@@ -314,6 +171,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
     /***
      * Add indicator  ,  tittle and submenu to actionbar
      */
+
     private void customizeActionBar(){
         ActionBar bar = getSupportActionBar();
         View title = LayoutInflater.from(this).inflate(R.layout.actionbar_tittle , null , false);
@@ -403,15 +261,10 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setItems(PROJECTS_ACTIONS, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int item) {
-                    // Debug mode
                     removeDialog(Constants.DIALOGS.PROJECT_ACTION);
-                    // Run without debug
                     if (PROJECTS_ACTIONS[item].equals(RUN_PROJECT_ACTION)) {
-                        DownloadFileTask getApkTask = new DownloadFileTask(ProjectListActivity.this,
-                                Constants.FILENAME_ZIP, ProjectListActivity.this);
-                        getApkTask.execute(selectedProject.getResourcesLink() + "?" + DEBUG_OFF_SERVICE_PARAM);
+                        projectPreviewManager.downloadAndStartProjectPreview(selectedProject.getResourcesLink());
                     }
-
                 }
             });
 
@@ -448,60 +301,6 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         }
         super.onPrepareDialog(id, dialog);
     }
-
-    @Override
-    public void onFileDownloaded(File file) {
-
-        if (file == null) {
-            Toast.makeText(this, getString(R.string.file_download_error_toast), Toast.LENGTH_LONG).show();
-            return;
-        }
-
-
-        //  TODO - Check filename and do what you need
-        // apk file - install
-        String fName = file.getName();
-        if (Constants.FILENAME_APK.equals(fName)) {
-            boolean install = new IntentUtils(this).installApk(file);
-            if (!install) {
-                showToast(getString(R.string.application_download_error_toast));
-            }
-        } else if (Constants.FILENAME_ZIP.equals(fName)) {
-            // Unzip
-            String dirPath = ProjectStorageManager.getWORK_DIRECTORY();
-
-            try {
-                FileUtils.checkDir(dirPath);
-                FileUtils.clearDirectory(dirPath);
-
-                FileUtils.unzip(ProjectStorageManager.getPROJECT_ZIP_FILE(), dirPath);
-                replaceCordovaResources(dirPath);
-                startActivity(ApperyActivity.class);
-            } catch (IOException e) {
-                e.printStackTrace();
-                showToast(getString(R.string.preview_error_toast));
-            }
-        }
-    }
-    
-	private void replaceCordovaResources(String dirPath) {		
-		String path = dirPath + this.CORDOVA_LIB_DIR;
-        if (!FileUtils.isDirExists(path)) {
-            path = dirPath + this.CORDOVA_ANGULAR_LIB_DIR;
-        }
-
-		String cordovaAssetArchiveFileName = "cordova_resources.zip";
-		
-		FileUtils.copyAsset(this, cordovaAssetArchiveFileName, path	+ cordovaAssetArchiveFileName);
-		try{
-			FileUtils.unzip(path + cordovaAssetArchiveFileName, path);
-			FileUtils.removeFile(path + cordovaAssetArchiveFileName);
-		}catch (IOException e) {
-             e.printStackTrace();
-             showToast(getString(R.string.preview_error_toast));
-         }
-
-	}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -541,9 +340,6 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         case Constants.MENU_OPTIONS.SORT_BY_CREATE:
             updateProjectsList(ProjectComparator.BY_CREATE_DATE);
             break;
-        /*case  Constants.MENU_OPTIONS.SELECT_FOLDER:
-            mSlidingMenu.showMenu(true);
-            break;*/
         case Constants.MENU_OPTIONS.LOGOUT :
              // for action logout we simply go on login activity
              // in login activity onresume there is action to perform logout
@@ -553,9 +349,9 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         default:
             break;
         }
-
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     protected void onDestroy() {
@@ -567,7 +363,6 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
     private void updateProjectsList(int orderBy) {
         Comparator<Project> comparator;
         sortBy = orderBy;
-
         switch (orderBy){
             case  ProjectComparator.BY_NAME :
                 comparator = new ProjectComparator(ProjectComparator.BY_NAME, ProjectComparator.ASC);
@@ -579,7 +374,6 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
                 comparator = new ProjectComparator(ProjectComparator.BY_EDIT_DATE, ProjectComparator.DESC);
                 break;
         }
-
         Collections.sort(projectList, comparator);
         mProjectAdapter.setmProjectList(getFilteredProjects());
         mProjectAdapter.notifyDataSetChanged();
@@ -592,17 +386,13 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
             if (!username.equals(pr.getOwner())&& !owners.contains(pr.getOwner()))
                 owners.add(pr.getOwner());
         Collections.sort(owners);
-
         mFolders.clear();
-
         mFolders.add(ALL_FOLDERS);
         mFolders.add(MY_FOLDER);
         mFolders.addAll(owners);
-
         mFolderAdapter.selected=0;
         mFolderAdapter.setFolders(mFolders);
         mFolderAdapter.notifyDataSetChanged();
-
     }
 
     /**
@@ -625,8 +415,4 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         }
         return res;
     }
-
-
-
-
 }

@@ -3,42 +3,33 @@ package io.appery.tester;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
+import io.appery.tester.dialogs.EnterAppCodeDialog;
 import io.appery.tester.net.api.BaseResponse;
 import io.appery.tester.net.api.DoSAML;
 import io.appery.tester.net.api.GetSAML;
-import io.appery.tester.net.api.GetUserId;
 import io.appery.tester.net.api.Login;
 import io.appery.tester.net.api.Logout;
 import io.appery.tester.net.api.callback.DoSAMLCallback;
 import io.appery.tester.net.api.callback.GetSAMLCallback;
 import io.appery.tester.net.api.callback.LoginCallback;
-import io.appery.tester.tasks.DownloadFileTask;
-import io.appery.tester.tasks.callback.DownloadFileCallback;
+import io.appery.tester.preview.ProjectPreviewManager;
 import io.appery.tester.utils.Constants;
-import io.appery.tester.utils.FileUtils;
-import io.appery.tester.utils.IntentUtils;
-import io.appery.tester.utils.ProjectStorageManager;
 import io.appery.tester.utils.WidgetUtils;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.text.InputType;
 import android.util.Log;
 
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import java.io.File;
-import java.io.IOException;
 
-public class LoginActivity extends BaseActivity implements LoginCallback, GetSAMLCallback, DoSAMLCallback, DownloadFileCallback {
+public class LoginActivity extends BaseActivity implements LoginCallback, GetSAMLCallback, DoSAMLCallback{
 
     protected static final int PREFERENCES = 0;
 
@@ -48,8 +39,7 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
 
     private AlertDialog.Builder builder;
 
-    private String CORDOVA_LIB_DIR = "/files/resources/lib/";
-    private String CORDOVA_ANGULAR_LIB_DIR = "/libs/";
+    private ProjectPreviewManager projectPreviewManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,25 +50,28 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
             finish();
             return;
         }
-
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-
         setContentView(R.layout.login);
-
+        bindUI();
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         ((TesterApplication) getApplication()).setBaseURL(getServerURL());
-
+        projectPreviewManager = new ProjectPreviewManager(getRestManager(),this);
     }
 
-
+    private void bindUI() {
+        findViewById(R.id.enter_code_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openEnterCodeDialog();
+            }
+        });
+    }
 
     @Override
     protected void onStart() {
         super.onStart();
-
         username = getPreferenceAsString(Constants.PREFERENCES.USERNAME, "");
         password = getPreferenceAsString(Constants.PREFERENCES.PASSWORD, "");
-
         WidgetUtils.setText(this, R.id.login_et, username);
         WidgetUtils.setText(this, R.id.password_et, password);
     }
@@ -86,15 +79,11 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
     @Override
     protected void onResume() {
         super.onResume();
-
         getRestManager().setBaseURL(getRestManager().getIdpURL());
         Logout logout = new Logout(getRestManager());
        	logout.execute();
-
         int views[] = new int[] { R.id.login_et, R.id.password_et, R.id.sign_in_btn };
-
         View focusView = null;
-
         for (int viewId : views) {
             focusView = findViewById(viewId);
             if (focusView instanceof EditText) {
@@ -128,7 +117,6 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
     public void onLoginSuccess(final String location) {
         setPreference(Constants.PREFERENCES.USERNAME, username);
         setPreference(Constants.PREFERENCES.PASSWORD, password);
-
         runOnUiThread(new Runnable() {
 
             @Override
@@ -137,11 +125,9 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
                 removeDialog(Constants.DIALOGS.SIGN_IN);
             }
         });
-
         getRestManager().setBaseURL(location);
         GetSAML samlAPI = new GetSAML(getRestManager(), this);
         samlAPI.execute();
-
         //GetUserId getUserId = new GetUserId(getRestManager(), this);
         //getUserId.execute();
     }
@@ -212,10 +198,8 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
      */
     public void signIn(View target) {
         ((TesterApplication) getApplication()).setBaseURL(getPreferenceAsString(Constants.PREFERENCES.BASE_URL, ""));
-
         username = WidgetUtils.getText(LoginActivity.this, R.id.login_et);
         password = WidgetUtils.getText(LoginActivity.this, R.id.password_et);
-
         getRestManager().setBaseURL(getRestManager().getIdpURL());
         String loginTarget = getRestManager().getBaseURLConstant() + Constants.API.LOGIN_TARGET;
         Login loginApi = new Login(getRestManager(), username, password, loginTarget, LoginActivity.this);
@@ -223,35 +207,10 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
         loginApi.execute();
     }
 
-    public void openEnterCodeDialog(View target) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Enter share code");
-
-        final EditText input = new EditText(this);
-
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(input);
-
-        final AlertDialog.Builder ok = builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                getRestManager().setBaseURL(getRestManager().getBaseURLConstant());
-                String codeText = input.getText().toString();
-                ProjectListActivity projListInstance = new ProjectListActivity();
-                DownloadFileTask getApkTask = new DownloadFileTask(LoginActivity.this,
-                        Constants.FILENAME_ZIP, LoginActivity.this);
-                getApkTask.execute(String.format(Constants.API.GET_PROJECT_RESOURCE_BY_CODE, codeText));
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                getRestManager().setBaseURL(getRestManager().getIdpURL());
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
+    public void openEnterCodeDialog() {
+        ((TesterApplication) getApplication()).setBaseURL(getPreferenceAsString(Constants.PREFERENCES.BASE_URL, ""));
+        EnterAppCodeDialog enterAppCodeDialog = new EnterAppCodeDialog(this,this.projectPreviewManager);
+        enterAppCodeDialog.show();
     }
 
     @Override
@@ -269,57 +228,4 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
         samlAPI.execute();
     }
 
-    @Override
-    public void onFileDownloaded(File file) {
-
-        if (file == null) {
-            Toast.makeText(this, getString(R.string.file_download_error_toast), Toast.LENGTH_LONG).show();
-            return;
-        }
-
-
-        //  TODO - Check filename and do what you need
-        // apk file - install
-        String fName = file.getName();
-        if (Constants.FILENAME_APK.equals(fName)) {
-            boolean install = new IntentUtils(this).installApk(file);
-            if (!install) {
-                showToast(getString(R.string.application_download_error_toast));
-            }
-        } else if (Constants.FILENAME_ZIP.equals(fName)) {
-            // Unzip
-            String dirPath = ProjectStorageManager.getWORK_DIRECTORY();
-
-            try {
-                FileUtils.checkDir(dirPath);
-                FileUtils.clearDirectory(dirPath);
-
-                FileUtils.unzip(ProjectStorageManager.getPROJECT_ZIP_FILE(), dirPath);
-                replaceCordovaResources(dirPath);
-                startActivity(ApperyActivity.class);
-            } catch (IOException e) {
-                e.printStackTrace();
-                showToast(getString(R.string.preview_error_toast));
-            }
-        }
-    }
-
-    private void replaceCordovaResources(String dirPath) {
-        String path = dirPath + this.CORDOVA_LIB_DIR;
-        if (!FileUtils.isDirExists(path)) {
-            path = dirPath + this.CORDOVA_ANGULAR_LIB_DIR;
-        }
-
-        String cordovaAssetArchiveFileName = "cordova_resources.zip";
-
-        FileUtils.copyAsset(this, cordovaAssetArchiveFileName, path + cordovaAssetArchiveFileName);
-        try{
-            FileUtils.unzip(path + cordovaAssetArchiveFileName, path);
-            FileUtils.removeFile(path + cordovaAssetArchiveFileName);
-        }catch (IOException e) {
-            e.printStackTrace();
-            showToast(getString(R.string.preview_error_toast));
-        }
-
-    }
 }

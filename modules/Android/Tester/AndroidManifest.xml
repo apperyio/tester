@@ -66,12 +66,11 @@
 
         <activity
             android:name=".LoginActivity"
-            android:configChanges="keyboardHidden"
+            android:configChanges="keyboardHidden|orientation"
             android:label="@string/application_name" 
-            android:launchMode="singleTop" >>
+            android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

@@ -26,7 +26,7 @@
     </style>
 
     <style name="Rights">
-        <item name="android:textColor">#FF666666</item>
+        <item name="android:textColor">#FFA9A9A9</item>
         <item name="android:textSize">14dp</item>
     </style>
     
