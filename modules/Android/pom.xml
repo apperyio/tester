@@ -16,8 +16,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<android.platform>16</android.platform>
-		<android.version>4.1.1.4</android.version>
+		<android.platform>17</android.platform>
+		<android.version>4.2.2_r3</android.version>
 		<android-support.version>r7</android-support.version>
 		<debug>true</debug>
 	</properties>

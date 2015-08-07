@@ -16,6 +16,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.protocol.HTTP;
@@ -68,6 +70,9 @@ public class RestClient {
 
         parameters = new ArrayList<NameValuePair>();
         headers = new ArrayList<NameValuePair>();
+
+        SchemeRegistry schemeRegistry = this.httpClient.getConnectionManager().getSchemeRegistry();
+        schemeRegistry.register(new Scheme("https", new TlsSniSocketFactory(), 443));
     }
 
     /**
