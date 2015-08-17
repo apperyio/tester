@@ -25,8 +25,12 @@ static const CGFloat kNavigationBarHeight = 44;
 static NSString *const kDefaultWebResourceFolder = @"www";
 
 @interface EXProjectViewController () <EXProjectsObserver>
+{
+    BOOL isShare;
+}
 
 @property (nonatomic, retain) EXProjectMetadata *_projectMetadata;
+@property (nonatomic, copy) NSString *_appCode;
 @property (nonatomic, retain) UINavigationController *projectNavigationController;
 
 @end
@@ -41,6 +45,17 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     if (self) {
         self.title = projectMetadata == nil ? [self defaultTitle] : projectMetadata.name;
         self._projectMetadata = projectMetadata;
+    }
+    return self;
+}
+
+- (id) initWithProjectCode: (NSString *)projectCode
+{
+    self = [super init];
+    if (self) {
+        self.title = projectCode == nil ? [self defaultTitle] : projectCode;
+        isShare = YES;
+        self._appCode = projectCode;
     }
     return self;
 }
@@ -111,14 +126,32 @@ static NSString *const kDefaultWebResourceFolder = @"www";
 
 - (void) configureNavigationBar
 {
-    UIBarButtonItem *projectsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"menu"]
-            style: UIBarButtonItemStylePlain target: self action: @selector(showProjectsViewController)];
-
+    UIBarButtonItem *projectsButton = nil;
+    
+    if (isShare) {
+        projectsButton = [[UIBarButtonItem alloc] initWithTitle:@"Back"
+                                                          style:UIBarButtonItemStylePlain
+                                                         target:self
+                                                         action:@selector(back)];
+    } else {
+        projectsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"menu"]
+                                                          style:UIBarButtonItemStylePlain
+                                                         target:self
+                                                         action:@selector(showProjectsViewController)];
+    }
+    
     UIBarButtonItem *reloadProjectButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"reload"]
-           style: UIBarButtonItemStylePlain target:self action:@selector(reloadProject)];
+                                                                            style:UIBarButtonItemStylePlain
+                                                                           target:self
+                                                                           action:@selector(reloadProject)];
 
     self.navigationItem.leftBarButtonItem = projectsButton;
     self.navigationItem.rightBarButtonItem = reloadProjectButton;
+}
+
+- (void) back
+{
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 - (void) showProjectsViewController
@@ -128,6 +161,11 @@ static NSString *const kDefaultWebResourceFolder = @"www";
 
 - (void) reloadProject
 {
+    if (isShare) {
+        [self loadProjectForAppCode:self._appCode];
+        
+        return;
+    }
     if (self._projectMetadata) {
         [self loadProjectForMetadata: self._projectMetadata];
     } else {        
@@ -139,6 +177,42 @@ static NSString *const kDefaultWebResourceFolder = @"www";
         
         NSLog(@"App list was reloaded");
     }
+}
+
+- (void) loadProjectForAppCode:(NSString *)appCode
+{
+    UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
+    MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
+    progressHud.labelText = NSLocalizedString(@"Loading app", @"Loading app progress hud title");
+    
+    [self.apperyService   loadProjectForAppCode:appCode
+                                        succeed:^(NSString *projectLocation, NSString *startPageName) {
+                                            [progressHud hide: NO];
+                                            
+                                            EXProjectViewController *projectViewController = [[EXProjectViewController alloc] initWithProjectCode:appCode];
+                                            projectViewController.apperyService = self.apperyService;
+                                            projectViewController.wwwFolderName = projectLocation;
+                                            projectViewController.startPage = startPageName;
+                                            
+                                            NSMutableArray *controllers = [NSMutableArray arrayWithArray: self.navigationController.viewControllers];
+                                            [controllers removeLastObject];
+                                            [controllers addObject: projectViewController];
+                                            
+                                            [self.navigationController setViewControllers: controllers animated: NO];
+                                            
+                                            NSLog(@"App %@ was load", appCode);
+                                        } failed:^(NSError *error) {
+                                            [progressHud hide: NO];
+                                            
+                                            [[[UIAlertView alloc] initWithTitle: error.localizedDescription
+                                                                        message: error.localizedRecoverySuggestion
+                                                                       delegate: nil
+                                                              cancelButtonTitle: NSLocalizedString(@"Ok", nil)
+                                                              otherButtonTitles: nil] show];
+                                            
+                                            NSLog(@"App loading failed due to: %@", error.localizedDescription);
+                                        }
+     ];
 }
 
 - (void) loadProjectForMetadata: (EXProjectMetadata *)projectMetadata

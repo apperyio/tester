@@ -21,6 +21,7 @@
 @property (retain, nonatomic) IBOutlet UITextField *userPassword;
 @property (retain, nonatomic) IBOutlet UISwitch *shouldRememberMe;
 @property (retain, nonatomic) IBOutlet GradientButton *loginButton;
+@property (retain, nonatomic) IBOutlet UIButton *shareButton;
 
 @property (nonatomic, retain) EXProjectViewController *projectViewController;
 
@@ -34,6 +35,11 @@
  * Provides login action, when user taps to correspond button.
  */
 - (IBAction) login:(id)sender;
+
+/**
+ * Go to enter shared app code
+ */
+- (IBAction) toShare:(id)sender;
 
 /**
  *

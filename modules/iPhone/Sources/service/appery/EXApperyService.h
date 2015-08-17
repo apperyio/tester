@@ -101,5 +101,18 @@
                         succeed: (void (^)(NSString *projectLocation, NSString *startPageName)) succeed
                          failed: (void (^)(NSError *error)) failed;
 
+/**
+ * Load project correspond to specified poject code and store it to the specified folder.
+ *
+ * @param appCode - project code
+ * @param succeed - block of code invoked when operation is successfull, where projectLocation parameter contains full
+ *                  path to the uzipped project location and startPageName parameter contains root html page name
+ * @param failed  - block of code invoked when operation is failed, error parameter describes details
+ *
+ * @exception NSException - if user is not logged in
+ */
+- (void) loadProjectForAppCode: (NSString *) appCode
+                       succeed: (void (^)(NSString *projectLocation, NSString *startPageName)) succeed
+                        failed: (void (^)(NSError *error)) failed;
 
 @end

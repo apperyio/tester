@@ -8,10 +8,13 @@
 
 #import "EXLoginViewController.h"
 #import "MBProgressHUD.h"
+#import "NSStringMask.h"
 
 #pragma mark - Private interface declaration
 
 @interface EXLoginViewController ()
+
+@property (nonatomic, strong) NSStringMask *mask;
 
 /**
  * Hides keyboard if it visible
@@ -29,6 +32,7 @@
     if (self = [super initWithNibName: nibNameOrNil bundle: nibBundleOrNil])
     {
         self.title = NSLocalizedString(@"Login", @"EXLoginViewController title");
+        self.mask = [[NSStringMask alloc] initWithPattern:@"(\\d{3})-(\\d{3})-(\\d{3})" placeholder:@"_"];
     }
     
     return self;
@@ -84,6 +88,26 @@
     }];
 }
 
+- (IBAction)toShare:(id)sender
+{
+    UIAlertView *shareAlert = [[UIAlertView alloc] initWithTitle:@"Enter an app code"
+                                                         message:nil
+                                                        delegate:self
+                                               cancelButtonTitle:@"Cancel"
+                                               otherButtonTitles:@"Enter", nil];
+    
+    shareAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
+    
+    UITextField *textfield = [shareAlert textFieldAtIndex:0];
+    textfield.backgroundColor = [UIColor clearColor];
+    textfield.placeholder = @"App code";
+    textfield.tag = 43834;
+    textfield.keyboardType = UIKeyboardTypeNumberPad;
+    textfield.returnKeyType = UIReturnKeyDone;
+    textfield.delegate = self;
+    [shareAlert show];
+}
+
 #pragma mark - Public interface implementation
 
 - (void) updateProjectsMetadata:(NSArray *)projectsMetadata
@@ -108,6 +132,83 @@
 {
     [textField resignFirstResponder];
     
+    return YES;
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    if (textField.tag != 43834) {
+        return YES;
+    }
+    
+    NSRange newRange = NSMakeRange(0, 0);
+    NSString *mutableString = [textField.text stringByReplacingCharactersInRange:range withString:string];
+    NSString *clean = [self.mask validCharactersForString:mutableString];
+    mutableString = [self.mask format:mutableString];
+    
+    if (clean.length > 0)
+    {
+        newRange = [mutableString rangeOfString:[clean substringFromIndex:clean.length - 1] options:NSBackwardsSearch];
+        if (newRange.location == NSNotFound)
+        {
+            newRange.location = mutableString.length;
+        }
+        else
+        {
+            newRange.location += newRange.length;
+        }
+        
+        newRange.length = 0;
+    }
+    
+    textField.text = mutableString;
+    [textField setValue:[NSValue valueWithRange:newRange] forKey:@"selectionRange"];
+    
+    return NO;
+}
+
+#pragma mark - UIAlertViewDelegate protocol implementation
+
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 0) {
+        return;
+    }
+    
+    UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
+    MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo:rootView animated:YES];
+    progressHud.labelText = NSLocalizedString(@"Loading app", @"Loading app progress hud title");
+    
+    NSString *appCode = [[alertView textFieldAtIndex:0] text];
+    
+    [self.apperyService   loadProjectForAppCode:appCode
+                                        succeed:^(NSString *projectLocation, NSString *startPageName) {
+                                           [progressHud hide: NO];
+                                           
+                                           EXProjectViewController *projectViewController = [[EXProjectViewController alloc] initWithProjectCode:appCode];
+                                           projectViewController.apperyService = self.apperyService;
+                                           projectViewController.wwwFolderName = projectLocation;
+                                           projectViewController.startPage = startPageName;
+                                           
+                                           [self.navigationController pushViewController:projectViewController animated:YES];
+                                           
+                                           NSLog(@"App %@ was load", appCode);
+                                        } failed:^(NSError *error) {
+                                           [progressHud hide: NO];
+                                           
+                                           [[[UIAlertView alloc] initWithTitle: error.localizedDescription
+                                                                       message: error.localizedRecoverySuggestion
+                                                                      delegate: nil
+                                                             cancelButtonTitle: NSLocalizedString(@"Ok", nil)
+                                                             otherButtonTitles: nil] show];
+                                           
+                                           NSLog(@"App loading failed due to: %@", error.localizedDescription);
+                                        }
+     ];
+}
+
+- (BOOL)alertViewShouldEnableFirstOtherButton:(UIAlertView *)alertView
+{
     return YES;
 }
 

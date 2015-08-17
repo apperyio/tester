@@ -21,6 +21,7 @@ static NSString * const BASE_URL_STRING = @"appery.io";
 static NSString * const LOGIN_PATH_URL_STRING = @"/idp/doLogin";
 static NSString * const PROJECTS_PATH_URL_STRING = @"/app/rest/projects/";
 static NSString * const PROJECT_PATH_URL_STRING = @"/app/project/%@/export/sources/web_resources/";
+static NSString * const SHARE_PROJECT_PATH_URL_STRING = @"/app/rest/project/shared/%@/export/sources/WEB_RESOURCES";
 static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
 
 #pragma mark - Private interface declaration
@@ -188,7 +189,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     
     // II
     EXApperyServiceOperation *second = [[EXApperyServiceOperation alloc] initWithCompletionHendler:^(EXApperyServiceOperation *operation) {
-        if (((NSHTTPURLResponse *)operation.responce).statusCode == 400) // just have to
+        if (operation.isSuccessfull)
         {
             [self changeLoggedStatusTo: YES];
             [self rememberUserName: userName password: password];
@@ -328,8 +329,58 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
                                                                       cachePolicy:NSURLRequestUseProtocolCachePolicy
                                                                   timeoutInterval:60.0];
     loadProjectOperation.projectMetadata = projectMetadata;
+    loadProjectOperation.request = loadProjectRequest;
     self.currentOperation = loadProjectOperation;
-    self.currentOperation.request = loadProjectRequest;
+    
+    [self.currentOperation start];
+}
+
+- (void) loadProjectForAppCode: (NSString *) appCode
+                       succeed: (void (^)(NSString *projectLocation, NSString *startPageName)) succeed
+                        failed: (void (^)(NSError *error)) failed
+{
+    NSAssert(appCode != nil, @"application code is undefined");
+    NSAssert(succeed != nil, @"succeed callback block is not specified");
+    NSAssert(failed != nil, @"failed callback block is not specified");
+    
+    EXApperyServiceOperationLoadProject *loadProjectOperation = [[EXApperyServiceOperationLoadProject alloc] initWithCompletionHendler: ^(EXApperyServiceOperation *operation) {
+        EXApperyServiceOperationLoadProject *loadProjectOperation = (EXApperyServiceOperationLoadProject *)operation;
+        
+        if (operation.isSuccessfull) {
+            succeed(loadProjectOperation.projectLocation, loadProjectOperation.projectStartPageName);
+        } else {
+            //404 (Invalid access code) - No app is associated with this code.
+            //403 (Invalid access code) - The code you have entered has expired or no longer valid.
+            
+            if(((NSHTTPURLResponse *)operation.responce).statusCode == 404)
+            {
+                NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
+                                          NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"No app is associated with this code", nil)};
+                operation.error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
+            }
+            else if(((NSHTTPURLResponse *)operation.responce).statusCode == 403)
+            {
+                NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
+                                          NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"The code you have entered has expired or no longer valid", nil)};
+                operation.error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
+            }
+            
+            failed (operation.error);
+        }
+        
+        self.currentOperation = nil;
+    }];
+    
+    NSString *loadProjectURLStr = [[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:[NSString stringWithFormat:SHARE_PROJECT_PATH_URL_STRING, appCode]];
+    NSURL *loadProjectURL = [NSURL URLWithString:loadProjectURLStr];
+    NSMutableURLRequest *loadProjectRequest = [NSMutableURLRequest requestWithURL:loadProjectURL
+                                                                      cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                                                  timeoutInterval:60.0];
+    
+    EXProjectMetadata *projectMetadata = [[EXProjectMetadata alloc] initWithMetadata: @{@"name": appCode}];
+    loadProjectOperation.projectMetadata = projectMetadata;
+    loadProjectOperation.request = loadProjectRequest;
+    self.currentOperation = loadProjectOperation;
     
     [self.currentOperation start];
 }

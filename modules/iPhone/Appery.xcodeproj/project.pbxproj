@@ -70,6 +70,7 @@
 		D4271EAF19D9ACD300B7DA2D /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = D4271EA819D9ACD300B7DA2D /* zip.c */; };
 		D4271EB019D9ACD300B7DA2D /* ZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = D4271EAB19D9ACD300B7DA2D /* ZipArchive.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		D427B0F01AF227940086DC08 /* ONOXMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = D427B0EF1AF227940086DC08 /* ONOXMLDocument.m */; };
+		D48DBD621B57B1B6002E8B7F /* NSStringMask.m in Sources */ = {isa = PBXBuildFile; fileRef = D48DBD5F1B57B1B6002E8B7F /* NSStringMask.m */; };
 		D49A19681B05E67200E9DEDC /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = D49A19651B05E67200E9DEDC /* logo.png */; };
 		D49A19691B05E67200E9DEDC /* logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D49A19661B05E67200E9DEDC /* logo@2x.png */; };
 		D49A196A1B05E67200E9DEDC /* logo~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D49A19671B05E67200E9DEDC /* logo~ipad.png */; };
@@ -236,6 +237,8 @@
 		D427B0ED1AF227940086DC08 /* Ono.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Ono.h; sourceTree = "<group>"; };
 		D427B0EE1AF227940086DC08 /* ONOXMLDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ONOXMLDocument.h; sourceTree = "<group>"; };
 		D427B0EF1AF227940086DC08 /* ONOXMLDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ONOXMLDocument.m; sourceTree = "<group>"; };
+		D48DBD5E1B57B1B6002E8B7F /* NSStringMask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringMask.h; sourceTree = "<group>"; };
+		D48DBD5F1B57B1B6002E8B7F /* NSStringMask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringMask.m; sourceTree = "<group>"; };
 		D49A19651B05E67200E9DEDC /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		D49A19661B05E67200E9DEDC /* logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo@2x.png"; sourceTree = "<group>"; };
 		D49A19671B05E67200E9DEDC /* logo~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo~ipad.png"; sourceTree = "<group>"; };
@@ -608,6 +611,7 @@
 		68CB4C5B15BFE38C000D80C3 /* libs */ = {
 			isa = PBXGroup;
 			children = (
+				D48DBD5D1B57B1B6002E8B7F /* NSStringMask */,
 				D427B0EC1AF227940086DC08 /* Ono */,
 				D4F8769E1AB994B700CE2C6F /* Plugins */,
 				683954C9174231CD001EC185 /* ViewDeck */,
@@ -734,6 +738,15 @@
 				D427B0EF1AF227940086DC08 /* ONOXMLDocument.m */,
 			);
 			path = Ono;
+			sourceTree = "<group>";
+		};
+		D48DBD5D1B57B1B6002E8B7F /* NSStringMask */ = {
+			isa = PBXGroup;
+			children = (
+				D48DBD5E1B57B1B6002E8B7F /* NSStringMask.h */,
+				D48DBD5F1B57B1B6002E8B7F /* NSStringMask.m */,
+			);
+			path = NSStringMask;
 			sourceTree = "<group>";
 		};
 		D4F8769E1AB994B700CE2C6F /* Plugins */ = {
@@ -1093,6 +1106,7 @@
 				687FBA4C15E63DDF008B956A /* EXMainWindowAppDelegate.m in Sources */,
 				D4F877021AB994B700CE2C6F /* CDVInAppBrowser.m in Sources */,
 				D4F876FC1AB994B700CE2C6F /* CDVAssetLibraryFilesystem.m in Sources */,
+				D48DBD621B57B1B6002E8B7F /* NSStringMask.m in Sources */,
 				687FBA5615E63DDF008B956A /* EXCredentialsManager.m in Sources */,
 				687FBA5715E63DDF008B956A /* EXUserSettings.m in Sources */,
 				687FBA5815E63DDF008B956A /* EXUserSettingsStorage.m in Sources */,

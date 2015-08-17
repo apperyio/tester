@@ -58,20 +58,11 @@ static NSString * const kDefaultStartPageName = @"index.html";
         return NO;
     }
     
-    NSString *libsLocation;
+    NSString *libsLocation = [NSString pathWithComponents:@[projectLocation, @"libs"]];
     
-    switch ([self.projectMetadata.type intValue]) {
-        case 1:
-            libsLocation = [NSString pathWithComponents:@[projectLocation, @"files/resources/lib"]];
-            break;
-            
-        case 7:
-        case 8:
-            libsLocation = [NSString pathWithComponents:@[projectLocation, @"libs"]];
-            break;
-            
-        default:
-            break;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (![fileManager fileExistsAtPath:libsLocation]){
+        libsLocation = [NSString pathWithComponents:@[projectLocation, @"files/resources/lib"]];
     }
     
     if ([self copyCordovaLibsToLocation: libsLocation error: &processError] == NO) {
@@ -175,8 +166,8 @@ static NSString * const kDefaultStartPageName = @"index.html";
     
     // Unzip priject zip archive
     ZipArchive *archiver = [[ZipArchive alloc] init];
-    if ([archiver UnzipOpenFile: zippedProjectFileFullPath]) {
-        if ([archiver UnzipFileTo: location overWrite: YES] == NO) {
+    if ([archiver UnzipOpenFile:zippedProjectFileFullPath]) {
+        if ([archiver UnzipFileTo:location overWrite:YES] == NO) {
             NSLog(@"Error was occured during unzipping project file");
             if (error) {
                 NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
@@ -189,13 +180,13 @@ static NSString * const kDefaultStartPageName = @"index.html";
     }
     
     // Remove saved zip archive
-    if ([fileManager removeItemAtPath: zippedProjectFileFullPath error: error] == NO) {
+    if ([fileManager removeItemAtPath:zippedProjectFileFullPath error:error] == NO) {
         // Not critical, it is possible to continue
         NSLog(@"Error was occured during zip archive deleting");
     }
     
     // Validation of the archive
-    if (![fileManager fileExistsAtPath: [location stringByAppendingString:@"/index.html"]]) {
+    if (![fileManager fileExistsAtPath:[location stringByAppendingString:@"/index.html"]]) {
         if (error) {
             NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
                                       NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Incorrect resources", nil)};
@@ -207,7 +198,7 @@ static NSString * const kDefaultStartPageName = @"index.html";
     return YES;
 }
 
-- (BOOL) copyCordovaLibsToLocation: (NSString *)destination error: (NSError **)error
+- (BOOL) copyCordovaLibsToLocation:(NSString *)destination error:(NSError **)error
 {
     NSLog(@"Coping www resources...");
     
@@ -229,7 +220,7 @@ static NSString * const kDefaultStartPageName = @"index.html";
         
         NSString *src = [wwwResource stringByAppendingPathComponent:entity];
         if ([fileManager copyItemAtPath:src toPath:dst error:error] == NO) {
-            return NO;
+            return NO;//!!!
         }
     }
     

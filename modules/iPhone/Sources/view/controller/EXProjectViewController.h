@@ -25,6 +25,8 @@
  */
 - (id) initWithProjectMetadata: (EXProjectMetadata *)projectMetadata;
 
+- (id) initWithProjectCode: (NSString *)projectCode;
+
 /**
  * Reference to the appery.io web service.
  * @required
