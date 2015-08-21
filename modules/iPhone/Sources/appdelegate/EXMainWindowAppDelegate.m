@@ -13,12 +13,15 @@
 #import "MBProgressHUD.h"
 #import "IIViewDeckController.h"
 
+#import "EXSignInViewController.h"
+
 #pragma mark - Private interface declaration
 
 @interface EXMainWindowAppDelegate ()
 
 @property (nonatomic, strong) EXApperyService *apperyService;
-@property (nonatomic, strong) EXLoginViewController *loginViewController;
+//@property (nonatomic, strong) EXLoginViewController *loginViewController;
+@property (nonatomic, strong) EXSignInViewController *loginViewController;
 @property (nonatomic, strong) IIViewDeckController *viewDeckController;
 
 - (BOOL)addSkipBackupAttributeToItemAtPath:(NSString *) filePathString;
@@ -51,9 +54,10 @@
     
     [self createAndConfigureApperyService];
     
-    self.loginViewController = [[EXLoginViewController alloc] initWithNibName:UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ?
-                                @"EXLoginViewController~iPad" : @"EXLoginViewController" bundle: nil];
+//    self.loginViewController = [[EXLoginViewController alloc] initWithNibName:UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ?
+//                                @"EXLoginViewController~iPad" : @"EXLoginViewController" bundle: nil];
     
+    self.loginViewController = [[EXSignInViewController alloc] initWithNibName:nil bundle:nil];
     self.loginViewController.apperyService = self.apperyService;
     
     self.loginViewController.projectViewController = [[EXProjectViewController alloc] initWithProjectMetadata: nil];
@@ -74,6 +78,7 @@
     self.viewDeckController.sizeMode = IIViewDeckLedgeSizeMode;
     
     self.window.rootViewController = self.viewDeckController;
+    
     [self.window makeKeyAndVisible];
     
     return YES;

@@ -10,6 +10,19 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		36150F9D1B85C0B600CFAC17 /* arrow_right@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 36150F9C1B85C0B600CFAC17 /* arrow_right@2x.png */; };
+		36150F9F1B85F63700CFAC17 /* logo@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 36150F9E1B85F63700CFAC17 /* logo@3x.png */; };
+		3629DEA01B832B050066D254 /* EXSignInViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3629DE9E1B832B050066D254 /* EXSignInViewController.m */; };
+		3629DEA11B832B050066D254 /* EXSignInViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3629DE9F1B832B050066D254 /* EXSignInViewController.xib */; };
+		3629DEA41B8334140066D254 /* EXSignInCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3629DEA31B8334140066D254 /* EXSignInCell.m */; };
+		3629DEA61B8334CD0066D254 /* EXSignInCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3629DEA51B8334CD0066D254 /* EXSignInCell.xib */; };
+		3629DEB61B8355360066D254 /* DeviceModelInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3629DEA91B8355360066D254 /* DeviceModelInfo.m */; };
+		3629DEB71B8355360066D254 /* NSObject+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 3629DEAB1B8355360066D254 /* NSObject+Utils.m */; };
+		3629DEB81B8355360066D254 /* NSString+XMLEscape.m in Sources */ = {isa = PBXBuildFile; fileRef = 3629DEAD1B8355360066D254 /* NSString+XMLEscape.m */; };
+		3629DEB91B8355360066D254 /* NSThread+BlockExecution.m in Sources */ = {isa = PBXBuildFile; fileRef = 3629DEAF1B8355360066D254 /* NSThread+BlockExecution.m */; };
+		3629DEBA1B8355360066D254 /* UIColor+hexColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 3629DEB11B8355360066D254 /* UIColor+hexColor.m */; };
+		3629DEBB1B8355360066D254 /* UIDevice+System.m in Sources */ = {isa = PBXBuildFile; fileRef = 3629DEB31B8355360066D254 /* UIDevice+System.m */; };
+		3629DEBC1B8355360066D254 /* UIView+LayerManagement.m in Sources */ = {isa = PBXBuildFile; fileRef = 3629DEB51B8355360066D254 /* UIView+LayerManagement.m */; };
 		370E327F1833E31100A88059 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 370E327D1833E31100A88059 /* iTunesArtwork */; };
 		370E32801833E31100A88059 /* iTunesArtwork@2x in Resources */ = {isa = PBXBuildFile; fileRef = 370E327E1833E31100A88059 /* iTunesArtwork@2x */; };
 		371DB9151833ADDF005A6461 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 371DB9141833ADDF005A6461 /* Images.xcassets */; };
@@ -19,7 +32,6 @@
 		683954D0174231CD001EC185 /* IISideController.m in Sources */ = {isa = PBXBuildFile; fileRef = 683954CB174231CD001EC185 /* IISideController.m */; };
 		683954D1174231CD001EC185 /* IIViewDeckController.m in Sources */ = {isa = PBXBuildFile; fileRef = 683954CD174231CD001EC185 /* IIViewDeckController.m */; };
 		683954D2174231CD001EC185 /* IIWrapController.m in Sources */ = {isa = PBXBuildFile; fileRef = 683954CF174231CD001EC185 /* IIWrapController.m */; };
-		683954F017452D0E001EC185 /* logo@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 683954EE17452D0E001EC185 /* logo@2x~ipad.png */; };
 		683954F617452D2C001EC185 /* menu.png in Resources */ = {isa = PBXBuildFile; fileRef = 683954F217452D2C001EC185 /* menu.png */; };
 		683954F717452D2C001EC185 /* menu@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 683954F317452D2C001EC185 /* menu@2x.png */; };
 		683954F817452D2C001EC185 /* reload.png in Resources */ = {isa = PBXBuildFile; fileRef = 683954F417452D2C001EC185 /* reload.png */; };
@@ -71,9 +83,7 @@
 		D4271EB019D9ACD300B7DA2D /* ZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = D4271EAB19D9ACD300B7DA2D /* ZipArchive.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		D427B0F01AF227940086DC08 /* ONOXMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = D427B0EF1AF227940086DC08 /* ONOXMLDocument.m */; };
 		D48DBD621B57B1B6002E8B7F /* NSStringMask.m in Sources */ = {isa = PBXBuildFile; fileRef = D48DBD5F1B57B1B6002E8B7F /* NSStringMask.m */; };
-		D49A19681B05E67200E9DEDC /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = D49A19651B05E67200E9DEDC /* logo.png */; };
 		D49A19691B05E67200E9DEDC /* logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D49A19661B05E67200E9DEDC /* logo@2x.png */; };
-		D49A196A1B05E67200E9DEDC /* logo~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D49A19671B05E67200E9DEDC /* logo~ipad.png */; };
 		D4B59F4019F7CB2F00649292 /* EXLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B59F3119F7CB2F00649292 /* EXLoginViewController.m */; };
 		D4B59F4119F7CB2F00649292 /* EXLoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D4B59F3219F7CB2F00649292 /* EXLoginViewController.xib */; };
 		D4B59F4219F7CB2F00649292 /* EXLoginViewController~iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D4B59F3319F7CB2F00649292 /* EXLoginViewController~iPad.xib */; };
@@ -147,6 +157,28 @@
 		1D6058910D05DD3D006BFB54 /* Appery.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Appery.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		36150F9C1B85C0B600CFAC17 /* arrow_right@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow_right@2x.png"; sourceTree = "<group>"; };
+		36150F9E1B85F63700CFAC17 /* logo@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo@3x.png"; sourceTree = "<group>"; };
+		3629DE9D1B832B050066D254 /* EXSignInViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXSignInViewController.h; sourceTree = "<group>"; };
+		3629DE9E1B832B050066D254 /* EXSignInViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSignInViewController.m; sourceTree = "<group>"; };
+		3629DE9F1B832B050066D254 /* EXSignInViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EXSignInViewController.xib; sourceTree = "<group>"; };
+		3629DEA21B8334140066D254 /* EXSignInCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXSignInCell.h; sourceTree = "<group>"; };
+		3629DEA31B8334140066D254 /* EXSignInCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSignInCell.m; sourceTree = "<group>"; };
+		3629DEA51B8334CD0066D254 /* EXSignInCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EXSignInCell.xib; sourceTree = "<group>"; };
+		3629DEA81B8355360066D254 /* DeviceModelInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceModelInfo.h; sourceTree = "<group>"; };
+		3629DEA91B8355360066D254 /* DeviceModelInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceModelInfo.m; sourceTree = "<group>"; };
+		3629DEAA1B8355360066D254 /* NSObject+Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+Utils.h"; sourceTree = "<group>"; };
+		3629DEAB1B8355360066D254 /* NSObject+Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Utils.m"; sourceTree = "<group>"; };
+		3629DEAC1B8355360066D254 /* NSString+XMLEscape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+XMLEscape.h"; sourceTree = "<group>"; };
+		3629DEAD1B8355360066D254 /* NSString+XMLEscape.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+XMLEscape.m"; sourceTree = "<group>"; };
+		3629DEAE1B8355360066D254 /* NSThread+BlockExecution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSThread+BlockExecution.h"; sourceTree = "<group>"; };
+		3629DEAF1B8355360066D254 /* NSThread+BlockExecution.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSThread+BlockExecution.m"; sourceTree = "<group>"; };
+		3629DEB01B8355360066D254 /* UIColor+hexColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+hexColor.h"; sourceTree = "<group>"; };
+		3629DEB11B8355360066D254 /* UIColor+hexColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+hexColor.m"; sourceTree = "<group>"; };
+		3629DEB21B8355360066D254 /* UIDevice+System.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIDevice+System.h"; sourceTree = "<group>"; };
+		3629DEB31B8355360066D254 /* UIDevice+System.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+System.m"; sourceTree = "<group>"; };
+		3629DEB41B8355360066D254 /* UIView+LayerManagement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+LayerManagement.h"; sourceTree = "<group>"; };
+		3629DEB51B8355360066D254 /* UIView+LayerManagement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+LayerManagement.m"; sourceTree = "<group>"; };
 		370E327D1833E31100A88059 /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; path = iTunesArtwork; sourceTree = "<group>"; };
 		370E327E1833E31100A88059 /* iTunesArtwork@2x */ = {isa = PBXFileReference; lastKnownFileType = file; path = "iTunesArtwork@2x"; sourceTree = "<group>"; };
 		371DB9141833ADDF005A6461 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Appery/Images.xcassets; sourceTree = SOURCE_ROOT; };
@@ -160,7 +192,6 @@
 		683954CD174231CD001EC185 /* IIViewDeckController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IIViewDeckController.m; sourceTree = "<group>"; };
 		683954CE174231CD001EC185 /* IIWrapController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IIWrapController.h; sourceTree = "<group>"; };
 		683954CF174231CD001EC185 /* IIWrapController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IIWrapController.m; sourceTree = "<group>"; };
-		683954EE17452D0E001EC185 /* logo@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo@2x~ipad.png"; sourceTree = "<group>"; };
 		683954F217452D2C001EC185 /* menu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu.png; sourceTree = "<group>"; };
 		683954F317452D2C001EC185 /* menu@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu@2x.png"; sourceTree = "<group>"; };
 		683954F417452D2C001EC185 /* reload.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reload.png; sourceTree = "<group>"; };
@@ -239,9 +270,7 @@
 		D427B0EF1AF227940086DC08 /* ONOXMLDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ONOXMLDocument.m; sourceTree = "<group>"; };
 		D48DBD5E1B57B1B6002E8B7F /* NSStringMask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringMask.h; sourceTree = "<group>"; };
 		D48DBD5F1B57B1B6002E8B7F /* NSStringMask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringMask.m; sourceTree = "<group>"; };
-		D49A19651B05E67200E9DEDC /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		D49A19661B05E67200E9DEDC /* logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo@2x.png"; sourceTree = "<group>"; };
-		D49A19671B05E67200E9DEDC /* logo~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo~ipad.png"; sourceTree = "<group>"; };
 		D4B59F3019F7CB2F00649292 /* EXLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLoginViewController.h; sourceTree = "<group>"; };
 		D4B59F3119F7CB2F00649292 /* EXLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLoginViewController.m; sourceTree = "<group>"; };
 		D4B59F3219F7CB2F00649292 /* EXLoginViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EXLoginViewController.xib; sourceTree = "<group>"; };
@@ -422,6 +451,27 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		3629DEA71B8355360066D254 /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				3629DEA81B8355360066D254 /* DeviceModelInfo.h */,
+				3629DEA91B8355360066D254 /* DeviceModelInfo.m */,
+				3629DEAA1B8355360066D254 /* NSObject+Utils.h */,
+				3629DEAB1B8355360066D254 /* NSObject+Utils.m */,
+				3629DEAC1B8355360066D254 /* NSString+XMLEscape.h */,
+				3629DEAD1B8355360066D254 /* NSString+XMLEscape.m */,
+				3629DEAE1B8355360066D254 /* NSThread+BlockExecution.h */,
+				3629DEAF1B8355360066D254 /* NSThread+BlockExecution.m */,
+				3629DEB01B8355360066D254 /* UIColor+hexColor.h */,
+				3629DEB11B8355360066D254 /* UIColor+hexColor.m */,
+				3629DEB21B8355360066D254 /* UIDevice+System.h */,
+				3629DEB31B8355360066D254 /* UIDevice+System.m */,
+				3629DEB41B8355360066D254 /* UIView+LayerManagement.h */,
+				3629DEB51B8355360066D254 /* UIView+LayerManagement.m */,
+			);
+			path = utils;
+			sourceTree = "<group>";
+		};
 		683954C9174231CD001EC185 /* ViewDeck */ = {
 			isa = PBXGroup;
 			children = (
@@ -443,6 +493,7 @@
 				687FBA1415E63DDF008B956A /* service */,
 				687FBA2A15E63DDF008B956A /* storage */,
 				687FBA3315E63DDF008B956A /* view */,
+				3629DEA71B8355360066D254 /* utils */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -517,6 +568,9 @@
 				687FBA3715E63DDF008B956A /* EXProjectMetadataCell.h */,
 				687FBA3815E63DDF008B956A /* EXProjectMetadataCell.m */,
 				687FBA3915E63DDF008B956A /* EXProjectMetadataCell.xib */,
+				3629DEA21B8334140066D254 /* EXSignInCell.h */,
+				3629DEA31B8334140066D254 /* EXSignInCell.m */,
+				3629DEA51B8334CD0066D254 /* EXSignInCell.xib */,
 			);
 			name = universal;
 			path = iPhone;
@@ -525,6 +579,9 @@
 		687FBA3A15E63DDF008B956A /* controller */ = {
 			isa = PBXGroup;
 			children = (
+				3629DE9D1B832B050066D254 /* EXSignInViewController.h */,
+				3629DE9E1B832B050066D254 /* EXSignInViewController.m */,
+				3629DE9F1B832B050066D254 /* EXSignInViewController.xib */,
 				D4B59F3019F7CB2F00649292 /* EXLoginViewController.h */,
 				D4B59F3119F7CB2F00649292 /* EXLoginViewController.m */,
 				D4B59F3219F7CB2F00649292 /* EXLoginViewController.xib */,
@@ -684,10 +741,9 @@
 		6F35CB9E14250B0600283C88 /* Login */ = {
 			isa = PBXGroup;
 			children = (
-				D49A19651B05E67200E9DEDC /* logo.png */,
+				36150F9C1B85C0B600CFAC17 /* arrow_right@2x.png */,
 				D49A19661B05E67200E9DEDC /* logo@2x.png */,
-				D49A19671B05E67200E9DEDC /* logo~ipad.png */,
-				683954EE17452D0E001EC185 /* logo@2x~ipad.png */,
+				36150F9E1B85F63700CFAC17 /* logo@3x.png */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -1067,17 +1123,18 @@
 				6885325317F9884F0095810A /* config.xml in Resources */,
 				D4B59F4219F7CB2F00649292 /* EXLoginViewController~iPad.xib in Resources */,
 				D4B59F4119F7CB2F00649292 /* EXLoginViewController.xib in Resources */,
+				36150F9D1B85C0B600CFAC17 /* arrow_right@2x.png in Resources */,
 				D4F220AB1B04A93800DF9D24 /* LaunchScreen.xib in Resources */,
 				6885330817F989320095810A /* scannerOverlay.xib in Resources */,
 				D4B59F4519F7CB2F00649292 /* EXProjectsMetadataViewController.xib in Resources */,
-				683954F017452D0E001EC185 /* logo@2x~ipad.png in Resources */,
+				36150F9F1B85F63700CFAC17 /* logo@3x.png in Resources */,
 				D4E346571A8A1FB5004C57B8 /* icon_jqm.png in Resources */,
+				3629DEA11B832B050066D254 /* EXSignInViewController.xib in Resources */,
 				D4E346531A8A1FB5004C57B8 /* icon_bootsrap@3x.png in Resources */,
 				D4E346581A8A1FB5004C57B8 /* icon_jqm@2x.png in Resources */,
-				D49A196A1B05E67200E9DEDC /* logo~ipad.png in Resources */,
 				683954F617452D2C001EC185 /* menu.png in Resources */,
-				D49A19681B05E67200E9DEDC /* logo.png in Resources */,
 				683954F717452D2C001EC185 /* menu@2x.png in Resources */,
+				3629DEA61B8334CD0066D254 /* EXSignInCell.xib in Resources */,
 				683954F817452D2C001EC185 /* reload.png in Resources */,
 				D49A19691B05E67200E9DEDC /* logo@2x.png in Resources */,
 				D4E346551A8A1FB5004C57B8 /* icon_ionic@2x.png in Resources */,
@@ -1106,6 +1163,8 @@
 				687FBA4C15E63DDF008B956A /* EXMainWindowAppDelegate.m in Sources */,
 				D4F877021AB994B700CE2C6F /* CDVInAppBrowser.m in Sources */,
 				D4F876FC1AB994B700CE2C6F /* CDVAssetLibraryFilesystem.m in Sources */,
+				3629DEBA1B8355360066D254 /* UIColor+hexColor.m in Sources */,
+				3629DEA01B832B050066D254 /* EXSignInViewController.m in Sources */,
 				D48DBD621B57B1B6002E8B7F /* NSStringMask.m in Sources */,
 				687FBA5615E63DDF008B956A /* EXCredentialsManager.m in Sources */,
 				687FBA5715E63DDF008B956A /* EXUserSettings.m in Sources */,
@@ -1114,6 +1173,7 @@
 				D4F876F51AB994B700CE2C6F /* CDVLogger.m in Sources */,
 				D4271EAF19D9ACD300B7DA2D /* zip.c in Sources */,
 				D427B0F01AF227940086DC08 /* ONOXMLDocument.m in Sources */,
+				3629DEBC1B8355360066D254 /* UIView+LayerManagement.m in Sources */,
 				D4F877041AB994B700CE2C6F /* CDVCapture.m in Sources */,
 				687FBA5915E63DDF008B956A /* EXProjectMetadataCell.m in Sources */,
 				687FBA7415E6492F008B956A /* GradientButton.m in Sources */,
@@ -1122,18 +1182,23 @@
 				D4271EAC19D9ACD300B7DA2D /* ioapi.c in Sources */,
 				D4F876FB1AB994B700CE2C6F /* CDVNotification.m in Sources */,
 				D4F876F61AB994B700CE2C6F /* CDVContact.m in Sources */,
+				3629DEB81B8355360066D254 /* NSString+XMLEscape.m in Sources */,
 				D4271EB019D9ACD300B7DA2D /* ZipArchive.m in Sources */,
 				D4F876F21AB994B700CE2C6F /* CDVCamera.m in Sources */,
 				D4F877051AB994B700CE2C6F /* CDVConnection.m in Sources */,
 				D4F876F71AB994B700CE2C6F /* CDVContacts.m in Sources */,
 				D4F876F41AB994B700CE2C6F /* UIImage+CropScaleOrientation.m in Sources */,
+				3629DEBB1B8355360066D254 /* UIDevice+System.m in Sources */,
 				D4B59F4419F7CB2F00649292 /* EXProjectsMetadataViewController.m in Sources */,
 				D4271EAE19D9ACD300B7DA2D /* unzip.c in Sources */,
 				D4F877001AB994B700CE2C6F /* CDVLocation.m in Sources */,
 				D4F876FF1AB994B700CE2C6F /* CDVFileTransfer.m in Sources */,
 				D4F877031AB994B700CE2C6F /* CDVSound.m in Sources */,
 				683954D0174231CD001EC185 /* IISideController.m in Sources */,
+				3629DEB91B8355360066D254 /* NSThread+BlockExecution.m in Sources */,
+				3629DEB61B8355360066D254 /* DeviceModelInfo.m in Sources */,
 				D4B59F4719F7CB2F00649292 /* EXProjectViewController.m in Sources */,
+				3629DEB71B8355360066D254 /* NSObject+Utils.m in Sources */,
 				683954D1174231CD001EC185 /* IIViewDeckController.m in Sources */,
 				683954D2174231CD001EC185 /* IIWrapController.m in Sources */,
 				D4F876FE1AB994B700CE2C6F /* CDVLocalFilesystem.m in Sources */,
@@ -1154,6 +1219,7 @@
 				D4F876FD1AB994B700CE2C6F /* CDVFile.m in Sources */,
 				68A76D1917461ED8000603E1 /* EXApperyServiceOperationLoadProjectsMetadata.m in Sources */,
 				D4F877011AB994B700CE2C6F /* CDVGlobalization.m in Sources */,
+				3629DEA41B8334140066D254 /* EXSignInCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1192,7 +1258,6 @@
 					"\"$(SDKROOT)/usr/include/libxml2\"",
 				);
 				INFOPLIST_FILE = "settings/Appery-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SOURCE_ROOT)/libs/",
@@ -1233,7 +1298,6 @@
 					"\"$(SDKROOT)/usr/include/libxml2\"",
 				);
 				INFOPLIST_FILE = "settings/Appery-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SOURCE_ROOT)/libs/",
@@ -1269,7 +1333,7 @@
 					"\"$(BUILT_PRODUCTS_DIR)\"",
 					"\"$(SDKROOT)/usr/include/libxml2\"",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PROVISIONING_PROFILE = "";
@@ -1300,7 +1364,6 @@
 					"\"$(SDKROOT)/usr/include/libxml2\"",
 				);
 				INFOPLIST_FILE = "settings/Appery-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SOURCE_ROOT)/libs/",
@@ -1337,7 +1400,7 @@
 					"\"$(BUILT_PRODUCTS_DIR)\"",
 					"\"$(SDKROOT)/usr/include/libxml2\"",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1361,7 +1424,7 @@
 					"\"$(BUILT_PRODUCTS_DIR)\"",
 					"\"$(SDKROOT)/usr/include/libxml2\"",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PROVISIONING_PROFILE = "";
@@ -1387,7 +1450,7 @@
 					"\"$(BUILT_PRODUCTS_DIR)\"",
 					"\"$(SDKROOT)/usr/include/libxml2\"",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PROVISIONING_PROFILE = "";
@@ -1418,7 +1481,6 @@
 					"\"$(SDKROOT)/usr/include/libxml2\"",
 				);
 				INFOPLIST_FILE = "settings/Appery-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SOURCE_ROOT)/libs/",

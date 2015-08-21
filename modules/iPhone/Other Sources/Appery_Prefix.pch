@@ -7,6 +7,18 @@
     #import <UIKit/UIKit.h>
 #endif
 
+#ifdef __OBJC__
+# ifndef NDEBUG
+#  ifndef DLog
+#   define DLog(fmt, ...) NSLog((@"%.255s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
+#  endif
+# else
+#  ifndef DLog
+#   define DLog(...) /* */
+#  endif
+# endif
+#endif
+
 #define APPERI_SERVICE_ERROR_DOMAIN @"apperyServiceErrorDomain"
 
 #define SYSTEM_VERSION_COMPARE(v) ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch])
