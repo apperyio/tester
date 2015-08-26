@@ -7,7 +7,6 @@
 //
 
 #import "EXMainWindowAppDelegate.h"
-#import "EXLoginViewController.h"
 #import "EXApperyService.h"
 #import "EXUserSettingsStorage.h"
 #import "MBProgressHUD.h"
@@ -20,15 +19,12 @@
 @interface EXMainWindowAppDelegate ()
 
 @property (nonatomic, strong) EXApperyService *apperyService;
-//@property (nonatomic, strong) EXLoginViewController *loginViewController;
 @property (nonatomic, strong) EXSignInViewController *loginViewController;
 @property (nonatomic, strong) IIViewDeckController *viewDeckController;
 
 - (BOOL)addSkipBackupAttributeToItemAtPath:(NSString *) filePathString;
 - (void)createAndConfigureApperyService;
 - (BOOL)updateBaseUrl;
-- (BOOL)shouldLoginToAppery;
-- (void)loginLastUserToAppery;
 - (void)hideAllHuds;
 - (void)cancelApperyServiceActivity;
 - (void)navigateToStartPage;
@@ -51,28 +47,12 @@
         [[NSFileManager defaultManager] createDirectoryAtPath:projectsLocation withIntermediateDirectories:NO attributes:nil error:&error];
     
     [self addSkipBackupAttributeToItemAtPath:projectsLocation];
-    
     [self createAndConfigureApperyService];
     
-//    self.loginViewController = [[EXLoginViewController alloc] initWithNibName:UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ?
-//                                @"EXLoginViewController~iPad" : @"EXLoginViewController" bundle: nil];
-    
-    self.loginViewController = [[EXSignInViewController alloc] initWithNibName:nil bundle:nil];
-    self.loginViewController.apperyService = self.apperyService;
-    
-    self.loginViewController.projectViewController = [[EXProjectViewController alloc] initWithProjectMetadata: nil];
-    self.loginViewController.projectViewController.apperyService = self.apperyService;
-    self.loginViewController.projectViewController.wwwFolderName = @"www";
-    self.loginViewController.projectViewController.startPage = @"index.html";
-    
-    EXProjectsMetadataViewController *projectsMetadataViewController = [[EXProjectsMetadataViewController alloc]
-                                                                        initWithNibName:NSStringFromClass([EXProjectsMetadataViewController class]) bundle:nil];
-    projectsMetadataViewController.apperyService = self.apperyService;
-    self.loginViewController.projectViewController.projectsMetadataViewController = projectsMetadataViewController;
+    self.loginViewController = [[EXSignInViewController alloc] initWithNibName:nil bundle:nil service:self.apperyService];
     
     UINavigationController *rootNavigationController = [[UINavigationController alloc] initWithRootViewController: self.loginViewController];
-    
-    self.viewDeckController = [[IIViewDeckController alloc] initWithCenterViewController: rootNavigationController];
+    self.viewDeckController = [[IIViewDeckController alloc] initWithCenterViewController:rootNavigationController];
     self.viewDeckController.navigationControllerBehavior = IIViewDeckNavigationControllerContained;
     self.viewDeckController.elastic = NO;
     self.viewDeckController.sizeMode = IIViewDeckLedgeSizeMode;
@@ -94,11 +74,7 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    if ([self shouldLoginToAppery] && ![self updateBaseUrl]) {
-        [self loginLastUserToAppery];
-    } else {
-        [self navigateToStartPage];
-    }
+    [self navigateToStartPage];
 }
 
 #pragma mark - Private interface implementation
@@ -140,37 +116,6 @@
     self.apperyService.baseUrl = [[NSUserDefaults standardUserDefaults] valueForKey: @"baseURL"];
     
     return ![self.apperyService.baseUrl isEqualToString:oldBaseUrl];
-}
-
-- (BOOL)shouldLoginToAppery
-{
-    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
-    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
-    
-    return lastUserSettings.shouldRememberMe;
-}
-
-- (void)loginLastUserToAppery
-{
-    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
-    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
-    NSString *password = [EXCredentialsManager retreivePasswordForUser: lastUserSettings.userName];
-    
-    [self.apperyService loginWithUsername: lastUserSettings.userName
-                                 password: password
-                                  succeed: ^(NSArray *projectsMetadata) {
-                                      EXProjectsMetadataViewController *pmvc = ((EXProjectsMetadataViewController *)self.loginViewController.projectViewController.projectsMetadataViewController);
-                                      pmvc.rootTableView.userInteractionEnabled = NO;
-                                      [self.loginViewController updateProjectsMetadata:projectsMetadata];
-                                      pmvc.rootTableView.userInteractionEnabled = YES;
-                                      
-                                      NSLog(@"User %@ login to %@", lastUserSettings.userName, self.apperyService.baseUrl);
-                                  }
-                                   failed:^(NSError *error) {
-                                       [self navigateToStartPage];
-                                       
-                                       NSLog(@"User %@ can't login to %@", lastUserSettings.userName, self.apperyService.baseUrl);
-                                   }];
 }
 
 - (void)hideAllHuds

@@ -14,6 +14,9 @@
 #import "EXUserSettingsStorage.h"
 #import "EXCredentialsManager.h"
 
+#import "EXProjectsMetadataViewController.h"
+#import "NSObject+Utils.h"
+
 #pragma mark - UI constants
 
 static const CGFloat kLeftViewWidth = 270;
@@ -24,61 +27,82 @@ static const CGFloat kNavigationBarHeight = 44;
 
 static NSString *const kDefaultWebResourceFolder = @"www";
 
-@interface EXProjectViewController () <EXProjectsObserver>
-{
-    BOOL isShare;
-}
+@interface EXProjectViewController ()
 
-@property (nonatomic, retain) EXProjectMetadata *_projectMetadata;
-@property (nonatomic, copy) NSString *_appCode;
-@property (nonatomic, retain) UINavigationController *projectNavigationController;
+@property (nonatomic, retain) EXProjectMetadata *projectMetadata;
+@property (nonatomic, copy) NSString *appCode;
+@property (nonatomic, assign) BOOL isShare;
+
 
 @end
 
 @implementation EXProjectViewController
 
+@synthesize apperyService = _apperyService;
+@synthesize slideController = _slideController;
+@synthesize projectMetadata = _projectMetadata;
+@synthesize appCode = _appCode;
+@synthesize isShare = _isShare;
+
 #pragma mark - Lifecycle
 
-- (id) initWithProjectMetadata: (EXProjectMetadata *)projectMetadata
-{
+- (instancetype)initWithService:(EXApperyService *)service projectMetadata:(EXProjectMetadata *)projectMetadata {
     self = [super init];
-    if (self) {
-        self.title = projectMetadata == nil ? [self defaultTitle] : projectMetadata.name;
-        self._projectMetadata = projectMetadata;
+    if (self == nil) {
+        return nil;
     }
-    return self;
-}
-
-- (id) initWithProjectCode: (NSString *)projectCode
-{
-    self = [super init];
-    if (self) {
-        self.title = projectCode == nil ? [self defaultTitle] : projectCode;
-        isShare = YES;
-        self._appCode = projectCode;
-    }
-    return self;
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
     
-    [self.projectsMetadataViewController addProjectsObserver: self];
+    _apperyService = service;
+    _projectMetadata = projectMetadata;
+    _isShare = NO;
+    return self;
+}
+
+- (instancetype)initWithService:(EXApperyService *)service projectCode:(NSString *)projectCode {
+    self = [super init];
+    if (self == nil) {
+        return nil;
+    }
+    
+    _apperyService = service;
+    _appCode = projectCode;
+    _isShare = YES;
+    return self;
+}
+
+#pragma mark - View management
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self.navigationController setNavigationBarHidden:NO animated:NO];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [self.navigationController setNavigationBarHidden:YES animated:NO];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     [self attachSlideViewController];
 }
 
-- (void) viewDidDisappear: (BOOL)animated
-{
+- (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear: animated];
-
-    [self.projectsMetadataViewController removeProjectsObserver: self];
     [self detachSlideViewController];
 }
 
-- (void) viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
+    
+    NSString *title = nil;
+    if (self.projectMetadata != nil) {
+        title = self.projectMetadata.name;
+    }
+    else if (self.appCode.length > 0) {
+        title = self.appCode;
+    }
+    self.title = (title.length == 0) ? [self defaultTitle] : title;
     
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRotate:) name:UIDeviceOrientationDidChangeNotification object:nil];
@@ -86,54 +110,35 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     [self configureNavigationBar];
 }
 
-- (void) dealloc
-{
+- (void)didReceiveMemoryWarning {
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [super didReceiveMemoryWarning];
 }
 
 #pragma mark - Public interface implementation
 
-- (void) loadProjectsMetadata
-{
-    [self.projectsMetadataViewController loadProjectsMetadataCompletion:^(BOOL succeeded) {
-        if ([self.title isEqualToString:[self defaultTitle]]) {
-            [self.viewDeckController openLeftViewAnimated:YES];
-        }
-    }];
-}
-
-#pragma mark - EXProjectsObserver protocol implementation
-
-- (void) projectMetadataWasSelected: (EXProjectMetadata *)projectMetadata
-{
-    [self loadProjectForMetadata: projectMetadata];
-}
-
-- (void) logoutCompleted
-{
-    [self.viewDeckController closeLeftViewAnimated:NO];
-    self.viewDeckController.leftController = nil;
-    [self.navigationController popToRootViewControllerAnimated:NO];
+- (void) updateContent {
+    [self reloadProject];
 }
 
 #pragma mark - Private interface implementation
 
-- (NSString *)defaultTitle
-{
+- (NSString *)defaultTitle {
     return NSLocalizedString(@"Select app", @"App view controller | Default title");
 }
 
-- (void) configureNavigationBar
-{
+- (void) configureNavigationBar {
     UIBarButtonItem *projectsButton = nil;
     
-    if (isShare) {
+    if (self.appCode.length > 0) {
         projectsButton = [[UIBarButtonItem alloc] initWithTitle:@"Back"
                                                           style:UIBarButtonItemStylePlain
                                                          target:self
                                                          action:@selector(back)];
-    } else {
+    }
+    else {
         projectsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"menu"]
                                                           style:UIBarButtonItemStylePlain
                                                          target:self
@@ -149,117 +154,151 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     self.navigationItem.rightBarButtonItem = reloadProjectButton;
 }
 
-- (void) back
-{
+- (void) back {
     [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
-- (void) showProjectsViewController
-{
-    [self.viewDeckController toggleLeftViewAnimated:YES];
+- (void)showProjectsViewController {
+    if (self.slideController != nil) {
+        [self.viewDeckController toggleLeftViewAnimated:YES];
+    }
+    else {
+        [self.navigationController popViewControllerAnimated:YES];
+    }
 }
 
-- (void) reloadProject
-{
-    if (isShare) {
-        [self loadProjectForAppCode:self._appCode];
-        
+- (void)reloadProject {
+    if (self.isShare && self.appCode.length > 0) {
+        [self loadProjectForAppCode:self.appCode];
         return;
     }
-    if (self._projectMetadata) {
-        [self loadProjectForMetadata: self._projectMetadata];
-    } else {        
-        [[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"Info", nil)
-                                    message: NSLocalizedString(@"Please select an app from the app list", nil)
-                                   delegate: nil
-                          cancelButtonTitle: NSLocalizedString(@"Ok", nil)
-                          otherButtonTitles: nil] show];
-        
-        NSLog(@"App list was reloaded");
+    
+    if (self.projectMetadata != nil) {
+        [self loadProjectForMetadata:self.projectMetadata];
+        return;
     }
+
+    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Info", nil)
+                                message:NSLocalizedString(@"Please select an app from the app list", nil)
+                               delegate:nil
+                      cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                      otherButtonTitles:nil] show];
 }
 
-- (void) loadProjectForAppCode:(NSString *)appCode
-{
+- (void)loadProjectForAppCode:(NSString *)appCode {
+    if (appCode.length == 0) {
+        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Application code is not given.", @"Application code is not given.")
+                                    message:NSLocalizedString(@"There is no application code to load the project.", @"There is no application code to load the project.")
+                                   delegate:nil
+                          cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                          otherButtonTitles:nil] show];
+        return;
+    }
+    
     UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
     MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
     progressHud.labelText = NSLocalizedString(@"Loading app", @"Loading app progress hud title");
     
-    [self.apperyService   loadProjectForAppCode:appCode
-                                        succeed:^(NSString *projectLocation, NSString *startPageName) {
-                                            [progressHud hide: NO];
-                                            
-                                            EXProjectViewController *projectViewController = [[EXProjectViewController alloc] initWithProjectCode:appCode];
-                                            projectViewController.apperyService = self.apperyService;
-                                            projectViewController.wwwFolderName = projectLocation;
-                                            projectViewController.startPage = startPageName;
-                                            
-                                            NSMutableArray *controllers = [NSMutableArray arrayWithArray: self.navigationController.viewControllers];
-                                            [controllers removeLastObject];
-                                            [controllers addObject: projectViewController];
-                                            
-                                            [self.navigationController setViewControllers: controllers animated: NO];
-                                            
-                                            NSLog(@"App %@ was load", appCode);
+    __weak EXApperyService *weakService = self.apperyService;
+    [self.apperyService loadProjectForAppCode:appCode
+                                      succeed:^(NSString *projectLocation, NSString *startPageName) {
+                                          DLog(@"The project for code: '%@' has been loaded.", appCode);
+                                          dispatch_async(dispatch_get_main_queue(), ^{
+                                              EXApperyService *strongService = weakService;
+                                              [progressHud hide:NO];
+                                              EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:strongService projectCode:appCode];
+                                              pvc.wwwFolderName = projectLocation;
+                                              pvc.startPage = startPageName;
+                                              pvc.slideController = self.slideController;
+                                              if (self.slideController != nil) {
+                                                  UINavigationController *nc = [self.slideController as:[UINavigationController class]];
+                                                  if (nc.viewControllers.count > 0) {
+                                                      EXProjectsMetadataViewController *pmvc = [nc.viewControllers[0] as:[EXProjectsMetadataViewController class]];
+                                                      pmvc.delegate = pvc;
+                                                  }
+                                              }
+
+                                              
+                                              NSMutableArray *controllers = [NSMutableArray arrayWithArray:self.navigationController.viewControllers];
+                                              [controllers removeLastObject];
+                                              [controllers addObject:pvc];
+                                              
+                                              [self.navigationController setViewControllers: controllers animated: NO];
+                                          });
                                         } failed:^(NSError *error) {
-                                            [progressHud hide: NO];
-                                            
-                                            [[[UIAlertView alloc] initWithTitle: error.localizedDescription
-                                                                        message: error.localizedRecoverySuggestion
-                                                                       delegate: nil
-                                                              cancelButtonTitle: NSLocalizedString(@"Ok", nil)
-                                                              otherButtonTitles: nil] show];
-                                            
-                                            NSLog(@"App loading failed due to: %@", error.localizedDescription);
+                                            DLog(@"The project for code: '%@' has NOT been loaded. Error: %@.", appCode, [error localizedDescription]);
+                                            dispatch_async(dispatch_get_main_queue(), ^{
+                                                [progressHud hide:NO];
+                                                [[[UIAlertView alloc] initWithTitle:error.localizedDescription
+                                                                            message:error.localizedRecoverySuggestion
+                                                                           delegate:nil
+                                                                  cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                                                                  otherButtonTitles:nil] show];
+                                            });
                                         }
      ];
 }
 
-- (void) loadProjectForMetadata: (EXProjectMetadata *)projectMetadata
-{
-    NSAssert(projectMetadata != nil, @"projectMetadata is not defined");
-    NSAssert(self.apperyService != nil, @"apperyService property is not defined");
+- (void)loadProjectForMetadata:(EXProjectMetadata *)projectMetadata {
+    if (projectMetadata == nil) {
+        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Project's metadata is not given.", @"Project's metadata is not given.")
+                                    message:NSLocalizedString(@"There is no project's metadata to load the project.", @"There is no project's metadata to load the project.")
+                                   delegate:nil
+                          cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                          otherButtonTitles:nil] show];
+        return;
+    }
     
-    [self.viewDeckController closeLeftViewAnimated:YES];
+    if (self.slideController != nil) {
+        [self.viewDeckController closeLeftViewAnimated:YES];
+    }
     
     UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
     MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
     progressHud.labelText = NSLocalizedString(@"Loading app", @"Loading app progress hud title");
     
+    __weak EXApperyService *weakService = self.apperyService;
     void(^reloadProject)(void) = ^{
-        [self.apperyService loadProjectForMetadata: projectMetadata
+        [self.apperyService loadProjectForMetadata:projectMetadata
             succeed:^(NSString *projectLocation, NSString *startPageName) {
-                [progressHud hide: NO];
+                DLog(@"The project with name '%@' has been loaded.", projectMetadata.name);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [progressHud hide: NO];
+                    EXApperyService *strongService = weakService;
+                    EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:strongService projectMetadata:projectMetadata];
+                    pvc.wwwFolderName = projectLocation;
+                    pvc.startPage = startPageName;
+                    pvc.slideController = self.slideController;
+                    if (self.slideController != nil) {
+                        UINavigationController *nc = [self.slideController as:[UINavigationController class]];
+                        if (nc.viewControllers.count > 0) {
+                            EXProjectsMetadataViewController *pmvc = [nc.viewControllers[0] as:[EXProjectsMetadataViewController class]];
+                            pmvc.delegate = pvc;
+                        }
+                    }
                 
-                EXProjectViewController *projectViewController = [[EXProjectViewController alloc] initWithProjectMetadata: projectMetadata];
-                projectViewController.apperyService = self.apperyService;
-                projectViewController.projectsMetadataViewController = self.projectsMetadataViewController;
-                projectViewController.wwwFolderName = projectLocation;
-                projectViewController.startPage = startPageName;
-                
-                NSMutableArray *controllers = [NSMutableArray arrayWithArray: self.navigationController.viewControllers];
-                [controllers removeLastObject];
-                [controllers addObject: projectViewController];
-                
-                [self.navigationController setViewControllers: controllers animated: NO];
-                
-                NSLog(@"App %@ was load", projectMetadata.name);
+                    NSMutableArray *controllers = [NSMutableArray arrayWithArray:self.navigationController.viewControllers];
+                    [controllers removeLastObject];
+                    [controllers addObject:pvc];
+                    
+                    [self.navigationController setViewControllers:controllers animated:NO];
+                });
             } failed:^(NSError *error) {
-                [progressHud hide: NO];
-                
-                [[[UIAlertView alloc] initWithTitle: error.localizedDescription
-                                            message: error.localizedRecoverySuggestion
-                                           delegate: nil
-                                  cancelButtonTitle: NSLocalizedString(@"Ok", nil)
-                                  otherButtonTitles: nil] show];
-                
-                NSLog(@"App loading failed due to: %@", error.localizedDescription);
+                DLog(@"The project with name: '%@' has NOT been loaded. Error: %@.", projectMetadata.name, error.localizedDescription);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [progressHud hide: NO];
+                    
+                    [[[UIAlertView alloc] initWithTitle:error.localizedDescription
+                                                message:error.localizedRecoverySuggestion
+                                               delegate:nil
+                                      cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                                      otherButtonTitles:nil] show];
+                });
             }
          ];
     };
     
     if (self.apperyService.isLoggedOut) {
-        
         EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
         EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
         NSString *password = [EXCredentialsManager retreivePasswordForUser: lastUserSettings.userName];
@@ -267,18 +306,20 @@ static NSString *const kDefaultWebResourceFolder = @"www";
         [self.apperyService loginWithUsername:lastUserSettings.userName password:password succeed:^(NSArray *projectsMetadata) {
             reloadProject();
         } failed:^(NSError *error) {
-            [progressHud hide: NO];
-            
-            [self.apperyService quickLogout];
-            [self logoutCompleted];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [progressHud hide: NO];
+                EXApperyService *strongService = weakService;
+                [strongService quickLogout];
+                [self masterControllerDidLogout];
+            });
         }];
-    } else {
+    }
+    else {
         reloadProject();
     }
 }
 
-- (void) didRotate:(NSNotification *)notification
-{
+- (void)didRotate:(NSNotification *)notification {
     self.viewDeckController.leftSize = [self calculateLeftViewSize];
 
     if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
@@ -288,32 +329,44 @@ static NSString *const kDefaultWebResourceFolder = @"www";
         
         if (UIDeviceOrientationIsPortrait(orientation)) {
             self.view.frame = CGRectMake(0, 0, screen.width, screen.height - kStatusBarHeight - kNavigationBarHeight);
-        } else {
+        }
+        else {
             self.view.frame = CGRectMake(0, 0, screen.height, screen.width - kStatusBarHeight - kNavigationBarHeight);
         }
     }
 }
 
-- (CGFloat)calculateLeftViewSize
-{
+- (CGFloat)calculateLeftViewSize {
     CGFloat centerViewLedge = self.view.bounds.size.width > kLeftViewWidth ? 0 : kCenterViewLedge;
     return self.view.bounds.size.width - kLeftViewWidth + centerViewLedge;
 }
 
-- (void)attachSlideViewController
-{
-    self.viewDeckController.leftController = self.projectsMetadataViewController;
-    self.viewDeckController.leftSize = [self calculateLeftViewSize];
-    
-    if ([self.wwwFolderName isEqualToString:kDefaultWebResourceFolder]) {
-        [self.viewDeckController openLeftViewAnimated:YES];
+- (void)attachSlideViewController {
+    if (self.slideController != nil) {
+        self.viewDeckController.leftController = self.slideController;
+        self.viewDeckController.leftSize = [self calculateLeftViewSize];
+        
+        if ([self.wwwFolderName isEqualToString:kDefaultWebResourceFolder]) {
+            [self.viewDeckController openLeftViewAnimated:YES];
+        }
     }
 }
 
-- (void)detachSlideViewController
-{
+- (void)detachSlideViewController {
     [self.viewDeckController closeLeftView];
     self.viewDeckController.leftController = nil;
+}
+
+#pragma mark - EXProjectControllerActionDelegate
+
+- (void)masterControllerDidLogout {
+    [self.viewDeckController closeLeftViewAnimated:NO];
+    self.viewDeckController.leftController = nil;
+    [self.navigationController popToRootViewControllerAnimated:NO];
+}
+
+- (void)masterControllerDidLoadMetadata:(EXProjectMetadata *)metadata {
+    [self loadProjectForMetadata:metadata];
 }
 
 @end

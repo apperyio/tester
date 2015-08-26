@@ -21,6 +21,8 @@ static const NSInteger kAppCodeTextFieldTag = 111;
 
 @interface EXSignInViewController () <UITableViewDataSource, UITableViewDelegate, EXSignInCellActionDelegate, UITextFieldDelegate>
 
+@property (nonatomic, strong, readwrite) EXApperyService *apperyService;
+
 @property (nonatomic, weak) IBOutlet UIScrollView *svScroll;
 @property (nonatomic, weak) IBOutlet UIView *vContent;
 
@@ -39,11 +41,12 @@ static const NSInteger kAppCodeTextFieldTag = 111;
 - (void)keyboardWillShowNotification:(NSNotification *)notification;
 - (void)keyboardWillHideNotification:(NSNotification *)notification;
 
+- (void) composeUIForMetadata:(NSArray *)metadata appCode:(NSString *)appCode location:(NSString *)location startPage:(NSString *)startPage;
+
 @end
 
 @implementation EXSignInViewController
 
-@synthesize projectViewController = _projectViewController;
 @synthesize apperyService = _apperyService;
 
 @synthesize svScroll = _svScroll;
@@ -62,14 +65,19 @@ static const NSInteger kAppCodeTextFieldTag = 111;
 #pragma mark - Lifecycle
 
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    self = [super initWithNibName: nibNameOrNil bundle: nibBundleOrNil];
+    return [self initWithNibName:nibNameOrNil bundle:nibBundleOrNil service:nil];
+}
+
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil service:(EXApperyService *)service {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self == nil) {
         return nil;
     }
-   
+    
+    _apperyService = service;
     _mask = [[NSStringMask alloc] initWithPattern:@"(\\d{3})-(\\d{3})-(\\d{3})" placeholder:@"_"];
     self.edgesForExtendedLayout = UIRectEdgeNone;
-
+    
     return self;
 }
 
@@ -79,7 +87,6 @@ static const NSInteger kAppCodeTextFieldTag = 111;
     [super viewDidLoad];
 
     self.title = NSLocalizedString(@"Login", @"EXSignInViewController title");
-    [self.navigationController setNavigationBarHidden:YES animated:NO];
     self.view.backgroundColor = [UIColor colorFromHEXString:@"#FBFBFB"];
     
     self.svScroll.backgroundColor = [UIColor clearColor];
@@ -117,6 +124,7 @@ static const NSInteger kAppCodeTextFieldTag = 111;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    [self.navigationController setNavigationBarHidden:YES animated:NO];
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     [center addObserver:self selector:@selector(keyboardWillShowNotification:) name:UIKeyboardWillShowNotification object:nil];
     [center addObserver:self selector:@selector(keyboardWillHideNotification:) name:UIKeyboardWillHideNotification object:nil];
@@ -136,15 +144,6 @@ static const NSInteger kAppCodeTextFieldTag = 111;
     });
 }
 
-#pragma mark - Public class logic
-
-- (void)updateProjectsMetadata:(NSArray *)projectsMetadata {
-    EXProjectViewController *nextViewController = (EXProjectViewController *)[self nextViewController];
-    if ([nextViewController.projectsMetadataViewController respondsToSelector: @selector(initializeProjectsMetadata:)]) {
-        [nextViewController.projectsMetadataViewController initializeProjectsMetadata:projectsMetadata];
-    }
-}
-
 #pragma mark - Private class logic
 
 - (void) signIn {
@@ -155,31 +154,33 @@ static const NSInteger kAppCodeTextFieldTag = 111;
     [self.apperyService quickLogout];
     __weak EXApperyService *weakService = self.apperyService;
     [self.apperyService loginWithUsername:self.uname password:self.pwd succeed: ^(NSArray *projectsMetadata) {
-        [progressHud hide: YES];
-        
-        EXApperyService *strongService = weakService;
-        [self saveUserSettings];
-        
-        self.uname = nil;
-        self.pwd = nil;
-        
-        [self navigateToNextViewController];
-        [self updateProjectsMetadata:projectsMetadata];
-        
-        DLog(@"User %@ login to %@", self.uname, strongService.baseUrl);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [progressHud hide: YES];
+            EXApperyService *strongService = weakService;
+
+            DLog(@"User %@ login to %@", self.uname, strongService.baseUrl);
+            [self saveUserSettings];
+            
+            self.uname = nil;
+            self.pwd = nil;
+            [self.tvSignIn reloadData];
+            
+            [self composeUIForMetadata:projectsMetadata appCode:nil location:@"www" startPage:@"index.html"];
+        });
     }
-                                   failed:^(NSError *error) {
-                                       [progressHud hide: YES];
-                                       self.uname = nil;
-                                       self.pwd = nil;
-                                       EXApperyService *strongService = weakService;
-                                       [[[UIAlertView alloc] initWithTitle: error.localizedDescription
-                                                                   message: error.localizedRecoverySuggestion
-                                                                  delegate: nil
-                                                         cancelButtonTitle: NSLocalizedString(@"Ok", nil)
-                                                         otherButtonTitles: nil] show];
-                                       
-                                       DLog(@"User %@ can't login to %@",self.uname, strongService.baseUrl);
+                                    failed:^(NSError *error) {
+                                        EXApperyService *strongService = weakService;
+                                        DLog(@"User %@ can't login to %@",self.uname, strongService.baseUrl);
+                                        dispatch_async(dispatch_get_main_queue(), ^{
+                                            [progressHud hide: YES];
+                                            self.uname = nil;
+                                            self.pwd = nil;
+                                            [[[UIAlertView alloc] initWithTitle: error.localizedDescription
+                                                                        message: error.localizedRecoverySuggestion
+                                                                       delegate: nil
+                                                              cancelButtonTitle: NSLocalizedString(@"Ok", nil)
+                                                              otherButtonTitles: nil] show];
+                                        });
                                    }];
 }
 
@@ -201,13 +202,44 @@ static const NSInteger kAppCodeTextFieldTag = 111;
 //    }
 }
 
-- (void) navigateToNextViewController
-{
-    UIViewController *nextViewController = [self nextViewController];
-    if ([self.navigationController.viewControllers containsObject: nextViewController]) {
-        [self.navigationController popToViewController: nextViewController animated: YES];
-    } else {
-        [self.navigationController pushViewController:nextViewController animated: YES];
+- (void) composeUIForMetadata:(NSArray *)metadata appCode:(NSString *)appCode location:(NSString *)location startPage:(NSString *)startPage {
+    if (metadata != nil) {
+        EXProjectsMetadataViewController *pmvc = [[EXProjectsMetadataViewController alloc] initWithNibName:nil bundle:nil service:self.apperyService projectsMetadata:metadata];
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectMetadata:nil];
+            pvc.wwwFolderName = location;
+            pvc.startPage = startPage;
+            
+            UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:pmvc];
+            pvc.slideController = nc;
+            
+            pmvc.delegate = pvc;
+            [self.navigationController pushViewController:pvc animated:YES];
+        }
+        else {
+            [self.navigationController pushViewController:pmvc animated:YES];
+        }
+    }
+    
+    if (appCode != nil) {
+        EXProjectsMetadataViewController *pmvc = [[EXProjectsMetadataViewController alloc] initWithNibName:nil bundle:nil service:self.apperyService projectsMetadata:metadata];
+        EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectCode:appCode];
+        pvc.wwwFolderName = location;
+        pvc.startPage = startPage;
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:pmvc];
+            pvc.slideController = nc;
+            pmvc.delegate = pvc;
+            [self.navigationController pushViewController:pvc animated:YES];
+        }
+        else {
+            pmvc.delegate = pvc;
+            NSMutableArray *controllers = [NSMutableArray arrayWithArray:self.navigationController.viewControllers];
+            [controllers addObject:pmvc];
+            [controllers addObject:pvc];
+            
+            [self.navigationController setViewControllers:controllers animated:YES];
+        }
     }
 }
 
@@ -358,12 +390,6 @@ static const NSInteger kAppCodeTextFieldTag = 111;
     }
 }
 
-#pragma mark - EXViewControllerProvider protocol implementation
-
-- (UIViewController *)nextViewController {
-    return self.projectViewController;
-}
-
 #pragma mark - UIAlertViewDelegate implementation
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
@@ -377,31 +403,26 @@ static const NSInteger kAppCodeTextFieldTag = 111;
     
     NSString *appCode = [[alertView textFieldAtIndex:0] text];
     
-    __weak EXApperyService *weakService = self.apperyService;
     [self.apperyService loadProjectForAppCode:appCode
                                       succeed:^(NSString *projectLocation, NSString *startPageName) {
-                                          [progressHud hide: NO];
-                                        
-                                          EXApperyService *strongService = weakService;
-                                          EXProjectViewController *projectViewController = [[EXProjectViewController alloc] initWithProjectCode:appCode];
-                                          projectViewController.apperyService = strongService;
-                                          projectViewController.wwwFolderName = projectLocation;
-                                          projectViewController.startPage = startPageName;
-                                            
-                                          [self.navigationController pushViewController:projectViewController animated:YES];
-                                            
-                                          DLog(@"App %@ has been loaded.", appCode);
+                                          DLog(@"The project for code: '%@' has been loaded.", appCode);
+                                          dispatch_async(dispatch_get_main_queue(), ^{
+                                              [progressHud hide: NO];
+                                              
+                                              [self composeUIForMetadata:nil appCode:appCode location:projectLocation startPage:startPageName];
+                                          });
                                         }
                                        failed:^(NSError *error) {
-                                           [progressHud hide: NO];
-                                            
-                                           [[[UIAlertView alloc] initWithTitle: error.localizedDescription
-                                                                       message: error.localizedRecoverySuggestion
-                                                                      delegate: nil
-                                                             cancelButtonTitle: NSLocalizedString(@"Ok", nil)
-                                                             otherButtonTitles: nil] show];
-                                            
-                                            DLog(@"App %@ loading has failed due to: %@", appCode, error.localizedDescription);
+                                           dispatch_async(dispatch_get_main_queue(), ^{
+                                               DLog(@"The project with code: '%@' has NOT been loaded. Error: %@", appCode, error.localizedDescription);
+                                               [progressHud hide: NO];
+                                               
+                                               [[[UIAlertView alloc] initWithTitle: error.localizedDescription
+                                                                           message: error.localizedRecoverySuggestion
+                                                                          delegate: nil
+                                                                 cancelButtonTitle: NSLocalizedString(@"Ok", nil)
+                                                                 otherButtonTitles: nil] show];
+                                           });
                                         }
      ];
 }
@@ -409,6 +430,8 @@ static const NSInteger kAppCodeTextFieldTag = 111;
 - (BOOL)alertViewShouldEnableFirstOtherButton:(UIAlertView *)alertView {
     return YES;
 }
+
+#pragma mark - UITextField delegaete
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];

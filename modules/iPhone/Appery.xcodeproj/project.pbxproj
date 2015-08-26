@@ -84,9 +84,6 @@
 		D427B0F01AF227940086DC08 /* ONOXMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = D427B0EF1AF227940086DC08 /* ONOXMLDocument.m */; };
 		D48DBD621B57B1B6002E8B7F /* NSStringMask.m in Sources */ = {isa = PBXBuildFile; fileRef = D48DBD5F1B57B1B6002E8B7F /* NSStringMask.m */; };
 		D49A19691B05E67200E9DEDC /* logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D49A19661B05E67200E9DEDC /* logo@2x.png */; };
-		D4B59F4019F7CB2F00649292 /* EXLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B59F3119F7CB2F00649292 /* EXLoginViewController.m */; };
-		D4B59F4119F7CB2F00649292 /* EXLoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D4B59F3219F7CB2F00649292 /* EXLoginViewController.xib */; };
-		D4B59F4219F7CB2F00649292 /* EXLoginViewController~iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D4B59F3319F7CB2F00649292 /* EXLoginViewController~iPad.xib */; };
 		D4B59F4319F7CB2F00649292 /* EXMainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = D4B59F3419F7CB2F00649292 /* EXMainWindow.xib */; };
 		D4B59F4419F7CB2F00649292 /* EXProjectsMetadataViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B59F3619F7CB2F00649292 /* EXProjectsMetadataViewController.m */; };
 		D4B59F4519F7CB2F00649292 /* EXProjectsMetadataViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D4B59F3719F7CB2F00649292 /* EXProjectsMetadataViewController.xib */; };
@@ -179,6 +176,7 @@
 		3629DEB31B8355360066D254 /* UIDevice+System.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+System.m"; sourceTree = "<group>"; };
 		3629DEB41B8355360066D254 /* UIView+LayerManagement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+LayerManagement.h"; sourceTree = "<group>"; };
 		3629DEB51B8355360066D254 /* UIView+LayerManagement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+LayerManagement.m"; sourceTree = "<group>"; };
+		36F9E5B81B8DAFFF0071A021 /* EXProjectControllerActionDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXProjectControllerActionDelegate.h; sourceTree = "<group>"; };
 		370E327D1833E31100A88059 /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; path = iTunesArtwork; sourceTree = "<group>"; };
 		370E327E1833E31100A88059 /* iTunesArtwork@2x */ = {isa = PBXFileReference; lastKnownFileType = file; path = "iTunesArtwork@2x"; sourceTree = "<group>"; };
 		371DB9141833ADDF005A6461 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Appery/Images.xcassets; sourceTree = SOURCE_ROOT; };
@@ -271,10 +269,6 @@
 		D48DBD5E1B57B1B6002E8B7F /* NSStringMask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringMask.h; sourceTree = "<group>"; };
 		D48DBD5F1B57B1B6002E8B7F /* NSStringMask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringMask.m; sourceTree = "<group>"; };
 		D49A19661B05E67200E9DEDC /* logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo@2x.png"; sourceTree = "<group>"; };
-		D4B59F3019F7CB2F00649292 /* EXLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLoginViewController.h; sourceTree = "<group>"; };
-		D4B59F3119F7CB2F00649292 /* EXLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLoginViewController.m; sourceTree = "<group>"; };
-		D4B59F3219F7CB2F00649292 /* EXLoginViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EXLoginViewController.xib; sourceTree = "<group>"; };
-		D4B59F3319F7CB2F00649292 /* EXLoginViewController~iPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "EXLoginViewController~iPad.xib"; sourceTree = "<group>"; };
 		D4B59F3419F7CB2F00649292 /* EXMainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EXMainWindow.xib; sourceTree = "<group>"; };
 		D4B59F3519F7CB2F00649292 /* EXProjectsMetadataViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXProjectsMetadataViewController.h; sourceTree = "<group>"; };
 		D4B59F3619F7CB2F00649292 /* EXProjectsMetadataViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXProjectsMetadataViewController.m; sourceTree = "<group>"; };
@@ -284,7 +278,6 @@
 		D4B59F3C19F7CB2F00649292 /* EXSelectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXSelectViewController.h; sourceTree = "<group>"; };
 		D4B59F3D19F7CB2F00649292 /* EXSelectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSelectViewController.m; sourceTree = "<group>"; };
 		D4B59F3E19F7CB2F00649292 /* EXSelectViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EXSelectViewController.xib; sourceTree = "<group>"; };
-		D4B59F3F19F7CB2F00649292 /* EXViewControllerProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXViewControllerProvider.h; sourceTree = "<group>"; };
 		D4D5C18A1A516C0B0069A40F /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		D4E346481A8A1FB5004C57B8 /* icon_bootsrap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_bootsrap.png; sourceTree = "<group>"; };
 		D4E346491A8A1FB5004C57B8 /* icon_bootsrap@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_bootsrap@2x.png"; sourceTree = "<group>"; };
@@ -582,20 +575,16 @@
 				3629DE9D1B832B050066D254 /* EXSignInViewController.h */,
 				3629DE9E1B832B050066D254 /* EXSignInViewController.m */,
 				3629DE9F1B832B050066D254 /* EXSignInViewController.xib */,
-				D4B59F3019F7CB2F00649292 /* EXLoginViewController.h */,
-				D4B59F3119F7CB2F00649292 /* EXLoginViewController.m */,
-				D4B59F3219F7CB2F00649292 /* EXLoginViewController.xib */,
-				D4B59F3319F7CB2F00649292 /* EXLoginViewController~iPad.xib */,
 				D4B59F3419F7CB2F00649292 /* EXMainWindow.xib */,
 				D4B59F3519F7CB2F00649292 /* EXProjectsMetadataViewController.h */,
 				D4B59F3619F7CB2F00649292 /* EXProjectsMetadataViewController.m */,
 				D4B59F3719F7CB2F00649292 /* EXProjectsMetadataViewController.xib */,
+				36F9E5B81B8DAFFF0071A021 /* EXProjectControllerActionDelegate.h */,
 				D4B59F3A19F7CB2F00649292 /* EXProjectViewController.h */,
 				D4B59F3B19F7CB2F00649292 /* EXProjectViewController.m */,
 				D4B59F3C19F7CB2F00649292 /* EXSelectViewController.h */,
 				D4B59F3D19F7CB2F00649292 /* EXSelectViewController.m */,
 				D4B59F3E19F7CB2F00649292 /* EXSelectViewController.xib */,
-				D4B59F3F19F7CB2F00649292 /* EXViewControllerProvider.h */,
 			);
 			path = controller;
 			sourceTree = "<group>";
@@ -1121,8 +1110,6 @@
 				687FBA5A15E63DDF008B956A /* EXProjectMetadataCell.xib in Resources */,
 				6879169C180177F2007B8401 /* VERSION in Resources */,
 				6885325317F9884F0095810A /* config.xml in Resources */,
-				D4B59F4219F7CB2F00649292 /* EXLoginViewController~iPad.xib in Resources */,
-				D4B59F4119F7CB2F00649292 /* EXLoginViewController.xib in Resources */,
 				36150F9D1B85C0B600CFAC17 /* arrow_right@2x.png in Resources */,
 				D4F220AB1B04A93800DF9D24 /* LaunchScreen.xib in Resources */,
 				6885330817F989320095810A /* scannerOverlay.xib in Resources */,
@@ -1213,7 +1200,6 @@
 				D4F876F11AB994B700CE2C6F /* CDVBattery.m in Sources */,
 				D4B59F4819F7CB2F00649292 /* EXSelectViewController.m in Sources */,
 				68A76D1517461ED8000603E1 /* EXApperyService.m in Sources */,
-				D4B59F4019F7CB2F00649292 /* EXLoginViewController.m in Sources */,
 				68A76D1717461ED8000603E1 /* EXApperyServiceOperation.m in Sources */,
 				68A76D1817461ED8000603E1 /* EXApperyServiceOperationLoadProject.m in Sources */,
 				D4F876FD1AB994B700CE2C6F /* CDVFile.m in Sources */,

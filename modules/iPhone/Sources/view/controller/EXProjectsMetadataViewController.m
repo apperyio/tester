@@ -16,6 +16,7 @@
 #import "EXUserSettingsStorage.h"
 #import "EXProjectMetadataCell.h"
 #import "EXSelectViewController.h"
+#import "EXProjectViewController.h"
 
 #pragma mark - UI string constants
 
@@ -26,20 +27,32 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 @interface EXProjectsMetadataViewController ()
 
+@property (nonatomic, strong, readwrite) EXApperyService *apperyService;
+
+/// @name UI properties
+@property (nonatomic, weak) IBOutlet UITableView *rootTableView;
+
+@property (nonatomic, weak) IBOutlet UINavigationBar *navigationBar;
+@property (nonatomic, weak) IBOutlet UIToolbar *toolBar;
+@property (nonatomic, weak) IBOutlet UIBarButtonItem *sortByDateButton;
+@property (nonatomic, weak) IBOutlet UIBarButtonItem *sortByNameButton;
+@property (nonatomic, weak) IBOutlet UIBarButtonItem *folderButton;
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
+
 /// Handles all projects metadata.
-@property (nonatomic, retain) NSArray *projectsMetadata;
+@property (nonatomic, strong) NSArray *projectsMetadata;
 
 /// Handles filtered projects metadata.
-@property (nonatomic, retain) NSMutableArray *filteredProjectsMetadata;
+@property (nonatomic, strong) NSMutableArray *filteredProjectsMetadata;
 
 /// Contains projects observers list.
-@property (nonatomic, retain) NSMutableArray *projectsObservers;
+@property (nonatomic, strong) NSMutableArray *projectsObservers;
 
 /// Handles view controller for folder selection.
-@property (nonatomic, retain) EXSelectViewController *selectFolderController;
+@property (nonatomic, strong) EXSelectViewController *selectFolderController;
 
 /// Current selected folder name.
-@property (nonatomic, retain) NSString *currentFolder;
+@property (nonatomic, strong) NSString *currentFolder;
 
 /// Current selected sorting method for projects metadata.
 @property (nonatomic, assign) EXSortingMethodType currentProjectsSortingMethod;
@@ -47,12 +60,31 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 /// Defines wheter KVO is registered.
 @property (nonatomic, assign) BOOL isObservingRegistered;
 
+@property (nonatomic, strong) NSArray* folders;
+
 /**
  * @returns reusable custom UITableViewCell object.
  */
 - (EXProjectMetadataCell *) getCustomTableViewCell;
 
-@property (retain,nonatomic) NSArray* folders;
+/// @name UI actions
+- (IBAction)logoutButtonPressed:(id)sender;
+- (IBAction)sortByDateButtonPressed:(id)sender;
+- (IBAction)sortByNameButtonPressed:(id)sender;
+- (IBAction)selectFolderButtonPressed:(id)sender;
+
+- (void)reloadProjects;
+/**
+ * Initialize Projects Metadata
+ */
+- (void)initializeProjectsMetadata:(NSArray *)projectsMetadata;
+
+/**
+ * Perform logout process.
+ */
+- (void) logoutFromService;
+
+- (void)loadProjectsMetadataCompletion:(EXProjectsMetadataViewControllerCompletionBlock)completion;
 
 @end
 
@@ -60,50 +92,100 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 @implementation EXProjectsMetadataViewController
 
+@synthesize apperyService = _apperyService;
+@synthesize delegate = _delegate;
+
+@synthesize rootTableView = _rootTableView;
+@synthesize navigationBar = _navigationBar;
+@synthesize toolBar = _toolBar;
+@synthesize sortByDateButton = _sortByDateButton;
+@synthesize sortByNameButton = _sortByNameButton;
+@synthesize folderButton = _folderButton;
+@synthesize refreshControl = _refreshControl;
+
+@synthesize projectsMetadata = _projectsMetadata;
+@synthesize filteredProjectsMetadata = _filteredProjectsMetadata;
+@synthesize projectsObservers = _projectsObservers;
+@synthesize selectFolderController = _selectFolderController;
+@synthesize currentFolder = _currentFolder;
 @synthesize currentProjectsSortingMethod = _currentProjectsSortingMethod;
+@synthesize isObservingRegistered = _isObservingRegistered;
+@synthesize folders = _folders;
 
 #pragma mark - Life cycle
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    if (self = [super initWithNibName: nibNameOrNil bundle:nibBundleOrNil]) {
-        self.projectsObservers = [[NSMutableArray alloc] init];
-        self.filteredProjectsMetadata = [[NSMutableArray alloc] init];
-        self.selectFolderController = [[EXSelectViewController alloc] initWithTitle:@"Folders"];
-        _currentProjectsSortingMethod = EXSortingMethodType_DateDescending;
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil service:(EXApperyService *)service projectsMetadata:(NSArray *)metadata {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self == nil) {
+        return nil;
     }
+    
+    _apperyService = service;
+    _projectsObservers = [[NSMutableArray alloc] init];
+    _filteredProjectsMetadata = [[NSMutableArray alloc] init];
+    _selectFolderController = [[EXSelectViewController alloc] initWithTitle:NSLocalizedString(@"Folders", @"Folders")];
+    _currentProjectsSortingMethod = EXSortingMethodType_DateDescending;
+    if (metadata.count > 0) {
+        [self initializeProjectsMetadata:metadata];
+    }
+    
     return self;
 }
 
-- (void)viewDidLoad
-{
-    [self configureNavigationBar];
-    [self configureToolbar];
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    return [self initWithNibName:nibNameOrNil bundle:nibBundleOrNil service:nil projectsMetadata:nil];
+}
+
+- (void)viewDidLoad {
     [self registerRotationObserving];
-    
-    [self sortProjectsByCurrentSortingMethod];
-    
     [super viewDidLoad];
+    
+    [self configureToolbar];
+    if (self.projectsMetadata.count == 0) {
+        [self loadProjectsMetadataCompletion:^(BOOL succeeded) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.rootTableView.userInteractionEnabled = YES;
+                [self.refreshControl endRefreshing];
+                [self sortProjectsByCurrentSortingMethod];
+            });
+        }];
+    }
+    else {
+        [self sortProjectsByCurrentSortingMethod];
+    }
+    
+    self.title = NSLocalizedString(@"Apps", @"EXProjectsViewController title");
+    
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:@"Loading apps"];
+    [refreshControl addTarget:self action: @selector(reloadProjects) forControlEvents:UIControlEventValueChanged];
+    self.refreshControl = refreshControl;
+    [self.rootTableView addSubview:self.refreshControl];
+    
+    UIBarButtonItem *bbLogout = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"logout"] style:UIBarButtonItemStylePlain target:self action:@selector(logoutButtonPressed:)];
+    self.navigationItem.leftBarButtonItem = bbLogout;
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
+- (void) viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [self.navigationController setNavigationBarHidden:NO animated:NO];
 }
 
-- (void)dealloc
-{
+- (void)didReceiveMemoryWarning {
     [self unregisterRotationObserving];
+    [super didReceiveMemoryWarning];
 }
 
 #pragma mark - UI actions
 
-- (void)reloadProjects
-{
+- (void)reloadProjects {
     void(^reloadProjectsInfo)(void) = ^{
         [self loadProjectsMetadataCompletion:^(BOOL succeeded) {
-            self.rootTableView.userInteractionEnabled = YES;
-            [self.refreshControl endRefreshing];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.rootTableView.userInteractionEnabled = YES;
+                [self.refreshControl endRefreshing];
+            });
         }];
     };
     
@@ -117,41 +199,46 @@ static const NSString * kArrowDownSymbol = @"\u2193";
         [self.apperyService loginWithUsername:lastUserSettings.userName password:password succeed:^(NSArray *projectsMetadata) {
             reloadProjectsInfo();
         } failed:^(NSError *error) {
-            self.rootTableView.userInteractionEnabled = YES;
-            
-            [self.apperyService quickLogout];
-            [self fireProjectsObserversLogoutCompleted];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.rootTableView.userInteractionEnabled = YES;
+                
+                [self.apperyService quickLogout];
+                id<EXProjectControllerActionDelegate> del = self.delegate;
+                if (del != nil) {
+                    [del masterControllerDidLogout];
+                }
+                else {
+                    [self.navigationController popToRootViewControllerAnimated:YES];
+                }
+            });
         }];
-    } else {
+    }
+    else {
         reloadProjectsInfo();
     }
 }
 
-- (IBAction)logoutButtonPressed:(id)sender
-{
+- (IBAction)logoutButtonPressed:(id)sender {
     _currentProjectsSortingMethod = EXSortingMethodType_DateDescending;
-    
     [self logoutFromService];
 }
 
-- (IBAction)sortByDateButtonPressed:(id)sender
-{
+- (IBAction)sortByDateButtonPressed:(id)sender {
     [self reverseSortProjectsByDate];
 }
 
-- (IBAction)sortByNameButtonPressed:(id)sender
-{
+- (IBAction)sortByNameButtonPressed:(id)sender {
     [self reverseSortProjectsByName];
 }
 
-- (IBAction)selectFolderButtonPressed:(id)sender
-{
+- (IBAction)selectFolderButtonPressed:(id)sender {
     self.selectFolderController.selection = self.currentFolder;
     [self.selectFolderController updateUI];
     
-    __unsafe_unretained EXProjectsMetadataViewController *weekSelf = self;
+    __weak EXProjectsMetadataViewController *weakSelf = self;
     
     self.selectFolderController.completion = ^(BOOL success, id selection) {
+        EXProjectsMetadataViewController *strongSelf = weakSelf;
         if (success) {
             NSString *(^getFolderButtonTitle)(void) = ^{
                 if ([selection length] > 7) {
@@ -163,15 +250,15 @@ static const NSString * kArrowDownSymbol = @"\u2193";
                 return (NSString *)selection;
             };
             
-            weekSelf.folderButton.title = getFolderButtonTitle();
-            weekSelf.currentFolder = selection;
-            [weekSelf filterProjectsWithOwner:selection];
+            strongSelf.folderButton.title = getFolderButtonTitle();
+            strongSelf.currentFolder = selection;
+            [strongSelf filterProjectsWithOwner:selection];
         }
         
-        weekSelf.navigationBar.userInteractionEnabled = YES;
-        weekSelf.rootTableView.userInteractionEnabled = YES;
-        weekSelf.toolBar.userInteractionEnabled = YES;
-        [weekSelf hideSelectFolderView];
+        strongSelf.navigationBar.userInteractionEnabled = YES;
+        strongSelf.rootTableView.userInteractionEnabled = YES;
+        strongSelf.toolBar.userInteractionEnabled = YES;
+        [strongSelf hideSelectFolderView];
     };
     
     self.navigationBar.userInteractionEnabled = NO;
@@ -181,97 +268,21 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [self showSelectFolderView];
 }
 
-#pragma mark - Public interface implementation
-
-- (void)addProjectsObserver:(id<EXProjectsObserver>)observer
-{
-    NSAssert(observer != nil, @"added observer is not defined");
-
-    if (![self.projectsObservers containsObject: observer]) {
-        [self.projectsObservers addObject: observer];
-    }
-}
-
-- (void)removeProjectsObserver:(id<EXProjectsObserver>)observer
-{
-    NSAssert(observer != nil, @"removed observer is not defined");
-    
-    [self.projectsObservers removeObject: observer];
-}
-
-- (void)initializeProjectsMetadata:(NSArray *) projectsMetadata
-{
-    NSArray *enabledProjectsMetadata = [self getEnabledProjectsMetadata:projectsMetadata];
-    self.projectsMetadata = enabledProjectsMetadata;
-    [self.filteredProjectsMetadata removeAllObjects];
-    [self.filteredProjectsMetadata addObjectsFromArray:enabledProjectsMetadata];
-    [self redefineAvailableFolders];
-    [self configureSelectFolderViewController];
-    [self sortProjectsByCurrentSortingMethod];
-}
-
-- (void)loadProjectsMetadataCompletion:(EXProjectsMetadataViewControllerCompletionBlock)completion
-{
-    NSAssert(self.apperyService != nil, @"apperyService property is not defined");
-    
-    [self.apperyService loadProjectsMetadata: ^(NSArray *projectsMetadata) {
-        [self initializeProjectsMetadata:projectsMetadata];
-
-        if (completion) {
-            completion(YES);
-        }
-    } failed:^(NSError *error) {
-        [[[UIAlertView alloc] initWithTitle: error.localizedDescription
-                                 message: error.localizedRecoverySuggestion
-                                delegate: nil
-                       cancelButtonTitle: NSLocalizedString(@"Ok", nil)
-                       otherButtonTitles: nil] show];
-
-        NSLog(@"Apps loading failed due to: %@", error.localizedDescription);
-
-        if (completion) {
-            completion(NO);
-        }
-    }];
-}
-
-- (void)logoutFromService
-{
-    UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
-    MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
-    progressHud.labelText = NSLocalizedString(@"Logout", @"Logout progress hud title");
-    
-    void(^finalize)(void)  = ^{
-        [progressHud hide: YES];
-        [self fireProjectsObserversLogoutCompleted];
-    };
-    
-    [self.apperyService logoutSucceed: ^{
-        finalize();
-    } failed:^(NSError *error) {
-        NSLog(@"Error was occured during remote logout operation. Details: %@", [error localizedDescription]);
-        finalize();
-    }];
-}
-
 #pragma mark - UITableViewDataSource protocol implementation
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.filteredProjectsMetadata != nil ? self.filteredProjectsMetadata.count : 0;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSAssert(self.filteredProjectsMetadata != nil, @"No data to feed EXProjectsViewController");
     NSAssert(indexPath.row < self.filteredProjectsMetadata.count , @"No data for the specified indexPath");
     
-    EXProjectMetadata *projectMetadata = [self.filteredProjectsMetadata objectAtIndex: indexPath.row];
+    EXProjectMetadata *projectMetadata = [self.filteredProjectsMetadata objectAtIndex:indexPath.row];
     EXProjectMetadataCell *cell = [self getCustomTableViewCell];
     cell.projectNameLabel.text = projectMetadata.name;
     cell.authorLabel.text = projectMetadata.creator;
@@ -299,19 +310,29 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - UITableViewDelegete protocol implementation
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     EXProjectMetadataCell *cell = [self getCustomTableViewCell];
     
     return cell.bounds.size.height;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSAssert(indexPath.row < self.filteredProjectsMetadata.count , @"No data for the specified indexPath");
     
     EXProjectMetadata *projectMetadata = [self.filteredProjectsMetadata objectAtIndex: indexPath.row];
-    [self fireProjectsObserversMetadataWasSelected: projectMetadata];
+    id<EXProjectControllerActionDelegate> del = self.delegate;
+    if (del != nil) {
+        [del masterControllerDidLoadMetadata:projectMetadata];
+    }
+    else {
+        EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectMetadata:projectMetadata];
+        pvc.wwwFolderName = @"www";
+        pvc.startPage = @"index.html";
+        self.delegate = pvc;
+        
+        [pvc updateContent];
+        [self.navigationController pushViewController:pvc animated:YES];
+    }
     
     [tableView deselectRowAtIndexPath: indexPath animated: YES];
 }
@@ -320,39 +341,80 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - Configuration helpers
 
-- (void)configureNavigationBar
-{
-    self.title = NSLocalizedString(@"Apps", @"EXProjectsViewController title");
-    
-    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
-    refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:@"Loading apps"];
-    [refreshControl addTarget:self action: @selector(reloadProjects) forControlEvents:UIControlEventValueChanged];
-    self.refreshControl = refreshControl;
-    [self.rootTableView addSubview:self.refreshControl];
-    
-    //For ios 7 and later
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
-        CGRect barFrame = self.navigationBar.frame;
-        barFrame.size = CGSizeMake(barFrame.size.width, 64);
-        self.navigationBar.frame = barFrame;
-    }
-}
-
-- (void)setSortButtonsDefaultNames
-{
+- (void)setSortButtonsDefaultNames {
     self.sortByDateButton.title = NSLocalizedString(@"Date", @"Apps list | Toolbar | Date button");
     self.sortByNameButton.title = NSLocalizedString(@"Name", @"Apps list | Toolbar | Name button");
 }
 
-- (void)configureToolbar
-{
+- (void)configureToolbar {
     [self setSortButtonsDefaultNames];
+}
+
+- (void)initializeProjectsMetadata:(NSArray *)projectsMetadata {
+    NSArray *enabledProjectsMetadata = [self getEnabledProjectsMetadata:projectsMetadata];
+    self.projectsMetadata = enabledProjectsMetadata;
+    [self.filteredProjectsMetadata removeAllObjects];
+    [self.filteredProjectsMetadata addObjectsFromArray:enabledProjectsMetadata];
+    [self redefineAvailableFolders];
+    [self configureSelectFolderViewController];
+    [self sortProjectsByCurrentSortingMethod];
+}
+
+- (void)loadProjectsMetadataCompletion:(EXProjectsMetadataViewControllerCompletionBlock)completion {
+    NSAssert(self.apperyService != nil, @"apperyService property is not defined");
+    
+    [self.apperyService loadProjectsMetadata: ^(NSArray *projectsMetadata) {
+        [self initializeProjectsMetadata:projectsMetadata];
+        
+        if (completion) {
+            completion(YES);
+        }
+    } failed:^(NSError *error) {
+        DLog(@"Apps loading failed due to: %@", error.localizedDescription);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[[UIAlertView alloc] initWithTitle: error.localizedDescription
+                                        message: error.localizedRecoverySuggestion
+                                       delegate: nil
+                              cancelButtonTitle: NSLocalizedString(@"Ok", nil)
+                              otherButtonTitles: nil] show];
+            
+        });
+        
+        if (completion) {
+            completion(NO);
+        }
+    }];
+}
+
+- (void)logoutFromService {
+    UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
+    MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
+    progressHud.labelText = NSLocalizedString(@"Logout", @"Logout progress hud title");
+    
+    void(^finalize)(void)  = ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [progressHud hide: YES];
+            id<EXProjectControllerActionDelegate> del = self.delegate;
+            if (del != nil) {
+                [del masterControllerDidLogout];
+            }
+            else {
+                [self.navigationController popToRootViewControllerAnimated:YES];
+            }
+        });
+    };
+    
+    [self.apperyService logoutSucceed: ^{
+        finalize();
+    } failed:^(NSError *error) {
+        DLog(@"Error was occured during remote logout operation. Details: %@", [error localizedDescription]);
+        finalize();
+    }];
 }
 
 #pragma mark - UI helpers
 
-- (EXProjectMetadataCell *)getCustomTableViewCell
-{
+- (EXProjectMetadataCell *)getCustomTableViewCell {
     static NSString *cellIdentifier = @"ProjectMetadataCellIdentifier";
     EXProjectMetadataCell *cell = (EXProjectMetadataCell *)[self.rootTableView dequeueReusableCellWithIdentifier: cellIdentifier];
     
@@ -363,8 +425,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     return cell;
 }
 
-- (void)showSelectFolderView
-{
+- (void)showSelectFolderView {
     UIView *viewToShow = self.selectFolderController.view;
     
     __block CGRect frame = viewToShow.frame;
@@ -383,8 +444,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }];
 }
 
-- (void)hideSelectFolderView
-{
+- (void)hideSelectFolderView {
     UIView *viewToHide = self.selectFolderController.view;
     
     [UIView animateWithDuration:0.4f animations:^{
@@ -396,8 +456,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }];
 }
 
-- (void)deviceOrientationDidChange:(NSNotification *)notification
-{
+- (void)deviceOrientationDidChange:(NSNotification *)notification {
     if (![self.view.subviews containsObject:self.selectFolderController.view]) {
         return;
     }
@@ -411,8 +470,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }];
 }
 
-- (void)redefineAvailableFolders
-{
+- (void)redefineAvailableFolders {
     NSArray *availableFolders = [self.projectsMetadata valueForKeyPath:@"@distinctUnionOfObjects.creator"];
     NSString *allFolderName = NSLocalizedString(@"All", @"Apps list | Toolbar | Folder button possible value");
     self.folders = [[NSArray arrayWithObject:allFolderName] arrayByAddingObjectsFromArray:availableFolders];
@@ -420,20 +478,19 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     self.currentFolder = allFolderName;
 }
 
-- (void)configureSelectFolderViewController
-{
+- (void)configureSelectFolderViewController {
     self.selectFolderController.data = self.folders;
     [self.selectFolderController updateUI];
     self.selectFolderController.completion = nil;
 }
 
-- (void)filterProjectsWithOwner:(id)owner
-{
+- (void)filterProjectsWithOwner:(id)owner {
     [self.filteredProjectsMetadata removeAllObjects];
     
     if ([self.folders indexOfObject:owner] == 0) {
         [self.filteredProjectsMetadata addObjectsFromArray:self.projectsMetadata];
-    } else {
+    }
+    else {
         NSPredicate *filterByOwnerPredicate = [NSPredicate predicateWithFormat:@"creator like[cd] %@", owner];
         [self.filteredProjectsMetadata addObjectsFromArray:[self.projectsMetadata filteredArrayUsingPredicate:filterByOwnerPredicate]];
     }
@@ -443,47 +500,23 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - KVO
 
-- (void)registerRotationObserving
-{
+- (void)registerRotationObserving {
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
     
     self.isObservingRegistered = YES;
 }
 
-- (void)unregisterRotationObserving
-{
+- (void)unregisterRotationObserving {
     if (self.isObservingRegistered) {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
         self.isObservingRegistered = NO;
     }
 }
 
-#pragma mark - Observers notification
-
-- (void)fireProjectsObserversMetadataWasSelected: (EXProjectMetadata *) projectMetadata
-{
-    for (id<EXProjectsObserver> observer in self.projectsObservers) {
-        if ([observer respondsToSelector: @selector(projectMetadataWasSelected:)]) {
-            [observer projectMetadataWasSelected: projectMetadata];
-        }
-    }
-}
-
-- (void)fireProjectsObserversLogoutCompleted
-{
-    for (id<EXProjectsObserver> observer in self.projectsObservers) {
-        if ([observer respondsToSelector: @selector(logoutCompleted)]) {
-            [observer logoutCompleted];
-        }
-    }
-}
-
-
 #pragma mark - Projects sorting / filtering
 
-- (void)setCurrentProjectsSortingMethod:(EXSortingMethodType) type
-{
+- (void)setCurrentProjectsSortingMethod:(EXSortingMethodType) type {
     _currentProjectsSortingMethod = type;
     
     EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
@@ -495,8 +528,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }
 }
 
-- (EXSortingMethodType)currentProjectsSortingMethod
-{
+- (EXSortingMethodType)currentProjectsSortingMethod {
     EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
     EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
     
@@ -507,14 +539,12 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     return _currentProjectsSortingMethod;
 }
 
-- (NSArray *)getEnabledProjectsMetadata:(NSArray *)projectsMetadata
-{
+- (NSArray *)getEnabledProjectsMetadata:(NSArray *)projectsMetadata {
     NSPredicate *enabledProjectsPredicate = [NSPredicate predicateWithFormat:@"disabled == %@", @0];
     return [projectsMetadata filteredArrayUsingPredicate:enabledProjectsPredicate];
 }
 
-- (void)reverseSortProjectsByDate
-{
+- (void)reverseSortProjectsByDate {
     static BOOL ascending = NO;
     
     switch (self.currentProjectsSortingMethod) {
@@ -531,18 +561,13 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [self sortProjectsByDateAscending:ascending];
 }
 
-- (void)sortProjectsByDateAscending:(BOOL)ascending
-{
+- (void)sortProjectsByDateAscending:(BOOL)ascending {
     // Sorting
     [self.filteredProjectsMetadata sortUsingComparator: ^NSComparisonResult(id obj1, id obj2) {
         EXProjectMetadata *first = (EXProjectMetadata *)obj1;
         EXProjectMetadata *second = (EXProjectMetadata *)obj2;
         
-        if (ascending) {
-            return [first.modifiedDate compare: second.modifiedDate];
-        } else {
-            return [second.modifiedDate compare: first.modifiedDate];
-        }
+        return ((ascending) ? [first.modifiedDate compare: second.modifiedDate] : [second.modifiedDate compare: first.modifiedDate]);
     }];
     
     // UI changes
@@ -555,8 +580,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [self.rootTableView reloadData];
 }
 
-- (void)reverseSortProjectsByName
-{
+- (void)reverseSortProjectsByName {
     static BOOL ascending = NO;
     
     switch (self.currentProjectsSortingMethod) {
@@ -573,8 +597,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [self sortProjectsByNameAscending:ascending];
 }
 
-- (void)sortProjectsByNameAscending:(BOOL)ascending
-{
+- (void)sortProjectsByNameAscending:(BOOL)ascending {
     // Sorting
     [self.filteredProjectsMetadata sortUsingComparator: ^NSComparisonResult(id obj1, id obj2) {
         EXProjectMetadata *first = (EXProjectMetadata *)obj1;
@@ -582,7 +605,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
         
         if (ascending) {
             return [first.name localizedCaseInsensitiveCompare: second.name];
-        } else {
+        }
+        else {
             return [second.name localizedCaseInsensitiveCompare: first.name];
         }
     }];
@@ -597,8 +621,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [self.rootTableView reloadData];
 }
 
-- (void)sortProjectsByCurrentSortingMethod
-{
+- (void)sortProjectsByCurrentSortingMethod {
     switch (self.currentProjectsSortingMethod) {
         case EXSortingMethodType_DateAscending:
             [self sortProjectsByDateAscending:YES];

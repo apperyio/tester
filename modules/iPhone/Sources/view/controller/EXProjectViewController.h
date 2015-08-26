@@ -11,36 +11,29 @@
 #import <Cordova/CDVViewController.h>
 
 #import "EXProjectsMetadataViewController.h"
+#import "EXProjectControllerActionDelegate.h"
 
 /**
  * Provides container for cordova projects.
  *     Inheritance is used to configure navigation controller bar appearance and behaviour.
  */
-@interface EXProjectViewController : CDVViewController <CDVScreenOrientationDelegate>
+@interface EXProjectViewController : CDVViewController <CDVScreenOrientationDelegate, EXProjectControllerActionDelegate>
+
+/**
+ * Reference to the appery.io web service.
+ * @required
+ */
+@property (nonatomic, strong, readonly) EXApperyService *apperyService;
+@property (nonatomic, strong) UIViewController *slideController;
 
 /**
  * Initialize with view controller and configures it with loaded project correspond to the specified project metadata.
  *
  * @param projectMetadata - project metadata for loading project, if nil empty view will be shown
  */
-- (id) initWithProjectMetadata: (EXProjectMetadata *)projectMetadata;
+- (instancetype)initWithService:(EXApperyService *)service projectMetadata:(EXProjectMetadata *)projectMetadata;
+- (instancetype)initWithService:(EXApperyService *)service projectCode:(NSString *)projectCode;
 
-- (id) initWithProjectCode: (NSString *)projectCode;
-
-/**
- * Reference to the appery.io web service.
- * @required
- */
-@property (nonatomic, retain) EXApperyService *apperyService;
-
-/**
- * Reference to EXProjectsMetadataViewController object is used to display it in popover.
- */
-@property (nonatomic, retain) EXProjectsMetadataViewController *projectsMetadataViewController;
-
-/**
- * Updates projects metadata.
- */
-- (void) loadProjectsMetadata;
+- (void) updateContent;
 
 @end

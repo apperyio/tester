@@ -4,16 +4,14 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "EXViewControllerProvider.h"
 
 @class EXProjectViewController;
 @class EXApperyService;
 
-@interface EXSignInViewController : UIViewController <EXViewControllerProvider>
+@interface EXSignInViewController : UIViewController
 
-@property (nonatomic, strong) EXProjectViewController *projectViewController;
-@property (nonatomic, retain) EXApperyService *apperyService;
+@property (nonatomic, strong, readonly) EXApperyService *apperyService;
 
-- (void) updateProjectsMetadata:(NSArray *)projectsMetadata;
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil service:(EXApperyService *)service NS_DESIGNATED_INITIALIZER;
 
 @end
