@@ -7,10 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EXProjectsMetadataViewController">
             <connections>
-                <outlet property="folderButton" destination="37" id="40"/>
                 <outlet property="rootTableView" destination="4" id="28"/>
-                <outlet property="sortByDateButton" destination="35" id="46"/>
-                <outlet property="sortByNameButton" destination="44" id="47"/>
                 <outlet property="toolBar" destination="34" id="64"/>
                 <outlet property="view" destination="8" id="43"/>
             </connections>
@@ -32,23 +29,7 @@
                 <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="34">
                     <rect key="frame" x="0.0" y="460" width="320" height="44"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <items>
-                        <barButtonItem title="Date" width="70" id="35">
-                            <connections>
-                                <action selector="sortByDateButtonPressed:" destination="-1" id="45"/>
-                            </connections>
-                        </barButtonItem>
-                        <barButtonItem title="Name" width="70" id="44">
-                            <connections>
-                                <action selector="sortByNameButtonPressed:" destination="-1" id="48"/>
-                            </connections>
-                        </barButtonItem>
-                        <barButtonItem title="All" width="100" id="37">
-                            <connections>
-                                <action selector="selectFolderButtonPressed:" destination="-1" id="42"/>
-                            </connections>
-                        </barButtonItem>
-                    </items>
+                    <items/>
                 </toolbar>
             </subviews>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>

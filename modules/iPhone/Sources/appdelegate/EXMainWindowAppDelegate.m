@@ -10,17 +10,17 @@
 #import "EXApperyService.h"
 #import "EXUserSettingsStorage.h"
 #import "MBProgressHUD.h"
-#import "IIViewDeckController.h"
 
 #import "EXSignInViewController.h"
+#import "RootViewControllerManager.h"
 
 #pragma mark - Private interface declaration
 
 @interface EXMainWindowAppDelegate ()
 
 @property (nonatomic, strong) EXApperyService *apperyService;
-@property (nonatomic, strong) EXSignInViewController *loginViewController;
-@property (nonatomic, strong) IIViewDeckController *viewDeckController;
+//@property (nonatomic, strong) EXSignInViewController *loginViewController;
+//@property (nonatomic, strong) IIViewDeckController *viewDeckController;
 
 - (BOOL)addSkipBackupAttributeToItemAtPath:(NSString *) filePathString;
 - (void)createAndConfigureApperyService;
@@ -33,10 +33,22 @@
 
 @implementation EXMainWindowAppDelegate
 
+@synthesize apperyService = _apperyService;
+//@synthesize loginViewController = _loginViewController;
+//@synthesize viewDeckController = _viewDeckController;
+
++ (EXMainWindowAppDelegate *)appDelegate {
+    return [[UIApplication sharedApplication] delegate];
+}
+
++ (UIWindow *)mainWindow {
+    return [[self appDelegate] window];
+}
+
+
 #pragma mark - UIApplicationDelegate protocol - Monitoring Application State Changes
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     NSError  *error = nil;
     NSArray  *directoriesInDomain = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsFolderPath = [directoriesInDomain objectAtIndex: 0];
@@ -49,16 +61,7 @@
     [self addSkipBackupAttributeToItemAtPath:projectsLocation];
     [self createAndConfigureApperyService];
     
-    self.loginViewController = [[EXSignInViewController alloc] initWithNibName:nil bundle:nil service:self.apperyService];
-    
-    UINavigationController *rootNavigationController = [[UINavigationController alloc] initWithRootViewController: self.loginViewController];
-    self.viewDeckController = [[IIViewDeckController alloc] initWithCenterViewController:rootNavigationController];
-    self.viewDeckController.navigationControllerBehavior = IIViewDeckNavigationControllerContained;
-    self.viewDeckController.elastic = NO;
-    self.viewDeckController.sizeMode = IIViewDeckLedgeSizeMode;
-    
-    self.window.rootViewController = self.viewDeckController;
-    
+    [self navigateToStartPage];
     [self.window makeKeyAndVisible];
     
     return YES;
@@ -66,21 +69,18 @@
 
 #pragma mark - UIApplicationDelegate protocol - Responding to System Notifications
 
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
+- (void)applicationDidEnterBackground:(UIApplication *)application {
     [self hideAllHuds];
     [self cancelApperyServiceActivity];
 }
 
-- (void)applicationWillEnterForeground:(UIApplication *)application
-{
+- (void)applicationWillEnterForeground:(UIApplication *)application {
     [self navigateToStartPage];
 }
 
 #pragma mark - Private interface implementation
 
-- (BOOL)addSkipBackupAttributeToItemAtPath:(NSString *)filePathString
-{
+- (BOOL)addSkipBackupAttributeToItemAtPath:(NSString *)filePathString {
     NSURL* URL= [NSURL fileURLWithPath: filePathString];
     assert([[NSFileManager defaultManager] fileExistsAtPath: [URL path]]);
     
@@ -100,8 +100,7 @@
     return success;
 }
 
-- (void)createAndConfigureApperyService
-{
+- (void)createAndConfigureApperyService {
     NSAssert(self.apperyService == nil, @"self.apperyService is already initialized");
     
     self.apperyService = [[EXApperyService alloc] init];
@@ -110,21 +109,18 @@
     NSLog(@"Appery service base URL: %@", self.apperyService.baseUrl);
 }
 
-- (BOOL)updateBaseUrl
-{
+- (BOOL)updateBaseUrl {
     NSString *oldBaseUrl = self.apperyService.baseUrl;
     self.apperyService.baseUrl = [[NSUserDefaults standardUserDefaults] valueForKey: @"baseURL"];
     
     return ![self.apperyService.baseUrl isEqualToString:oldBaseUrl];
 }
 
-- (void)hideAllHuds
-{
+- (void)hideAllHuds {
     [MBProgressHUD hideAllHUDsForView: self.window.rootViewController.view animated: NO];
 }
 
-- (void)cancelApperyServiceActivity
-{
+- (void)cancelApperyServiceActivity {
     [self.apperyService cancelCurrentOperation];
     
     if (self.apperyService.isLoggedIn) {
@@ -132,14 +128,17 @@
     }
 }
 
-- (void)navigateToStartPage
-{
-    IIViewDeckController *rootDeckViewController = (IIViewDeckController *)self.window.rootViewController;
-    [(UINavigationController *)rootDeckViewController.centerController popToRootViewControllerAnimated:NO];
-    [rootDeckViewController closeLeftView];
-    rootDeckViewController.leftController = nil;
-    [rootDeckViewController closeRightView];
-    rootDeckViewController.rightController = nil;
+- (void)navigateToStartPage {
+    RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
+    if ( manager.isSidebarShown ) {
+        __weak RootViewControllerManager *weakManager = manager;
+        [manager setSidebarEnabled:NO animated:YES completionBlock:^{
+            RootViewControllerManager *blockManager = weakManager;
+            [blockManager setSidebarViewController:nil];
+        }];
+    }
+    EXSignInViewController *signIn = [[EXSignInViewController alloc] initWithNibName:nil bundle:nil service:self.apperyService];
+    [[RootViewControllerManager sharedInstance] pushRootViewController:signIn animated:NO completionBlock:nil];
 }
 
 @end

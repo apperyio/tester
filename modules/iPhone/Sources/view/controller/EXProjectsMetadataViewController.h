@@ -11,6 +11,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "EXBaseViewController.h"
 #import "EXApperyService.h"
 #import "EXProjectMetadata.h"
 #import "EXProjectControllerActionDelegate.h"
@@ -18,7 +19,7 @@
 /// @name Additional types
 typedef void(^EXProjectsMetadataViewControllerCompletionBlock)(BOOL succeeded);
 
-@interface EXProjectsMetadataViewController : UIViewController
+@interface EXProjectsMetadataViewController : EXBaseViewController
 
 /**
  * Reference to the appery.io web service.

@@ -24,7 +24,6 @@
  * @required
  */
 @property (nonatomic, strong, readonly) EXApperyService *apperyService;
-@property (nonatomic, strong) UIViewController *slideController;
 
 /**
  * Initialize with view controller and configures it with loaded project correspond to the specified project metadata.

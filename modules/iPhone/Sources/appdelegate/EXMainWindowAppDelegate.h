@@ -12,4 +12,9 @@
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 
++ (EXMainWindowAppDelegate *)appDelegate;
++ (UIWindow *)mainWindow;
+
+- (void)navigateToStartPage;
+
 @end

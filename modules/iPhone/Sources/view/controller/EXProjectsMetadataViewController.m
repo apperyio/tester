@@ -18,6 +18,11 @@
 #import "EXSelectViewController.h"
 #import "EXProjectViewController.h"
 
+#import "EXToolbarItem.h"
+
+#import "EXMainWindowAppDelegate.h"
+#import "RootViewControllerManager.h"
+
 #pragma mark - UI string constants
 
 static const NSString * kArrowUpSymbol = @"\u2191";
@@ -32,11 +37,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 /// @name UI properties
 @property (nonatomic, weak) IBOutlet UITableView *rootTableView;
 
-@property (nonatomic, weak) IBOutlet UINavigationBar *navigationBar;
 @property (nonatomic, weak) IBOutlet UIToolbar *toolBar;
-@property (nonatomic, weak) IBOutlet UIBarButtonItem *sortByDateButton;
-@property (nonatomic, weak) IBOutlet UIBarButtonItem *sortByNameButton;
-@property (nonatomic, weak) IBOutlet UIBarButtonItem *folderButton;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 
 /// Handles all projects metadata.
@@ -68,10 +69,9 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 - (EXProjectMetadataCell *) getCustomTableViewCell;
 
 /// @name UI actions
-- (IBAction)logoutButtonPressed:(id)sender;
-- (IBAction)sortByDateButtonPressed:(id)sender;
-- (IBAction)sortByNameButtonPressed:(id)sender;
-- (IBAction)selectFolderButtonPressed:(id)sender;
+- (void)logoutButtonPressed:(id)sender;
+- (void)sortByDateButtonPressed:(id)sender;
+- (void)sortByNameButtonPressed:(id)sender;
 
 - (void)reloadProjects;
 /**
@@ -96,11 +96,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 @synthesize delegate = _delegate;
 
 @synthesize rootTableView = _rootTableView;
-@synthesize navigationBar = _navigationBar;
 @synthesize toolBar = _toolBar;
-@synthesize sortByDateButton = _sortByDateButton;
-@synthesize sortByNameButton = _sortByNameButton;
-@synthesize folderButton = _folderButton;
 @synthesize refreshControl = _refreshControl;
 
 @synthesize projectsMetadata = _projectsMetadata;
@@ -129,6 +125,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
         [self initializeProjectsMetadata:metadata];
     }
     
+    self.preferredContentSize = CGSizeMake(320., 480.);
     return self;
 }
 
@@ -175,6 +172,16 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 - (void)didReceiveMemoryWarning {
     [self unregisterRotationObserving];
     [super didReceiveMemoryWarning];
+}
+
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    
+    CGRect viewRect = self.view.frame;
+    
+    CGRect frm = self.toolBar.frame;
+    frm.size.width = viewRect.size.width;
+    self.toolBar.frame = frm;
 }
 
 #pragma mark - UI actions
@@ -229,43 +236,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 - (IBAction)sortByNameButtonPressed:(id)sender {
     [self reverseSortProjectsByName];
-}
-
-- (IBAction)selectFolderButtonPressed:(id)sender {
-    self.selectFolderController.selection = self.currentFolder;
-    [self.selectFolderController updateUI];
-    
-    __weak EXProjectsMetadataViewController *weakSelf = self;
-    
-    self.selectFolderController.completion = ^(BOOL success, id selection) {
-        EXProjectsMetadataViewController *strongSelf = weakSelf;
-        if (success) {
-            NSString *(^getFolderButtonTitle)(void) = ^{
-                if ([selection length] > 7) {
-                    NSRange stringRange = {0, MIN([selection length], 7)};
-                    stringRange = [selection rangeOfComposedCharacterSequencesForRange:stringRange];
-                    NSString *shortString = [selection substringWithRange:stringRange];
-                    return [shortString stringByAppendingString:@"..."];
-                }
-                return (NSString *)selection;
-            };
-            
-            strongSelf.folderButton.title = getFolderButtonTitle();
-            strongSelf.currentFolder = selection;
-            [strongSelf filterProjectsWithOwner:selection];
-        }
-        
-        strongSelf.navigationBar.userInteractionEnabled = YES;
-        strongSelf.rootTableView.userInteractionEnabled = YES;
-        strongSelf.toolBar.userInteractionEnabled = YES;
-        [strongSelf hideSelectFolderView];
-    };
-    
-    self.navigationBar.userInteractionEnabled = NO;
-    self.rootTableView.userInteractionEnabled = NO;
-    self.toolBar.userInteractionEnabled = NO;
-    
-    [self showSelectFolderView];
 }
 
 #pragma mark - UITableViewDataSource protocol implementation
@@ -328,7 +298,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
         EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectMetadata:projectMetadata];
         pvc.wwwFolderName = @"www";
         pvc.startPage = @"index.html";
-        self.delegate = pvc;
         
         [pvc updateContent];
         [self.navigationController pushViewController:pvc animated:YES];
@@ -341,13 +310,28 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - Configuration helpers
 
-- (void)setSortButtonsDefaultNames {
-    self.sortByDateButton.title = NSLocalizedString(@"Date", @"Apps list | Toolbar | Date button");
-    self.sortByNameButton.title = NSLocalizedString(@"Name", @"Apps list | Toolbar | Name button");
-}
-
 - (void)configureToolbar {
-    [self setSortButtonsDefaultNames];
+    EXToolbarItem *name = [[EXToolbarItem alloc] initWithImage:[UIImage imageNamed:@"name"] title:NSLocalizedString(@"Name", @"Name")];
+    [name addTarget:self selector:@selector(sortByNameButtonPressed:)];
+    UIBarButtonItem *bbName = [[UIBarButtonItem alloc] initWithCustomView:name];
+    
+    UIBarButtonItem *flex1 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:NULL];
+    
+    EXToolbarItem *date = [[EXToolbarItem alloc] initWithImage:[UIImage imageNamed:@"date"] title:NSLocalizedString(@"Created", @"Create")];
+    [name addTarget:self selector:@selector(sortByDateButtonPressed:)];
+    UIBarButtonItem *bbDate = [[UIBarButtonItem alloc] initWithCustomView:date];
+    
+    UIBarButtonItem *flex2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:NULL];
+    
+    EXToolbarItem *mod = [[EXToolbarItem alloc] initWithImage:[UIImage imageNamed:@"modified"] title:NSLocalizedString(@"Modified", @"Modified")];
+    UIBarButtonItem *bbMod = [[UIBarButtonItem alloc] initWithCustomView:mod];
+    
+    UIBarButtonItem *flex3 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:NULL];
+    
+    EXToolbarItem *user = [[EXToolbarItem alloc] initWithImage:[UIImage imageNamed:@"user"] title:NSLocalizedString(@"User", @"User")];
+    UIBarButtonItem *bbUser = [[UIBarButtonItem alloc] initWithCustomView:user];
+    
+    [self.toolBar setItems:@[ bbName, flex1, bbDate, flex2, bbMod, flex3, bbUser ] animated:NO];
 }
 
 - (void)initializeProjectsMetadata:(NSArray *)projectsMetadata {
@@ -399,7 +383,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
                 [del masterControllerDidLogout];
             }
             else {
-                [self.navigationController popToRootViewControllerAnimated:YES];
+                [[EXMainWindowAppDelegate appDelegate] navigateToStartPage];
             }
         });
     };
@@ -474,7 +458,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     NSArray *availableFolders = [self.projectsMetadata valueForKeyPath:@"@distinctUnionOfObjects.creator"];
     NSString *allFolderName = NSLocalizedString(@"All", @"Apps list | Toolbar | Folder button possible value");
     self.folders = [[NSArray arrayWithObject:allFolderName] arrayByAddingObjectsFromArray:availableFolders];
-    self.folderButton.title = allFolderName;
     self.currentFolder = allFolderName;
 }
 
@@ -571,10 +554,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }];
     
     // UI changes
-    [self setSortButtonsDefaultNames];
-    
-    self.sortByDateButton.title = [self.sortByDateButton.title stringByAppendingFormat:@" %@", ascending ? kArrowUpSymbol : kArrowDownSymbol];
-    
     self.currentProjectsSortingMethod = ascending ? EXSortingMethodType_DateAscending : EXSortingMethodType_DateDescending;
     
     [self.rootTableView reloadData];
@@ -612,10 +591,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }];
     
     // UI changes
-    [self setSortButtonsDefaultNames];
-    
-    self.sortByNameButton.title = [self.sortByNameButton.title stringByAppendingFormat:@" %@", ascending ? kArrowUpSymbol : kArrowDownSymbol];
-    
     self.currentProjectsSortingMethod = ascending ? EXSortingMethodType_NameAscending : EXSortingMethodType_NameDescending;
     
     [self.rootTableView reloadData];

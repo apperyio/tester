@@ -4,11 +4,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "EXBaseViewController.h"
 
 @class EXProjectViewController;
 @class EXApperyService;
 
-@interface EXSignInViewController : UIViewController
+@interface EXSignInViewController : EXBaseViewController
 
 @property (nonatomic, strong, readonly) EXApperyService *apperyService;
 

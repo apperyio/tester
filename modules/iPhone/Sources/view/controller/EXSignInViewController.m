@@ -13,6 +13,9 @@
 #import "EXUserSettingsStorage.h"
 #import "EXCredentialsManager.h"
 
+#import "RootViewControllerManager.h"
+#import "EXMainWindowAppDelegate.h"
+
 #import "MBProgressHUD.h"
 #import "NSStringMask.h"
 
@@ -77,6 +80,7 @@ static const NSInteger kAppCodeTextFieldTag = 111;
     _apperyService = service;
     _mask = [[NSStringMask alloc] initWithPattern:@"(\\d{3})-(\\d{3})-(\\d{3})" placeholder:@"_"];
     self.edgesForExtendedLayout = UIRectEdgeNone;
+    self.shouldHideNavigationBar = YES;
     
     return self;
 }
@@ -147,7 +151,7 @@ static const NSInteger kAppCodeTextFieldTag = 111;
 #pragma mark - Private class logic
 
 - (void) signIn {
-    UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
+    UIView *rootView = [[[EXMainWindowAppDelegate mainWindow] rootViewController] view];
     MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
     progressHud.labelText = NSLocalizedString(@"Login", @"Login progress hud title");
     
@@ -164,7 +168,6 @@ static const NSInteger kAppCodeTextFieldTag = 111;
             self.uname = nil;
             self.pwd = nil;
             [self.tvSignIn reloadData];
-            
             [self composeUIForMetadata:projectsMetadata appCode:nil location:@"www" startPage:@"index.html"];
         });
     }
@@ -203,42 +206,49 @@ static const NSInteger kAppCodeTextFieldTag = 111;
 }
 
 - (void) composeUIForMetadata:(NSArray *)metadata appCode:(NSString *)appCode location:(NSString *)location startPage:(NSString *)startPage {
+    RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
+    EXProjectsMetadataViewController *pmvc = [[EXProjectsMetadataViewController alloc] initWithNibName:nil bundle:nil service:self.apperyService projectsMetadata:metadata];
+
     if (metadata != nil) {
-        EXProjectsMetadataViewController *pmvc = [[EXProjectsMetadataViewController alloc] initWithNibName:nil bundle:nil service:self.apperyService projectsMetadata:metadata];
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectMetadata:nil];
+            
             pvc.wwwFolderName = location;
             pvc.startPage = startPage;
-            
-            UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:pmvc];
-            pvc.slideController = nc;
-            
             pmvc.delegate = pvc;
-            [self.navigationController pushViewController:pvc animated:YES];
+            
+            [manager setSidebarViewController:pmvc];
+            [manager setSidebarEnabled:YES];
+            __weak RootViewControllerManager *weakManager = manager;
+            [manager pushRootViewController:pvc animated:YES completionBlock:^{
+                RootViewControllerManager *blockManager = weakManager;
+                [blockManager showSidebarController:nil animated:YES completionBlock:nil];
+            }];
         }
         else {
-            [self.navigationController pushViewController:pmvc animated:YES];
+            [manager pushRootViewController:pmvc animated:YES completionBlock:nil];
         }
     }
     
     if (appCode != nil) {
-        EXProjectsMetadataViewController *pmvc = [[EXProjectsMetadataViewController alloc] initWithNibName:nil bundle:nil service:self.apperyService projectsMetadata:metadata];
         EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectCode:appCode];
         pvc.wwwFolderName = location;
         pvc.startPage = startPage;
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:pmvc];
-            pvc.slideController = nc;
+        
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             pmvc.delegate = pvc;
-            [self.navigationController pushViewController:pvc animated:YES];
+            
+            [manager setSidebarViewController:pmvc];
+            [manager setSidebarEnabled:YES];
+            __weak RootViewControllerManager *weakManager = manager;
+            [manager pushRootViewController:pvc animated:YES completionBlock:^{
+                RootViewControllerManager *blockManager = weakManager;
+                [blockManager showSidebarController:nil animated:YES completionBlock:nil];
+            }];
         }
         else {
-            pmvc.delegate = pvc;
-            NSMutableArray *controllers = [NSMutableArray arrayWithArray:self.navigationController.viewControllers];
-            [controllers addObject:pmvc];
-            [controllers addObject:pvc];
-            
-            [self.navigationController setViewControllers:controllers animated:YES];
+            [manager pushRootViewController:pmvc animated:NO completionBlock:nil];
+            [manager pushRootViewController:pvc animated:YES completionBlock:nil];
         }
     }
 }

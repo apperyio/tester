@@ -9,21 +9,16 @@
 #import "EXProjectViewController.h"
 
 #import "MBProgressHUD.h"
-#import "IIViewDeckController.h"
-
 #import "EXUserSettingsStorage.h"
 #import "EXCredentialsManager.h"
 
 #import "EXProjectsMetadataViewController.h"
 #import "NSObject+Utils.h"
 
+#import "EXMainWindowAppDelegate.h"
+#import "RootViewControllerManager.h"
+
 #pragma mark - UI constants
-
-static const CGFloat kLeftViewWidth = 270;
-static const CGFloat kCenterViewLedge = 50;
-
-static const CGFloat kStatusBarHeight = 20;
-static const CGFloat kNavigationBarHeight = 44;
 
 static NSString *const kDefaultWebResourceFolder = @"www";
 
@@ -39,7 +34,6 @@ static NSString *const kDefaultWebResourceFolder = @"www";
 @implementation EXProjectViewController
 
 @synthesize apperyService = _apperyService;
-@synthesize slideController = _slideController;
 @synthesize projectMetadata = _projectMetadata;
 @synthesize appCode = _appCode;
 @synthesize isShare = _isShare;
@@ -72,26 +66,6 @@ static NSString *const kDefaultWebResourceFolder = @"www";
 
 #pragma mark - View management
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    [self.navigationController setNavigationBarHidden:NO animated:NO];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    [self.navigationController setNavigationBarHidden:YES animated:NO];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    [self attachSlideViewController];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear: animated];
-    [self detachSlideViewController];
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -104,17 +78,22 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     }
     self.title = (title.length == 0) ? [self defaultTitle] : title;
     
-    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRotate:) name:UIDeviceOrientationDidChangeNotification object:nil];
-        
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     [self configureNavigationBar];
 }
 
 - (void)didReceiveMemoryWarning {
-    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
     [super didReceiveMemoryWarning];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self.navigationController setNavigationBarHidden:NO animated:NO];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [self.navigationController setNavigationBarHidden:YES animated:NO];
 }
 
 #pragma mark - Public interface implementation
@@ -130,21 +109,10 @@ static NSString *const kDefaultWebResourceFolder = @"www";
 }
 
 - (void) configureNavigationBar {
-    UIBarButtonItem *projectsButton = nil;
-    
-    if (self.appCode.length > 0) {
-        projectsButton = [[UIBarButtonItem alloc] initWithTitle:@"Back"
-                                                          style:UIBarButtonItemStylePlain
-                                                         target:self
-                                                         action:@selector(back)];
-    }
-    else {
-        projectsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"menu"]
+    UIBarButtonItem *projectsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"back"]
                                                           style:UIBarButtonItemStylePlain
                                                          target:self
                                                          action:@selector(showProjectsViewController)];
-    }
-    
     UIBarButtonItem *reloadProjectButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"reload"]
                                                                             style:UIBarButtonItemStylePlain
                                                                            target:self
@@ -159,8 +127,10 @@ static NSString *const kDefaultWebResourceFolder = @"www";
 }
 
 - (void)showProjectsViewController {
-    if (self.slideController != nil) {
-        [self.viewDeckController toggleLeftViewAnimated:YES];
+    RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
+    UIViewController *sideController = [manager topSidebarController];
+    if (sideController != nil) {
+        [manager toggleSidebarControllerAnimated:YES completionBlock:nil];
     }
     else {
         [self.navigationController popViewControllerAnimated:YES];
@@ -209,21 +179,16 @@ static NSString *const kDefaultWebResourceFolder = @"www";
                                               EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:strongService projectCode:appCode];
                                               pvc.wwwFolderName = projectLocation;
                                               pvc.startPage = startPageName;
-                                              pvc.slideController = self.slideController;
-                                              if (self.slideController != nil) {
-                                                  UINavigationController *nc = [self.slideController as:[UINavigationController class]];
-                                                  if (nc.viewControllers.count > 0) {
-                                                      EXProjectsMetadataViewController *pmvc = [nc.viewControllers[0] as:[EXProjectsMetadataViewController class]];
-                                                      pmvc.delegate = pvc;
-                                                  }
-                                              }
-
                                               
-                                              NSMutableArray *controllers = [NSMutableArray arrayWithArray:self.navigationController.viewControllers];
-                                              [controllers removeLastObject];
-                                              [controllers addObject:pvc];
+                                              RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
+                                              EXProjectsMetadataViewController *pmvc = [[manager topSidebarController] as:[EXProjectsMetadataViewController class]];
+                                              pmvc.delegate = pvc;
                                               
-                                              [self.navigationController setViewControllers: controllers animated: NO];
+                                              NSMutableArray *viewControllers = [NSMutableArray arrayWithArray:[self.navigationController viewControllers]];
+                                              [viewControllers removeLastObject];
+                                              [viewControllers addObject:pvc];
+                                              
+                                              [self.navigationController setViewControllers:viewControllers animated:NO];
                                           });
                                         } failed:^(NSError *error) {
                                             DLog(@"The project for code: '%@' has NOT been loaded. Error: %@.", appCode, [error localizedDescription]);
@@ -249,8 +214,8 @@ static NSString *const kDefaultWebResourceFolder = @"www";
         return;
     }
     
-    if (self.slideController != nil) {
-        [self.viewDeckController closeLeftViewAnimated:YES];
+    if ([[RootViewControllerManager sharedInstance] isSidebarShown]) {
+        [[RootViewControllerManager sharedInstance] hideSidebarControllerAnimated:YES completionBlock:nil];
     }
     
     UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
@@ -268,20 +233,16 @@ static NSString *const kDefaultWebResourceFolder = @"www";
                     EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:strongService projectMetadata:projectMetadata];
                     pvc.wwwFolderName = projectLocation;
                     pvc.startPage = startPageName;
-                    pvc.slideController = self.slideController;
-                    if (self.slideController != nil) {
-                        UINavigationController *nc = [self.slideController as:[UINavigationController class]];
-                        if (nc.viewControllers.count > 0) {
-                            EXProjectsMetadataViewController *pmvc = [nc.viewControllers[0] as:[EXProjectsMetadataViewController class]];
-                            pmvc.delegate = pvc;
-                        }
-                    }
-                
-                    NSMutableArray *controllers = [NSMutableArray arrayWithArray:self.navigationController.viewControllers];
-                    [controllers removeLastObject];
-                    [controllers addObject:pvc];
                     
-                    [self.navigationController setViewControllers:controllers animated:NO];
+                    RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
+                    EXProjectsMetadataViewController *pmvc = [[manager topSidebarController] as:[EXProjectsMetadataViewController class]];
+                    pmvc.delegate = pvc;
+                    
+                    NSMutableArray *viewControllers = [NSMutableArray arrayWithArray:[self.navigationController viewControllers]];
+                    [viewControllers removeLastObject];
+                    [viewControllers addObject:pvc];
+                    
+                    [self.navigationController setViewControllers:viewControllers animated:NO];
                 });
             } failed:^(NSError *error) {
                 DLog(@"The project with name: '%@' has NOT been loaded. Error: %@.", projectMetadata.name, error.localizedDescription);
@@ -319,50 +280,11 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     }
 }
 
-- (void)didRotate:(NSNotification *)notification {
-    self.viewDeckController.leftSize = [self calculateLeftViewSize];
-
-    if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
-        // ETST-14908 fix
-        CGSize screen = [[UIScreen mainScreen] bounds].size;
-        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-        
-        if (UIDeviceOrientationIsPortrait(orientation)) {
-            self.view.frame = CGRectMake(0, 0, screen.width, screen.height - kStatusBarHeight - kNavigationBarHeight);
-        }
-        else {
-            self.view.frame = CGRectMake(0, 0, screen.height, screen.width - kStatusBarHeight - kNavigationBarHeight);
-        }
-    }
-}
-
-- (CGFloat)calculateLeftViewSize {
-    CGFloat centerViewLedge = self.view.bounds.size.width > kLeftViewWidth ? 0 : kCenterViewLedge;
-    return self.view.bounds.size.width - kLeftViewWidth + centerViewLedge;
-}
-
-- (void)attachSlideViewController {
-    if (self.slideController != nil) {
-        self.viewDeckController.leftController = self.slideController;
-        self.viewDeckController.leftSize = [self calculateLeftViewSize];
-        
-        if ([self.wwwFolderName isEqualToString:kDefaultWebResourceFolder]) {
-            [self.viewDeckController openLeftViewAnimated:YES];
-        }
-    }
-}
-
-- (void)detachSlideViewController {
-    [self.viewDeckController closeLeftView];
-    self.viewDeckController.leftController = nil;
-}
 
 #pragma mark - EXProjectControllerActionDelegate
 
 - (void)masterControllerDidLogout {
-    [self.viewDeckController closeLeftViewAnimated:NO];
-    self.viewDeckController.leftController = nil;
-    [self.navigationController popToRootViewControllerAnimated:NO];
+    [[EXMainWindowAppDelegate appDelegate] navigateToStartPage];
 }
 
 - (void)masterControllerDidLoadMetadata:(EXProjectMetadata *)metadata {
