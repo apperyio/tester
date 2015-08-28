@@ -7,14 +7,19 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "EXToolbarItemActionDelegate.h"
 
 @interface EXToolbarItem : UIView
 
-@property (nonatomic, strong) UIImage *image;
+@property (nonatomic, strong) NSString *imageName;
+@property (nonatomic, strong) NSString *activeImageName;
 @property (nonatomic, strong) NSString *title;
 
-- (instancetype)initWithImage:(UIImage *)image title:(NSString *)title;
+@property (nonatomic, assign, readonly) BOOL isActive;
+@property (nonatomic, weak) id<EXToolbarItemActionDelegate> delegate;
 
-- (void)addTarget:(NSObject *)target selector:(SEL)selector;
+- (instancetype)initWithImageName:(NSString *)imageName activeImageName:(NSString *)activeImageName title:(NSString *)title;
+
+- (void)setStateToActive:(BOOL)active;
 
 @end

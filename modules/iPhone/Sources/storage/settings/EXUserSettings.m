@@ -19,22 +19,27 @@ static NSString *const kSortMethod = @"sortMethod";
 
 @implementation EXUserSettings
 
+@synthesize userName = _userName;
+@synthesize shouldRememberMe = _shouldRememberMe;
+@synthesize sortMethodType = _sortMethodType;
+
 #pragma mark - NSCoding protocol implementation
 
-- (id) initWithCoder: (NSCoder *)decoder
-{
-    if (self = [super init]) {
-        self.userName = [decoder decodeObjectForKey: kUserName];
-        self.shouldRememberMe = [decoder decodeBoolForKey: kShouldRememberMe];
-        self.sortMethodType = [decoder decodeIntForKey:kSortMethod];
+- (instancetype)initWithCoder:(NSCoder *)decoder {
+    self = [super init];
+    if (self == nil) {
+        return nil;
     }
+    
+    _userName = [decoder decodeObjectForKey:kUserName];
+    _shouldRememberMe = [decoder decodeBoolForKey:kShouldRememberMe];
+    _sortMethodType = [decoder decodeIntegerForKey:kSortMethod];
     return self;
 }
 
-- (void) encodeWithCoder: (NSCoder *)encoder
-{
-    [encoder encodeObject: self.userName forKey: kUserName];
-    [encoder encodeBool: self.shouldRememberMe forKey: kShouldRememberMe];
+- (void)encodeWithCoder:(NSCoder *)encoder {
+    [encoder encodeObject:self.userName forKey:kUserName];
+    [encoder encodeBool:self.shouldRememberMe forKey:kShouldRememberMe];
     [encoder encodeInteger:self.sortMethodType forKey:kSortMethod];
 }
 

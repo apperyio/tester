@@ -19,9 +19,11 @@
 #import "EXProjectViewController.h"
 
 #import "EXToolbarItem.h"
+#import "EXToolbarItemActionDelegate.h"
 
 #import "EXMainWindowAppDelegate.h"
 #import "RootViewControllerManager.h"
+#import "NSObject+Utils.h"
 
 #pragma mark - UI string constants
 
@@ -30,7 +32,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - Private interface declaration
 
-@interface EXProjectsMetadataViewController ()
+@interface EXProjectsMetadataViewController () <EXToolbarItemActionDelegate>
 
 @property (nonatomic, strong, readwrite) EXApperyService *apperyService;
 
@@ -61,7 +63,9 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 /// Defines wheter KVO is registered.
 @property (nonatomic, assign) BOOL isObservingRegistered;
 
-@property (nonatomic, strong) NSArray* folders;
+@property (nonatomic, strong) NSArray *folders;
+
+@property (nonatomic, strong) NSArray *toolbarActualItems;
 
 /**
  * @returns reusable custom UITableViewCell object.
@@ -69,9 +73,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 - (EXProjectMetadataCell *) getCustomTableViewCell;
 
 /// @name UI actions
-- (void)logoutButtonPressed:(id)sender;
-- (void)sortByDateButtonPressed:(id)sender;
-- (void)sortByNameButtonPressed:(id)sender;
+- (void)logoutAction:(id)sender;
 
 - (void)reloadProjects;
 /**
@@ -85,6 +87,13 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 - (void) logoutFromService;
 
 - (void)loadProjectsMetadataCompletion:(EXProjectsMetadataViewControllerCompletionBlock)completion;
+
+- (void)sortMetadataArray:(NSMutableArray *)metadata withMethod:(EXSortingMethodType)sortMethod;
+- (void)setupNameSortMethod;
+- (void)setupCreationDateSortMethod;
+- (void)setupModificationDateSortMethod;
+- (void)setupCreatorUserSortMethod;
+- (void)sortByCurrentMethodAndUpdateUI;
 
 @end
 
@@ -143,12 +152,12 @@ static const NSString * kArrowDownSymbol = @"\u2193";
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.rootTableView.userInteractionEnabled = YES;
                 [self.refreshControl endRefreshing];
-                [self sortProjectsByCurrentSortingMethod];
+                [self sortByCurrentMethodAndUpdateUI];
             });
         }];
     }
     else {
-        [self sortProjectsByCurrentSortingMethod];
+        [self sortByCurrentMethodAndUpdateUI];
     }
     
     self.title = NSLocalizedString(@"Apps", @"EXProjectsViewController title");
@@ -159,7 +168,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     self.refreshControl = refreshControl;
     [self.rootTableView addSubview:self.refreshControl];
     
-    UIBarButtonItem *bbLogout = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"logout"] style:UIBarButtonItemStylePlain target:self action:@selector(logoutButtonPressed:)];
+    UIBarButtonItem *bbLogout = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"logout"] style:UIBarButtonItemStylePlain target:self action:@selector(logoutAction:)];
     self.navigationItem.leftBarButtonItem = bbLogout;
 }
 
@@ -225,17 +234,10 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }
 }
 
-- (IBAction)logoutButtonPressed:(id)sender {
+- (void)logoutAction:(id)sender {
+    #pragma unused(sender)
     _currentProjectsSortingMethod = EXSortingMethodType_DateDescending;
     [self logoutFromService];
-}
-
-- (IBAction)sortByDateButtonPressed:(id)sender {
-    [self reverseSortProjectsByDate];
-}
-
-- (IBAction)sortByNameButtonPressed:(id)sender {
-    [self reverseSortProjectsByName];
 }
 
 #pragma mark - UITableViewDataSource protocol implementation
@@ -311,27 +313,46 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 #pragma mark - Configuration helpers
 
 - (void)configureToolbar {
-    EXToolbarItem *name = [[EXToolbarItem alloc] initWithImage:[UIImage imageNamed:@"name"] title:NSLocalizedString(@"Name", @"Name")];
-    [name addTarget:self selector:@selector(sortByNameButtonPressed:)];
+    NSMutableArray *actualTBItems = [NSMutableArray array];
+    
+    EXToolbarItem *name = [[EXToolbarItem alloc] initWithImageName:@"name" activeImageName:@"name_b" title:NSLocalizedString(@"Name", @"Name")];
+    name.delegate = self;
+    name.tag = [self tagBySortMethod:EXSortingMethodType_NameAscending];
+    [actualTBItems addObject:name];
     UIBarButtonItem *bbName = [[UIBarButtonItem alloc] initWithCustomView:name];
     
     UIBarButtonItem *flex1 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:NULL];
     
-    EXToolbarItem *date = [[EXToolbarItem alloc] initWithImage:[UIImage imageNamed:@"date"] title:NSLocalizedString(@"Created", @"Create")];
-    [name addTarget:self selector:@selector(sortByDateButtonPressed:)];
+    EXToolbarItem *date = [[EXToolbarItem alloc] initWithImageName:@"date" activeImageName:@"date_b" title:NSLocalizedString(@"Created", @"Create")];
+    date.delegate = self;
+    date.tag = [self tagBySortMethod:EXSortingMethodType_DateDescending];
+    [actualTBItems addObject:date];
     UIBarButtonItem *bbDate = [[UIBarButtonItem alloc] initWithCustomView:date];
     
     UIBarButtonItem *flex2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:NULL];
     
-    EXToolbarItem *mod = [[EXToolbarItem alloc] initWithImage:[UIImage imageNamed:@"modified"] title:NSLocalizedString(@"Modified", @"Modified")];
+    EXToolbarItem *mod = [[EXToolbarItem alloc] initWithImageName:@"modified" activeImageName:@"modified_b" title:NSLocalizedString(@"Modified", @"Modified")];
+    mod.delegate = self;
+    mod.tag = [self tagBySortMethod:EXSortingMethodType_ModificationdDescending];
+    [actualTBItems addObject:mod];
     UIBarButtonItem *bbMod = [[UIBarButtonItem alloc] initWithCustomView:mod];
     
     UIBarButtonItem *flex3 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:NULL];
     
-    EXToolbarItem *user = [[EXToolbarItem alloc] initWithImage:[UIImage imageNamed:@"user"] title:NSLocalizedString(@"User", @"User")];
+    EXToolbarItem *user = [[EXToolbarItem alloc] initWithImageName:@"user" activeImageName:@"user_b" title:NSLocalizedString(@"User", @"User")];
+    user.delegate = self;
+    user.tag = [self tagBySortMethod:EXSortingMethodType_CreatorAscending];
+    [actualTBItems addObject:user];
     UIBarButtonItem *bbUser = [[UIBarButtonItem alloc] initWithCustomView:user];
     
     [self.toolBar setItems:@[ bbName, flex1, bbDate, flex2, bbMod, flex3, bbUser ] animated:NO];
+    self.toolbarActualItems = actualTBItems;
+}
+
+- (void) deactivateToolbarItems {
+    for (EXToolbarItem *item in self.toolbarActualItems) {
+        [item setStateToActive:NO];
+    }
 }
 
 - (void)initializeProjectsMetadata:(NSArray *)projectsMetadata {
@@ -341,7 +362,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [self.filteredProjectsMetadata addObjectsFromArray:enabledProjectsMetadata];
     [self redefineAvailableFolders];
     [self configureSelectFolderViewController];
-    [self sortProjectsByCurrentSortingMethod];
+    [self sortByCurrentMethodAndUpdateUI];
 }
 
 - (void)loadProjectsMetadataCompletion:(EXProjectsMetadataViewControllerCompletionBlock)completion {
@@ -478,7 +499,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
         [self.filteredProjectsMetadata addObjectsFromArray:[self.projectsMetadata filteredArrayUsingPredicate:filterByOwnerPredicate]];
     }
     
-    [self sortProjectsByCurrentSortingMethod];
+    [self sortByCurrentMethodAndUpdateUI];
 }
 
 #pragma mark - KVO
@@ -527,93 +548,159 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     return [projectsMetadata filteredArrayUsingPredicate:enabledProjectsPredicate];
 }
 
-- (void)reverseSortProjectsByDate {
-    static BOOL ascending = NO;
-    
-    switch (self.currentProjectsSortingMethod) {
-        case EXSortingMethodType_DateAscending:
-            ascending = NO;
-            break;
-        case EXSortingMethodType_DateDescending:
-            ascending = YES;
-            break;
-        default:
-            break;
-    }
-    
-    [self sortProjectsByDateAscending:ascending];
-}
-
-- (void)sortProjectsByDateAscending:(BOOL)ascending {
-    // Sorting
-    [self.filteredProjectsMetadata sortUsingComparator: ^NSComparisonResult(id obj1, id obj2) {
-        EXProjectMetadata *first = (EXProjectMetadata *)obj1;
-        EXProjectMetadata *second = (EXProjectMetadata *)obj2;
+- (void)sortMetadataArray:(NSMutableArray *)metadata withMethod:(EXSortingMethodType)sortMethod {
+    [metadata sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        EXProjectMetadata *first = [obj1 as:[EXProjectMetadata class]];
+        EXProjectMetadata *second = [obj2 as:[EXProjectMetadata class]];
         
-        return ((ascending) ? [first.modifiedDate compare: second.modifiedDate] : [second.modifiedDate compare: first.modifiedDate]);
+        NSComparisonResult order = NSOrderedSame;
+        switch (sortMethod) {
+            case EXSortingMethodType_NameAscending:
+                order = [first.name localizedCaseInsensitiveCompare:second.name];
+                break;
+            case EXSortingMethodType_NameDescending:
+                order = [second.name localizedCaseInsensitiveCompare:first.name];
+                break;
+            case EXSortingMethodType_DateAscending:
+                order = [first.creationDate compare:second.creationDate];
+                break;
+            case EXSortingMethodType_DateDescending:
+                order = [second.creationDate compare:first.creationDate];
+                break;
+            case EXSortingMethodType_ModificationAscending:
+                order = [first.modifiedDate compare:second.modifiedDate];
+                break;
+            case EXSortingMethodType_ModificationdDescending:
+                order = [second.modifiedDate compare:first.modifiedDate];
+                break;
+            case EXSortingMethodType_CreatorAscending:
+                order = [first.creator localizedCaseInsensitiveCompare:second.creator];
+                break;
+            case EXSortingMethodType_CreatorDescending:
+                order = [second.creator localizedCaseInsensitiveCompare:first.creator];
+                break;
+            default:
+                break;
+        }
+        
+        return order;
     }];
-    
-    // UI changes
-    self.currentProjectsSortingMethod = ascending ? EXSortingMethodType_DateAscending : EXSortingMethodType_DateDescending;
-    
-    [self.rootTableView reloadData];
 }
 
-- (void)reverseSortProjectsByName {
-    static BOOL ascending = NO;
-    
+- (void)setupNameSortMethod {
     switch (self.currentProjectsSortingMethod) {
         case EXSortingMethodType_NameAscending:
-            ascending = NO;
-            break;
-        case EXSortingMethodType_NameDescending:
-            ascending = YES;
+            self.currentProjectsSortingMethod = EXSortingMethodType_NameDescending;
             break;
         default:
+            self.currentProjectsSortingMethod = EXSortingMethodType_NameAscending;
             break;
     }
-    
-    [self sortProjectsByNameAscending:ascending];
 }
 
-- (void)sortProjectsByNameAscending:(BOOL)ascending {
-    // Sorting
-    [self.filteredProjectsMetadata sortUsingComparator: ^NSComparisonResult(id obj1, id obj2) {
-        EXProjectMetadata *first = (EXProjectMetadata *)obj1;
-        EXProjectMetadata *second = (EXProjectMetadata *)obj2;
-        
-        if (ascending) {
-            return [first.name localizedCaseInsensitiveCompare: second.name];
-        }
-        else {
-            return [second.name localizedCaseInsensitiveCompare: first.name];
-        }
-    }];
-    
-    // UI changes
-    self.currentProjectsSortingMethod = ascending ? EXSortingMethodType_NameAscending : EXSortingMethodType_NameDescending;
-    
-    [self.rootTableView reloadData];
-}
-
-- (void)sortProjectsByCurrentSortingMethod {
+- (void)setupCreationDateSortMethod {
     switch (self.currentProjectsSortingMethod) {
-        case EXSortingMethodType_DateAscending:
-            [self sortProjectsByDateAscending:YES];
-            break;
         case EXSortingMethodType_DateDescending:
-            [self sortProjectsByDateAscending:NO];
-            break;
-        case EXSortingMethodType_NameAscending:
-            [self sortProjectsByNameAscending:YES];
-            break;
-        case EXSortingMethodType_NameDescending:
-            [self sortProjectsByNameAscending:NO];
+            self.currentProjectsSortingMethod = EXSortingMethodType_DateAscending;
             break;
         default:
-            [self reverseSortProjectsByDate];
+            self.currentProjectsSortingMethod = EXSortingMethodType_DateDescending;
             break;
     }
+}
+
+- (void)setupModificationDateSortMethod {
+    switch (self.currentProjectsSortingMethod) {
+        case EXSortingMethodType_ModificationdDescending:
+            self.currentProjectsSortingMethod = EXSortingMethodType_ModificationAscending;
+            break;
+        default:
+            self.currentProjectsSortingMethod = EXSortingMethodType_ModificationdDescending;
+            break;
+    }
+}
+
+- (void)setupCreatorUserSortMethod {
+    switch (self.currentProjectsSortingMethod) {
+        case EXSortingMethodType_CreatorAscending:
+            self.currentProjectsSortingMethod = EXSortingMethodType_CreatorDescending;
+            break;
+        default:
+            self.currentProjectsSortingMethod = EXSortingMethodType_CreatorAscending;
+            break;
+    }
+}
+
+- (void)sortByCurrentMethodAndUpdateUI {
+    MBProgressHUD *localHud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    [localHud setLabelText:NSLocalizedString(@"Sorting...", @"Sorting...")];
+    
+    [self deactivateToolbarItems];
+    EXToolbarItem *actualItem = [self.toolbarActualItems[[self tagBySortMethod:self.currentProjectsSortingMethod]] as:[EXToolbarItem class]];
+    [actualItem setStateToActive:YES];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self sortMetadataArray:self.filteredProjectsMetadata withMethod:self.currentProjectsSortingMethod];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.rootTableView reloadData];
+            [localHud hide:YES];
+        });
+    });
+}
+
+- (NSInteger) tagBySortMethod:(EXSortingMethodType)method {
+    NSInteger tag = -1;
+    switch (method) {
+        case EXSortingMethodType_NameAscending:
+        case EXSortingMethodType_NameDescending:
+            tag = 0;
+            break;
+        case EXSortingMethodType_DateAscending:
+        case EXSortingMethodType_DateDescending:
+            tag = 1;
+            break;
+        case EXSortingMethodType_ModificationAscending:
+        case EXSortingMethodType_ModificationdDescending:
+            tag = 2;
+            break;
+        case EXSortingMethodType_CreatorAscending:
+        case EXSortingMethodType_CreatorDescending:
+            tag = 3;
+            break;
+        default:
+            break;
+    }
+    return tag;
+}
+
+- (NSInteger)tagByCurrentSortMethod {
+    return [self tagBySortMethod:self.currentProjectsSortingMethod];
+}
+
+- (void)setCurrentSortMethodByTag:(NSInteger)tag {
+    switch (tag) {
+        case 0:
+            [self setupNameSortMethod];
+            break;
+        case 1:
+            [self setupCreationDateSortMethod];
+            break;
+        case 2:
+            [self setupModificationDateSortMethod];
+            break;
+        case 3:
+            [self setupCreatorUserSortMethod];
+            break;
+        default:
+            break;
+    }
+}
+
+#pragma mark - EXToolbarItemActionDelegate 
+
+- (void) didActivateToolbarItem:(EXToolbarItem *)item {
+    [self setCurrentSortMethodByTag:item.tag];
+    [self sortByCurrentMethodAndUpdateUI];
 }
 
 @end

@@ -11,31 +11,43 @@
 
 @interface EXToolbarItem ()
 
-@property (nonatomic, strong) UIButton *bAction;
 @property (nonatomic, strong) UIImageView *ivImage;
 @property (nonatomic, strong) UILabel *lTitle;
+@property (nonatomic, assign, readwrite) BOOL isActive;
+
+@property (nonatomic, strong) UIButton *bAction;
+
+- (void)toolbarItemAction:(id)sender;
 
 @end
 
 @implementation EXToolbarItem
 
-@dynamic image;
 @dynamic title;
 
-@synthesize bAction = _bAction;
+@synthesize imageName = _imageName;
+@synthesize activeImageName = _activeImageName;
+
 @synthesize ivImage = _ivImage;
 @synthesize lTitle = _lTitle;
+@synthesize isActive = _isActive;
+@synthesize delegate = _delegate;
+
+@synthesize bAction = _bAction;
 
 #pragma mark - Lifecycle
 
-- (instancetype)initWithImage:(UIImage *)image title:(NSString *)title {
+- (instancetype)initWithImageName:(NSString *)imageName activeImageName:(NSString *)activeImageName title:(NSString *)title {
     self = [super initWithFrame:CGRectMake(0., 0., 44., 44.)];
     if (self == nil) {
         return nil;
     }
     
+    _imageName = imageName;
+    _activeImageName = activeImageName;
+    
     _ivImage = [[UIImageView alloc] initWithFrame:CGRectZero];
-    _ivImage.image = image;
+    _ivImage.image = (_imageName.length > 0) ? [UIImage imageNamed:imageName] : nil;
     [self addSubview:_ivImage];
     
     _lTitle = [[UILabel alloc] initWithFrame:CGRectZero];
@@ -46,21 +58,14 @@
     [self addSubview:_lTitle];
     
     _bAction = [UIButton buttonWithType:UIButtonTypeCustom];
-    _bAction.frame = self.frame;
+    _bAction.frame = self.bounds;
+    [_bAction addTarget:self action:@selector(toolbarItemAction:) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:_bAction];
     
     return self;
 }
 
 #pragma mark - Getter/Setter
-
-- (UIImage *)image {
-    return self.ivImage.image;
-}
-
-- (void)setImage:(UIImage *)image {
-    self.ivImage.image = image;
-}
 
 - (NSString *)title {
     return self.lTitle.text;
@@ -72,8 +77,29 @@
 
 #pragma mark - Public class logic
 
-- (void)addTarget:(NSObject *)target selector:(SEL)selector {
-    [self.bAction addTarget:target action:selector forControlEvents:UIControlEventTouchUpInside];
+- (void)setStateToActive:(BOOL)active {
+    self.isActive = active;
+    if (self.isActive) {
+        self.lTitle.textColor = [UIColor colorFromHEXString:@"#2581FF"];
+        if (self.activeImageName.length > 0) {
+            self.ivImage.image = [UIImage imageNamed:self.activeImageName];
+        }
+    }
+    else {
+        self.lTitle.textColor = [UIColor colorFromHEXString:@"#BDBDBD"];
+        if (self.imageName) {
+            self.ivImage.image = [UIImage imageNamed:self.imageName];
+        }
+    }
+}
+
+#pragma mark - Action handler 
+
+- (void)toolbarItemAction:(id)sender {
+    id<EXToolbarItemActionDelegate> del = self.delegate;
+    if ([del respondsToSelector:@selector(didActivateToolbarItem:)]) {
+        [del didActivateToolbarItem:self];
+    }
 }
 
 #pragma mark - View management

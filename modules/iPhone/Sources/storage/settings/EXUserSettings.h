@@ -8,12 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
-typedef enum {
-    EXSortingMethodType_DateDescending = 0,
+typedef NS_ENUM(NSInteger, EXSortingMethodType) {
+    EXSortingMethodType_DateDescending,
     EXSortingMethodType_DateAscending,
     EXSortingMethodType_NameDescending,
     EXSortingMethodType_NameAscending,
-} EXSortingMethodType;
+    EXSortingMethodType_ModificationdDescending,
+    EXSortingMethodType_ModificationAscending,
+    EXSortingMethodType_CreatorDescending,
+    EXSortingMethodType_CreatorAscending,
+};
 
 /**
  * This class provides access to user settings which define this application's behaviour.
@@ -23,7 +27,7 @@ typedef enum {
 /**
  * Defines user name
  */
-@property (nonatomic, retain) NSString *userName;
+@property (nonatomic, strong) NSString *userName;
 
 /**
  * Defines if application should to remember current user

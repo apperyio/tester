@@ -132,7 +132,7 @@
     RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
     if ( manager.isSidebarShown ) {
         __weak RootViewControllerManager *weakManager = manager;
-        [manager setSidebarEnabled:NO animated:YES completionBlock:^{
+        [manager setSidebarEnabled:NO animated:NO completionBlock:^{
             RootViewControllerManager *blockManager = weakManager;
             [blockManager setSidebarViewController:nil];
         }];
