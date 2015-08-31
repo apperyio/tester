@@ -210,7 +210,13 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
             
             [manager setSidebarViewController:pmvc];
             [manager setSidebarEnabled:YES];
-            [manager pushRootViewController:pvc animated:YES completionBlock:nil];
+            __weak RootViewControllerManager *weakManager = manager;
+            [manager pushRootViewController:pvc animated:YES completionBlock:^{
+                RootViewControllerManager *strongManager = weakManager;
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [strongManager showSidebarController:nil animated:YES completionBlock:nil];
+                });
+            }];
         }
         else {
             [manager pushRootViewController:pmvc animated:YES completionBlock:nil];

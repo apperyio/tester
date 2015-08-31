@@ -96,13 +96,6 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     [self.navigationController setNavigationBarHidden:YES animated:NO];
 }
 
-#warning Need to show sidebar somehow.
-//- (void)viewDidAppear:(BOOL)animated {
-//    [super viewDidAppear:animated];
-//    
-//    [[RootViewControllerManager sharedInstance] showSidebarController:nil animated:YES completionBlock:nil];
-//}
-
 #pragma mark - Public interface implementation
 
 - (void) updateContent {
