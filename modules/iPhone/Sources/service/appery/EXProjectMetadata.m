@@ -21,6 +21,11 @@ static NSString *const kProjectSharedWithSupport = @"sharedWithSupport";
 static NSString *const kProjectSharedWithSupportBy = @"sharedWithSupportBy";
 static NSString *const kProjectType = @"type";
 
+typedef NS_ENUM(NSInteger, FormattedOutputRequirement) {
+    FORDateAndTime = 0,
+    FORDateOnly
+};
+
 #pragma mark - Private interface declaration
 
 @interface EXProjectMetadata ()
@@ -28,7 +33,7 @@ static NSString *const kProjectType = @"type";
 /**
  * Format date specifiied in milliseconds (from 1970 year) to convinient string representation.
  */
-- (NSString *) formatDateFromMiliseconds: (NSNumber *) milliseconds;
+- (NSString *)formatDateFromUTCMilliseconds:(NSNumber *) utcDate outputRequirement:(FormattedOutputRequirement) requirement;
 
 /**
  * @return - YES if specified value is nil or it's string representation is equal to "null"
@@ -47,17 +52,16 @@ static NSString *const kProjectType = @"type";
 
 #pragma mark - Initialization
 
-- (id) initWithMetadata: (NSDictionary *) metadata
-{
+- (instancetype)initWithMetadata:(NSDictionary *)metadata {
     if (self = [super init]) {
         self._id =  [self getCorrectValue:[metadata objectForKey: kProjectId]];
         self.creationDate =  [self getCorrectValue:[metadata objectForKey: kProjectCreationDate]];
         if (self.creationDate == nil) {
-            self.creationDate = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSinceReferenceDate]];
+            self.creationDate = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSinceReferenceDate] * 1000];
         }
         self.modifiedDate =  [self getCorrectValue:[metadata objectForKey: kProjectModifiedDate]];
         if (self.modifiedDate == nil) {
-            self.modifiedDate = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSinceReferenceDate]];
+            self.modifiedDate = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSinceReferenceDate] * 1000];
         }
         self.creator = [self getCorrectValue:[metadata objectForKey: kProjectCreator]];
         self.disabled = [self getCorrectValue:[metadata objectForKey: kProjectDisabled]];
@@ -75,36 +79,38 @@ static NSString *const kProjectType = @"type";
 
 #pragma mark - Getters
 
-- (NSString *) formattedModifiedDate
-{
-    return [self formatDateFromMiliseconds: self.modifiedDate];
+- (NSString *)formattedModifiedDate {
+    return [self formatDateFromUTCMilliseconds:self.modifiedDate outputRequirement:FORDateOnly];
 }
 
 #pragma mark - Override
 
-- (NSString *) description
-{
+- (NSString *)description {
     return [NSString stringWithFormat: @"guid = %@, name = %@", self.guid, self.name];
 }
 
 #pragma mark - Private interface implementation
 
-- (NSString *) formatDateFromMiliseconds:(NSNumber *) milliseconds
-{
-    NSDate *date = [NSDate dateWithTimeIntervalSince1970:[milliseconds doubleValue] * 0.001];
+- (NSString *)formatDateFromUTCMilliseconds:(NSNumber *) utcDate outputRequirement:(FormattedOutputRequirement) requirement {
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:[utcDate doubleValue] * 0.001];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyy-MM-dd kk:mm:ss"];
-    
+    switch (requirement) {
+        case FORDateOnly:
+            [dateFormatter setDateFormat:@"MM.dd.yyyy"];
+            break;
+        default:
+            [dateFormatter setDateFormat:@"MM.dd.yyyy kk:mm:ss"];
+            break;
+    }
+
     return [dateFormatter stringFromDate: date];
 }
 
-- (BOOL) isEmptyValue: (id)value
-{
+- (BOOL)isEmptyValue:(id)value {
     return (value == nil) || value == [NSNull null];
 }
                     
-- (id) getCorrectValue: (id) value
-{
+- (id)getCorrectValue:(id)value {
     return [self isEmptyValue: value] ? nil : value;
 }
     

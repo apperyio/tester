@@ -31,6 +31,6 @@
  * Initialize this object with values specified in properties dictionary.
  * @param metadata - dictionary with project's metadata received from the appery.io service.
  */
-- (id) initWithMetadata: (NSDictionary *) metadata;
+- (instancetype)initWithMetadata:(NSDictionary *)metadata;
 
 @end

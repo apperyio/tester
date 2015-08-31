@@ -8,11 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
+extern NSString *const kEXProjectMetadataCell;
+
+@class EXProjectMetadata;
+
 @interface EXProjectMetadataCell : UITableViewCell
 
-@property (retain, nonatomic) IBOutlet UILabel *projectNameLabel;
-@property (retain, nonatomic) IBOutlet UILabel *authorLabel;
-@property (retain, nonatomic) IBOutlet UILabel *modificationDateLabel;
-@property (retain, nonatomic) IBOutlet UIImageView *projectTypeIcon;
+- (void)updateWithMetadata:(EXProjectMetadata *)metadata;
+
++ (CGFloat) height;
 
 @end

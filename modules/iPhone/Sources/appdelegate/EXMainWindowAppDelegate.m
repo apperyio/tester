@@ -10,6 +10,7 @@
 #import "EXApperyService.h"
 #import "EXUserSettingsStorage.h"
 #import "MBProgressHUD.h"
+#import "UIColor+hexColor.h"
 
 #import "EXSignInViewController.h"
 #import "RootViewControllerManager.h"
@@ -63,6 +64,10 @@
     
     [self navigateToStartPage];
     [self.window makeKeyAndVisible];
+    
+    [[UINavigationBar appearance] setBarTintColor:[UIColor colorFromHEXString:@"#F6F6F6"]];
+    [[UINavigationBar appearance] setTintColor:[UIColor colorFromHEXString:@"#4D4D4D"]];
+    [[UINavigationBar appearance] setTitleTextAttributes:@{ NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue" size:20.], NSForegroundColorAttributeName: [UIColor colorFromHEXString:@"#4D4D4D"] }];
     
     return YES;
 }

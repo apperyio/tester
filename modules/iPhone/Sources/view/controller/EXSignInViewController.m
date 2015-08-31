@@ -17,10 +17,9 @@
 #import "EXMainWindowAppDelegate.h"
 
 #import "MBProgressHUD.h"
-#import "NSStringMask.h"
+#import "EXAppCodeController.h"
 
 static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
-static const NSInteger kAppCodeTextFieldTag = 111;
 
 @interface EXSignInViewController () <UITableViewDataSource, UITableViewDelegate, EXSignInCellActionDelegate, UITextFieldDelegate>
 
@@ -34,10 +33,10 @@ static const NSInteger kAppCodeTextFieldTag = 111;
 @property (nonatomic, weak) IBOutlet UIButton *bAppCode;
 @property (nonatomic, weak) IBOutlet UILabel *lCopyright;
 
-@property (nonatomic, strong) NSStringMask *mask;
-
 @property (nonatomic, strong) NSString *uname;
 @property (nonatomic, strong) NSString *pwd;
+
+@property (nonatomic, strong) EXAppCodeController *appCodeController;
 
 - (IBAction)appCodeAction:(id)sender;
 
@@ -60,10 +59,10 @@ static const NSInteger kAppCodeTextFieldTag = 111;
 @synthesize bAppCode = _bAppCode;
 @synthesize lCopyright = _lCopyright;
 
-@synthesize mask = _mask;
-
 @synthesize uname = _uname;
 @synthesize pwd = _pwd;
+
+@synthesize appCodeController = _appCodeController;
 
 #pragma mark - Lifecycle
 
@@ -78,7 +77,6 @@ static const NSInteger kAppCodeTextFieldTag = 111;
     }
     
     _apperyService = service;
-    _mask = [[NSStringMask alloc] initWithPattern:@"(\\d{3})-(\\d{3})-(\\d{3})" placeholder:@"_"];
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.shouldHideNavigationBar = YES;
     
@@ -207,9 +205,8 @@ static const NSInteger kAppCodeTextFieldTag = 111;
 
 - (void) composeUIForMetadata:(NSArray *)metadata appCode:(NSString *)appCode location:(NSString *)location startPage:(NSString *)startPage {
     RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
-    EXProjectsMetadataViewController *pmvc = [[EXProjectsMetadataViewController alloc] initWithNibName:nil bundle:nil service:self.apperyService projectsMetadata:metadata];
-
     if (metadata != nil) {
+        EXProjectsMetadataViewController *pmvc = [[EXProjectsMetadataViewController alloc] initWithNibName:nil bundle:nil service:self.apperyService projectsMetadata:metadata];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectMetadata:nil];
             
@@ -219,11 +216,7 @@ static const NSInteger kAppCodeTextFieldTag = 111;
             
             [manager setSidebarViewController:pmvc];
             [manager setSidebarEnabled:YES];
-            __weak RootViewControllerManager *weakManager = manager;
-            [manager pushRootViewController:pvc animated:YES completionBlock:^{
-                RootViewControllerManager *blockManager = weakManager;
-                [blockManager showSidebarController:nil animated:YES completionBlock:nil];
-            }];
+            [manager pushRootViewController:pvc animated:YES completionBlock:nil];
         }
         else {
             [manager pushRootViewController:pmvc animated:YES completionBlock:nil];
@@ -236,18 +229,12 @@ static const NSInteger kAppCodeTextFieldTag = 111;
         pvc.startPage = startPage;
         
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            pmvc.delegate = pvc;
-            
-            [manager setSidebarViewController:pmvc];
-            [manager setSidebarEnabled:YES];
-            __weak RootViewControllerManager *weakManager = manager;
-            [manager pushRootViewController:pvc animated:YES completionBlock:^{
-                RootViewControllerManager *blockManager = weakManager;
-                [blockManager showSidebarController:nil animated:YES completionBlock:nil];
-            }];
+            [manager setSidebarViewController:nil];
+            [manager setSidebarEnabled:NO];
+            [manager pushRootViewController:pvc animated:YES completionBlock:nil];
+            [pvc updateContent];
         }
         else {
-            [manager pushRootViewController:pmvc animated:NO completionBlock:nil];
             [manager pushRootViewController:pvc animated:YES completionBlock:nil];
         }
     }
@@ -256,22 +243,37 @@ static const NSInteger kAppCodeTextFieldTag = 111;
 #pragma mark - Action handlers
 
 - (IBAction)appCodeAction:(id)sender {
-    UIAlertView *shareAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Enter an app code", @"Enter an app code")
-                                                         message:nil
-                                                        delegate:self
-                                               cancelButtonTitle:@"Cancel"
-                                               otherButtonTitles:@"Enter", nil];
-    
-    shareAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
-    
-    UITextField *textfield = [shareAlert textFieldAtIndex:0];
-    textfield.backgroundColor = [UIColor clearColor];
-    textfield.placeholder = @"App code";
-    textfield.tag = kAppCodeTextFieldTag;
-    textfield.keyboardType = UIKeyboardTypeNumberPad;
-    textfield.returnKeyType = UIReturnKeyDone;
-    textfield.delegate = self;
-    [shareAlert show];
+    self.appCodeController = [[EXAppCodeController alloc] init];
+    [self.appCodeController requestCodeWithCompletionHandler:^(NSString *appCode){
+        [self composeUIForMetadata:nil appCode:appCode location:@"www" startPage:@"index.html"];
+//        
+//        UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
+//        MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo:rootView animated:YES];
+//        progressHud.labelText = NSLocalizedString(@"Loading app", @"Loading app progress hud title");
+//        [self.apperyService loadProjectForAppCode:appCode
+//                                          succeed:^(NSString *projectLocation, NSString *startPageName) {
+//                                              DLog(@"The project for code: '%@' has been loaded.", appCode);
+//                                              dispatch_async(dispatch_get_main_queue(), ^{
+//                                                  [progressHud hide: NO];
+//        
+//                                                  [self composeUIForMetadata:nil appCode:appCode location:projectLocation startPage:startPageName];
+//                                              });
+//                                          }
+//                                           failed:^(NSError *error) {
+//                                               dispatch_async(dispatch_get_main_queue(), ^{
+//                                                   DLog(@"The project with code: '%@' has NOT been loaded. Error: %@", appCode, error.localizedDescription);
+//                                                   [progressHud hide: NO];
+//        
+//                                                   [[[UIAlertView alloc] initWithTitle: error.localizedDescription
+//                                                                               message: error.localizedRecoverySuggestion
+//                                                                              delegate: nil
+//                                                                     cancelButtonTitle: NSLocalizedString(@"Ok", nil)
+//                                                                     otherButtonTitles: nil] show];
+//                                               });
+//                                           }
+//        ];
+        self.appCodeController = nil;
+    }];
 }
 
 #pragma mark - UITableViewDataSource
@@ -398,80 +400,6 @@ static const NSInteger kAppCodeTextFieldTag = 111;
         default:
             break;
     }
-}
-
-#pragma mark - UIAlertViewDelegate implementation
-
-- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
-    if (buttonIndex == 0) {
-        return;
-    }
-    
-    UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
-    MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo:rootView animated:YES];
-    progressHud.labelText = NSLocalizedString(@"Loading app", @"Loading app progress hud title");
-    
-    NSString *appCode = [[alertView textFieldAtIndex:0] text];
-    
-    [self.apperyService loadProjectForAppCode:appCode
-                                      succeed:^(NSString *projectLocation, NSString *startPageName) {
-                                          DLog(@"The project for code: '%@' has been loaded.", appCode);
-                                          dispatch_async(dispatch_get_main_queue(), ^{
-                                              [progressHud hide: NO];
-                                              
-                                              [self composeUIForMetadata:nil appCode:appCode location:projectLocation startPage:startPageName];
-                                          });
-                                        }
-                                       failed:^(NSError *error) {
-                                           dispatch_async(dispatch_get_main_queue(), ^{
-                                               DLog(@"The project with code: '%@' has NOT been loaded. Error: %@", appCode, error.localizedDescription);
-                                               [progressHud hide: NO];
-                                               
-                                               [[[UIAlertView alloc] initWithTitle: error.localizedDescription
-                                                                           message: error.localizedRecoverySuggestion
-                                                                          delegate: nil
-                                                                 cancelButtonTitle: NSLocalizedString(@"Ok", nil)
-                                                                 otherButtonTitles: nil] show];
-                                           });
-                                        }
-     ];
-}
-
-- (BOOL)alertViewShouldEnableFirstOtherButton:(UIAlertView *)alertView {
-    return YES;
-}
-
-#pragma mark - UITextField delegaete
-
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    [textField resignFirstResponder];
-    return YES;
-}
-
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-    if (textField.tag != kAppCodeTextFieldTag) {
-        return YES;
-    }
-    
-    NSRange newRange = NSMakeRange(0, 0);
-    NSString *mutableString = [textField.text stringByReplacingCharactersInRange:range withString:string];
-    NSString *clean = [self.mask validCharactersForString:mutableString];
-    mutableString = [self.mask format:mutableString];
-    
-    if (clean.length > 0) {
-        newRange = [mutableString rangeOfString:[clean substringFromIndex:clean.length - 1] options:NSBackwardsSearch];
-        if (newRange.location == NSNotFound) {
-            newRange.location = mutableString.length;
-        }
-        else {
-            newRange.location += newRange.length;
-        }
-        newRange.length = 0;
-    }
-    
-    textField.text = mutableString;
-    [textField setValue:[NSValue valueWithRange:newRange] forKey:@"selectionRange"];
-    return NO;
 }
 
 #pragma mark - Keyboard notification handlers

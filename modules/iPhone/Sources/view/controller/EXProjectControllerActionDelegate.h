@@ -15,5 +15,6 @@
 @required
 - (void)masterControllerDidLogout;
 - (void)masterControllerDidLoadMetadata:(EXProjectMetadata *)metadata;
+- (void)masterControllerDidAcquireAppCode:(NSString *)appCode;
 
 @end

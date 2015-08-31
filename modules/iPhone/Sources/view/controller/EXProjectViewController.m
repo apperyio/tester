@@ -96,6 +96,13 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     [self.navigationController setNavigationBarHidden:YES animated:NO];
 }
 
+#warning Need to show sidebar somehow.
+//- (void)viewDidAppear:(BOOL)animated {
+//    [super viewDidAppear:animated];
+//    
+//    [[RootViewControllerManager sharedInstance] showSidebarController:nil animated:YES completionBlock:nil];
+//}
+
 #pragma mark - Public interface implementation
 
 - (void) updateContent {
@@ -105,7 +112,7 @@ static NSString *const kDefaultWebResourceFolder = @"www";
 #pragma mark - Private interface implementation
 
 - (NSString *)defaultTitle {
-    return NSLocalizedString(@"Select app", @"App view controller | Default title");
+    return NSLocalizedString(@"App Preview", @"App view controller | Default title");
 }
 
 - (void) configureNavigationBar {
@@ -133,7 +140,12 @@ static NSString *const kDefaultWebResourceFolder = @"www";
         [manager toggleSidebarControllerAnimated:YES completionBlock:nil];
     }
     else {
-        [self.navigationController popViewControllerAnimated:YES];
+        if ([self.navigationController.viewControllers count] <= 1) {
+            [self masterControllerDidLogout];
+        }
+        else {
+            [self.navigationController popViewControllerAnimated:YES];
+        }
     }
 }
 
@@ -163,6 +175,10 @@ static NSString *const kDefaultWebResourceFolder = @"www";
                           cancelButtonTitle:NSLocalizedString(@"Ok", nil)
                           otherButtonTitles:nil] show];
         return;
+    }
+    
+    if ([[RootViewControllerManager sharedInstance] isSidebarShown]) {
+        [[RootViewControllerManager sharedInstance] hideSidebarControllerAnimated:YES completionBlock:nil];
     }
     
     UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
@@ -289,6 +305,10 @@ static NSString *const kDefaultWebResourceFolder = @"www";
 
 - (void)masterControllerDidLoadMetadata:(EXProjectMetadata *)metadata {
     [self loadProjectForMetadata:metadata];
+}
+
+- (void)masterControllerDidAcquireAppCode:(NSString *)appCode {
+    [self loadProjectForAppCode:appCode];
 }
 
 @end

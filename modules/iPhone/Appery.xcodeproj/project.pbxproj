@@ -47,6 +47,7 @@
 		3629DEBA1B8355360066D254 /* UIColor+hexColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 3629DEB11B8355360066D254 /* UIColor+hexColor.m */; };
 		3629DEBB1B8355360066D254 /* UIDevice+System.m in Sources */ = {isa = PBXBuildFile; fileRef = 3629DEB31B8355360066D254 /* UIDevice+System.m */; };
 		3629DEBC1B8355360066D254 /* UIView+LayerManagement.m in Sources */ = {isa = PBXBuildFile; fileRef = 3629DEB51B8355360066D254 /* UIView+LayerManagement.m */; };
+		36C233A41B949848005C1241 /* EXAppCodeController.m in Sources */ = {isa = PBXBuildFile; fileRef = 36C233A31B949848005C1241 /* EXAppCodeController.m */; };
 		36D82C371B90947600BEDEB6 /* date_b.png in Resources */ = {isa = PBXBuildFile; fileRef = 36D82C2C1B90947600BEDEB6 /* date_b.png */; };
 		36D82C381B90947600BEDEB6 /* date_b@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 36D82C2D1B90947600BEDEB6 /* date_b@2x.png */; };
 		36D82C391B90947600BEDEB6 /* date_b@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 36D82C2E1B90947600BEDEB6 /* date_b@3x.png */; };
@@ -239,6 +240,8 @@
 		3629DEB31B8355360066D254 /* UIDevice+System.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+System.m"; sourceTree = "<group>"; };
 		3629DEB41B8355360066D254 /* UIView+LayerManagement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+LayerManagement.h"; sourceTree = "<group>"; };
 		3629DEB51B8355360066D254 /* UIView+LayerManagement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+LayerManagement.m"; sourceTree = "<group>"; };
+		36C233A21B949848005C1241 /* EXAppCodeController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppCodeController.h; sourceTree = "<group>"; };
+		36C233A31B949848005C1241 /* EXAppCodeController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppCodeController.m; sourceTree = "<group>"; };
 		36D82C2C1B90947600BEDEB6 /* date_b.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = date_b.png; sourceTree = "<group>"; };
 		36D82C2D1B90947600BEDEB6 /* date_b@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "date_b@2x.png"; sourceTree = "<group>"; };
 		36D82C2E1B90947600BEDEB6 /* date_b@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "date_b@3x.png"; sourceTree = "<group>"; };
@@ -639,6 +642,8 @@
 				36D82C441B909F6E00BEDEB6 /* EXToolbarItemActionDelegate.h */,
 				361449DF1B8EF7E800CD2CE2 /* EXToolbarItem.h */,
 				361449E01B8EF7E800CD2CE2 /* EXToolbarItem.m */,
+				36C233A21B949848005C1241 /* EXAppCodeController.h */,
+				36C233A31B949848005C1241 /* EXAppCodeController.m */,
 			);
 			name = universal;
 			path = iPhone;
@@ -1334,6 +1339,7 @@
 				361449EB1B8F1CE300CD2CE2 /* RootViewControllerManager.m in Sources */,
 				68A76D1417461ED8000603E1 /* NSString+URLUtility.m in Sources */,
 				D4F876F31AB994B700CE2C6F /* CDVJpegHeaderWriter.m in Sources */,
+				36C233A41B949848005C1241 /* EXAppCodeController.m in Sources */,
 				D4F876F11AB994B700CE2C6F /* CDVBattery.m in Sources */,
 				D4B59F4819F7CB2F00649292 /* EXSelectViewController.m in Sources */,
 				68A76D1517461ED8000603E1 /* EXApperyService.m in Sources */,

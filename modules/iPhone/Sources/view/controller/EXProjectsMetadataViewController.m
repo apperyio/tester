@@ -24,6 +24,7 @@
 #import "EXMainWindowAppDelegate.h"
 #import "RootViewControllerManager.h"
 #import "NSObject+Utils.h"
+#import "EXAppCodeController.h"
 
 #pragma mark - UI string constants
 
@@ -67,6 +68,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 @property (nonatomic, strong) NSArray *toolbarActualItems;
 
+@property (nonatomic, strong) EXAppCodeController *appCodeController;
 /**
  * @returns reusable custom UITableViewCell object.
  */
@@ -116,6 +118,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 @synthesize currentProjectsSortingMethod = _currentProjectsSortingMethod;
 @synthesize isObservingRegistered = _isObservingRegistered;
 @synthesize folders = _folders;
+@synthesize toolbarActualItems = _toolbarActualItems;
+@synthesize appCodeController = _appCodeController;
 
 #pragma mark - Life cycle
 
@@ -146,6 +150,10 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [self registerRotationObserving];
     [super viewDidLoad];
     
+    [self.rootTableView registerNib:[UINib nibWithNibName:@"EXProjectMetadataCell" bundle:nil] forCellReuseIdentifier:kEXProjectMetadataCell];
+    self.rootTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.rootTableView.separatorColor = [UIColor clearColor];
+    
     [self configureToolbar];
     if (self.projectsMetadata.count == 0) {
         [self loadProjectsMetadataCompletion:^(BOOL succeeded) {
@@ -160,7 +168,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
         [self sortByCurrentMethodAndUpdateUI];
     }
     
-    self.title = NSLocalizedString(@"Apps", @"EXProjectsViewController title");
+    self.title = NSLocalizedString(@"My Apps", @"EXProjectsViewController title");
     
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:@"Loading apps"];
@@ -170,6 +178,9 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     
     UIBarButtonItem *bbLogout = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"logout"] style:UIBarButtonItemStylePlain target:self action:@selector(logoutAction:)];
     self.navigationItem.leftBarButtonItem = bbLogout;
+    
+    UIBarButtonItem *bbAppCode = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"AppCode", @"AppCode") style:UIBarButtonItemStylePlain target:self action:@selector(appCodeAction:)];
+    self.navigationItem.rightBarButtonItem = bbAppCode;
 }
 
 - (void) viewWillAppear:(BOOL)animated {
@@ -240,6 +251,55 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [self logoutFromService];
 }
 
+- (void)appCodeAction:(id)sender {
+    #pragma unused(sender)
+    self.appCodeController = [[EXAppCodeController alloc] init];
+    [self.appCodeController requestCodeWithCompletionHandler:^(NSString *appCode){
+        id<EXProjectControllerActionDelegate> del = self.delegate;
+        if (del != nil) {
+            [del masterControllerDidAcquireAppCode:appCode];
+        }
+        else {
+            EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectCode:appCode];
+            pvc.wwwFolderName = @"www";
+            pvc.startPage = @"index.html";
+            
+            [pvc updateContent];
+            [self.navigationController pushViewController:pvc animated:YES];
+//            UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
+//            MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo:rootView animated:YES];
+//            progressHud.labelText = NSLocalizedString(@"Loading app", @"Loading app progress hud title");
+//            [self.apperyService loadProjectForAppCode:appCode
+//                                              succeed:^(NSString *projectLocation, NSString *startPageName) {
+//                                                  DLog(@"The project for code: '%@' has been loaded.", appCode);
+//                                                  dispatch_async(dispatch_get_main_queue(), ^{
+//                                                      [progressHud hide: NO];
+//                                                      
+//                                                      EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectCode:appCode];
+//                                                      pvc.wwwFolderName = projectLocation;
+//                                                      pvc.startPage = startPageName;
+//                                                      
+//                                                      [self.navigationController pushViewController:pvc animated:YES];
+//                                                  });
+//                                              }
+//                                               failed:^(NSError *error) {
+//                                                   dispatch_async(dispatch_get_main_queue(), ^{
+//                                                       DLog(@"The project with code: '%@' has NOT been loaded. Error: %@", appCode, error.localizedDescription);
+//                                                       [progressHud hide: NO];
+//                                                       
+//                                                       [[[UIAlertView alloc] initWithTitle: error.localizedDescription
+//                                                                                   message: error.localizedRecoverySuggestion
+//                                                                                  delegate: nil
+//                                                                         cancelButtonTitle: NSLocalizedString(@"Ok", nil)
+//                                                                         otherButtonTitles: nil] show];
+//                                                   });
+//                                               }
+//             ];
+        }
+        self.appCodeController = nil;
+    }];
+}
+
 #pragma mark - UITableViewDataSource protocol implementation
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -254,38 +314,19 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     NSAssert(self.filteredProjectsMetadata != nil, @"No data to feed EXProjectsViewController");
     NSAssert(indexPath.row < self.filteredProjectsMetadata.count , @"No data for the specified indexPath");
     
-    EXProjectMetadata *projectMetadata = [self.filteredProjectsMetadata objectAtIndex:indexPath.row];
-    EXProjectMetadataCell *cell = [self getCustomTableViewCell];
-    cell.projectNameLabel.text = projectMetadata.name;
-    cell.authorLabel.text = projectMetadata.creator;
-    cell.modificationDateLabel.text = projectMetadata.formattedModifiedDate;
-    
-    switch ([projectMetadata.type intValue]) {
-        case 1:
-            [cell.projectTypeIcon setImage:[UIImage imageNamed: @"icon_jqm"]];
-            break;
-        
-        case 7:
-            [cell.projectTypeIcon setImage:[UIImage imageNamed: @"icon_bootsrap"]];
-            break;
-        
-        case 8:
-            [cell.projectTypeIcon setImage:[UIImage imageNamed: @"icon_ionic"]];
-            break;
-        
-        default:
-            break;
+    EXProjectMetadata* projectMetadata = [self.filteredProjectsMetadata objectAtIndex:indexPath.row];
+    EXProjectMetadataCell* cell = [tableView dequeueReusableCellWithIdentifier:kEXProjectMetadataCell];
+    if (cell == nil) {
+        return [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"UNEXPECTED_CELL"];
     }
-    
-	return cell;
+    [cell updateWithMetadata:projectMetadata];
+    return cell;
 }
 
 #pragma mark - UITableViewDelegete protocol implementation
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    EXProjectMetadataCell *cell = [self getCustomTableViewCell];
-    
-    return cell.bounds.size.height;
+    return [EXProjectMetadataCell height];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -420,6 +461,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 #pragma mark - UI helpers
 
 - (EXProjectMetadataCell *)getCustomTableViewCell {
+    
+    
     static NSString *cellIdentifier = @"ProjectMetadataCellIdentifier";
     EXProjectMetadataCell *cell = (EXProjectMetadataCell *)[self.rootTableView dequeueReusableCellWithIdentifier: cellIdentifier];
     
