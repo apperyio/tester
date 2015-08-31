@@ -264,37 +264,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
             pvc.wwwFolderName = @"www";
             pvc.startPage = @"index.html";
             
-            [pvc updateContent];
             [self.navigationController pushViewController:pvc animated:YES];
-//            UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
-//            MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo:rootView animated:YES];
-//            progressHud.labelText = NSLocalizedString(@"Loading app", @"Loading app progress hud title");
-//            [self.apperyService loadProjectForAppCode:appCode
-//                                              succeed:^(NSString *projectLocation, NSString *startPageName) {
-//                                                  DLog(@"The project for code: '%@' has been loaded.", appCode);
-//                                                  dispatch_async(dispatch_get_main_queue(), ^{
-//                                                      [progressHud hide: NO];
-//                                                      
-//                                                      EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectCode:appCode];
-//                                                      pvc.wwwFolderName = projectLocation;
-//                                                      pvc.startPage = startPageName;
-//                                                      
-//                                                      [self.navigationController pushViewController:pvc animated:YES];
-//                                                  });
-//                                              }
-//                                               failed:^(NSError *error) {
-//                                                   dispatch_async(dispatch_get_main_queue(), ^{
-//                                                       DLog(@"The project with code: '%@' has NOT been loaded. Error: %@", appCode, error.localizedDescription);
-//                                                       [progressHud hide: NO];
-//                                                       
-//                                                       [[[UIAlertView alloc] initWithTitle: error.localizedDescription
-//                                                                                   message: error.localizedRecoverySuggestion
-//                                                                                  delegate: nil
-//                                                                         cancelButtonTitle: NSLocalizedString(@"Ok", nil)
-//                                                                         otherButtonTitles: nil] show];
-//                                                   });
-//                                               }
-//             ];
+            [pvc updateContent];            
         }
         self.appCodeController = nil;
     }];

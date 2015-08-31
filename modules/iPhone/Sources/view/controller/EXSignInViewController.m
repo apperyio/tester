@@ -194,13 +194,7 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     userSettings.userName = self.uname;
     userSettings.shouldRememberMe = YES;
     userSettings.sortMethodType = [[usStorage retreiveLastStoredSettings] sortMethodType];
-    [usStorage storeSettings: userSettings];
-    
-//    // save user credentials
-//    if ([EXCredentialsManager addPassword:self.pwd forUser:self.uname] == NO) {
-//        // not critical
-//        DLog(@"Can not add password for user: %@", self.uname);
-//    }
+    [usStorage storeSettings: userSettings];    
 }
 
 - (void) composeUIForMetadata:(NSArray *)metadata appCode:(NSString *)appCode location:(NSString *)location startPage:(NSString *)startPage {
@@ -227,16 +221,8 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
         EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectCode:appCode];
         pvc.wwwFolderName = location;
         pvc.startPage = startPage;
-        
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [manager setSidebarViewController:nil];
-            [manager setSidebarEnabled:NO];
-            [manager pushRootViewController:pvc animated:YES completionBlock:nil];
-            [pvc updateContent];
-        }
-        else {
-            [manager pushRootViewController:pvc animated:YES completionBlock:nil];
-        }
+        [manager pushRootViewController:pvc animated:YES completionBlock:nil];
+        [pvc updateContent];
     }
 }
 
@@ -246,32 +232,6 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     self.appCodeController = [[EXAppCodeController alloc] init];
     [self.appCodeController requestCodeWithCompletionHandler:^(NSString *appCode){
         [self composeUIForMetadata:nil appCode:appCode location:@"www" startPage:@"index.html"];
-//        
-//        UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
-//        MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo:rootView animated:YES];
-//        progressHud.labelText = NSLocalizedString(@"Loading app", @"Loading app progress hud title");
-//        [self.apperyService loadProjectForAppCode:appCode
-//                                          succeed:^(NSString *projectLocation, NSString *startPageName) {
-//                                              DLog(@"The project for code: '%@' has been loaded.", appCode);
-//                                              dispatch_async(dispatch_get_main_queue(), ^{
-//                                                  [progressHud hide: NO];
-//        
-//                                                  [self composeUIForMetadata:nil appCode:appCode location:projectLocation startPage:startPageName];
-//                                              });
-//                                          }
-//                                           failed:^(NSError *error) {
-//                                               dispatch_async(dispatch_get_main_queue(), ^{
-//                                                   DLog(@"The project with code: '%@' has NOT been loaded. Error: %@", appCode, error.localizedDescription);
-//                                                   [progressHud hide: NO];
-//        
-//                                                   [[[UIAlertView alloc] initWithTitle: error.localizedDescription
-//                                                                               message: error.localizedRecoverySuggestion
-//                                                                              delegate: nil
-//                                                                     cancelButtonTitle: NSLocalizedString(@"Ok", nil)
-//                                                                     otherButtonTitles: nil] show];
-//                                               });
-//                                           }
-//        ];
         self.appCodeController = nil;
     }];
 }
