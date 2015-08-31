@@ -176,6 +176,8 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
                                             [progressHud hide: YES];
                                             self.uname = nil;
                                             self.pwd = nil;
+                                            [self.tvSignIn reloadData];
+                                            
                                             [[[UIAlertView alloc] initWithTitle: error.localizedDescription
                                                                         message: error.localizedRecoverySuggestion
                                                                        delegate: nil
