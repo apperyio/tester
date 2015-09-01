@@ -112,7 +112,7 @@
     frm.size.width = imSize.width;
     frm.size.height = imSize.height;
     frm.origin.x = self.frame.size.width / 2. - frm.size.width / 2.;
-    frm.origin.y = 2.;
+    frm.origin.y = 6.;
     self.ivImage.frame = frm;
     
     frm = self.lTitle.frame;

@@ -69,6 +69,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 @property (nonatomic, strong) NSArray *toolbarActualItems;
 
 @property (nonatomic, strong) EXAppCodeController *appCodeController;
+
+@property (nonatomic, strong) NSIndexPath *selectedItemPath;
 /**
  * @returns reusable custom UITableViewCell object.
  */
@@ -120,6 +122,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 @synthesize folders = _folders;
 @synthesize toolbarActualItems = _toolbarActualItems;
 @synthesize appCodeController = _appCodeController;
+@synthesize selectedItemPath = _selectedItemPath;
 
 #pragma mark - Life cycle
 
@@ -254,7 +257,11 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 - (void)appCodeAction:(id)sender {
     #pragma unused(sender)
     self.appCodeController = [[EXAppCodeController alloc] init];
-    [self.appCodeController requestCodeWithCompletionHandler:^(NSString *appCode){
+    [self.appCodeController requestCodeWithCompletionHandler:^(NSString *appCode) {
+        if (self.selectedItemPath != nil) {
+            [self.rootTableView deselectRowAtIndexPath:self.selectedItemPath animated:YES];
+            self.selectedItemPath = nil;
+        }
         id<EXProjectControllerActionDelegate> del = self.delegate;
         if (del != nil) {
             [del masterControllerDidAcquireAppCode:appCode];
@@ -306,6 +313,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     EXProjectMetadata *projectMetadata = [self.filteredProjectsMetadata objectAtIndex: indexPath.row];
     id<EXProjectControllerActionDelegate> del = self.delegate;
     if (del != nil) {
+        self.selectedItemPath = indexPath;
         [del masterControllerDidLoadMetadata:projectMetadata];
     }
     else {
@@ -315,9 +323,9 @@ static const NSString * kArrowDownSymbol = @"\u2193";
         
         [pvc updateContent];
         [self.navigationController pushViewController:pvc animated:YES];
+        
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
-    
-    [tableView deselectRowAtIndexPath: indexPath animated: YES];
 }
 
 #pragma mark - Private

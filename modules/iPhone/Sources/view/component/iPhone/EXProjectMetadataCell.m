@@ -34,8 +34,9 @@ NSString *const kEXProjectMetadataCell = @"EXProjectMetadataCell";
     [super awakeFromNib];
     
     UILabel *l = self.lDivider;
-    l.backgroundColor = [UIColor colorFromHEXString:@"#848484"];
+    l.backgroundColor = [UIColor colorFromHEXString:@"#989898"];
     l.text = nil;
+    l.alpha = .4;
     
     l = self.lTitle;
     l.font = [UIFont fontWithName:@"HelveticaNeue" size:20.];
@@ -43,7 +44,7 @@ NSString *const kEXProjectMetadataCell = @"EXProjectMetadataCell";
     
     l = self.lDetails;
     l.font = [UIFont fontWithName:@"HelveticaNeue" size:10.];
-    l.textColor = [UIColor colorFromHEXString:@"4D4D4D"];
+    l.textColor = [UIColor colorFromHEXString:@"#4D4D4D"];
 }
 
 #pragma mark - Public class logic
