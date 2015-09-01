@@ -45,7 +45,7 @@
     tf.borderStyle = UITextBorderStyleNone;
     tf.autocapitalizationType = UITextAutocapitalizationTypeNone;
     tf.autocorrectionType = UITextAutocorrectionTypeNo;
-    tf.font = [UIFont fontWithName:@"HelveticaNeue" size:18.];
+    tf.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:18.];
     tf.textColor = [UIColor colorFromHEXString:@"#BDBDBD"];
 }
 
@@ -62,7 +62,7 @@
 #pragma mark - Public class logic
 
 + (CGFloat)height {
-    return 44.;
+    return 54.;
 }
 
 - (void)configureCellForType:(SignInCellType) type {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14E46" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
@@ -33,11 +33,11 @@
                                         <constraint firstAttribute="height" constant="21" id="v7l-70-SA2"/>
                                     </constraints>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vMb-aj-t3l">
-                                    <rect key="frame" x="225" y="396" width="150" height="40"/>
+                                    <rect key="frame" x="225" y="406" width="150" height="40"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="40" id="NbP-96-18M"/>
                                         <constraint firstAttribute="width" constant="150" id="Ouj-Gb-Agc"/>
@@ -50,11 +50,29 @@
                                     </connections>
                                 </button>
                                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="UAf-qa-eGv">
-                                    <rect key="frame" x="8" y="233" width="584" height="133"/>
-                                    <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                    <rect key="frame" x="140" y="223" width="320" height="153"/>
+                                    <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                                     <constraints>
-                                        <constraint firstAttribute="height" constant="133" id="pGY-8g-gq5"/>
+                                        <constraint firstAttribute="width" constant="350" id="e5J-ec-spk"/>
+                                        <constraint firstAttribute="height" constant="153" id="pGY-8g-gq5"/>
                                     </constraints>
+                                    <variation key="default">
+                                        <mask key="constraints">
+                                            <exclude reference="e5J-ec-spk"/>
+                                        </mask>
+                                    </variation>
+                                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                        <rect key="frame" x="140" y="223" width="320" height="153"/>
+                                        <mask key="constraints">
+                                            <exclude reference="e5J-ec-spk"/>
+                                        </mask>
+                                    </variation>
+                                    <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
+                                        <rect key="frame" x="8" y="223" width="584" height="153"/>
+                                        <mask key="constraints">
+                                            <include reference="e5J-ec-spk"/>
+                                        </mask>
+                                    </variation>
                                     <connections>
                                         <outlet property="dataSource" destination="-1" id="pyh-hJ-CBg"/>
                                         <outlet property="delegate" destination="-1" id="1jp-o2-IbQ"/>
@@ -79,11 +97,30 @@
                                 <constraint firstItem="vMb-aj-t3l" firstAttribute="top" secondItem="UAf-qa-eGv" secondAttribute="bottom" constant="30" id="RC0-HO-wjs"/>
                                 <constraint firstAttribute="width" constant="600" placeholder="YES" id="SVU-Cp-WLi"/>
                                 <constraint firstItem="UAf-qa-eGv" firstAttribute="leading" secondItem="9Y8-1k-VBK" secondAttribute="leading" constant="8" id="Vhv-cj-0rv"/>
+                                <constraint firstAttribute="centerX" secondItem="UAf-qa-eGv" secondAttribute="centerX" id="fQ6-g9-9dO"/>
                                 <constraint firstItem="x7d-Ih-lw8" firstAttribute="leading" secondItem="9Y8-1k-VBK" secondAttribute="leading" constant="8" id="msr-do-BEE"/>
                                 <constraint firstAttribute="trailing" secondItem="x7d-Ih-lw8" secondAttribute="trailing" constant="8" id="riT-SK-s6o"/>
                                 <constraint firstAttribute="height" constant="600" placeholder="YES" id="vNG-bt-Dq7"/>
                                 <constraint firstAttribute="trailing" secondItem="UAf-qa-eGv" secondAttribute="trailing" constant="8" id="yhA-GQ-pla"/>
                             </constraints>
+                            <variation key="default">
+                                <mask key="constraints">
+                                    <exclude reference="Vhv-cj-0rv"/>
+                                    <exclude reference="yhA-GQ-pla"/>
+                                </mask>
+                            </variation>
+                            <variation key="heightClass=regular-widthClass=compact">
+                                <mask key="constraints">
+                                    <include reference="Vhv-cj-0rv"/>
+                                    <include reference="yhA-GQ-pla"/>
+                                </mask>
+                            </variation>
+                            <variation key="heightClass=regular-widthClass=regular">
+                                <mask key="constraints">
+                                    <exclude reference="Vhv-cj-0rv"/>
+                                    <exclude reference="yhA-GQ-pla"/>
+                                </mask>
+                            </variation>
                         </view>
                     </subviews>
                     <constraints>
