@@ -86,7 +86,7 @@
         }
     }
     else {
-        self.lTitle.textColor = [UIColor colorFromHEXString:@"#BDBDBD"];
+        self.lTitle.textColor = [UIColor colorFromHEXString:@"#666666"];
         if (self.imageName) {
             self.ivImage.image = [UIImage imageNamed:self.imageName];
         }
