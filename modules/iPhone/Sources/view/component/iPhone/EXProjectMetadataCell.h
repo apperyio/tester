@@ -16,6 +16,6 @@ extern NSString *const kEXProjectMetadataCell;
 
 - (void)updateWithMetadata:(EXProjectMetadata *)metadata;
 
-+ (CGFloat) height;
++ (CGFloat)height;
 
 @end

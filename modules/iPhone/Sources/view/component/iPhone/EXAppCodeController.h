@@ -9,7 +9,7 @@ typedef void(^EXAppControllerCompletionHandler)(NSString *appCode);
 
 @interface EXAppCodeController : NSObject
 
-- (void) requestCodeWithCompletionHandler:(EXAppControllerCompletionHandler)completionHandler;
+- (void)requestCodeWithCompletionHandler:(EXAppControllerCompletionHandler)completionHandler;
 
 @end
 

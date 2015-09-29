@@ -59,7 +59,7 @@ NSString *const kEXProjectMetadataCell = @"EXProjectMetadataCell";
     l.text = [NSString stringWithFormat:@"%@, %@", metadata.creator, metadata.formattedModifiedDate];
 }
 
-+ (CGFloat) height {
++ (CGFloat)height {
     return 64.;
 }
 

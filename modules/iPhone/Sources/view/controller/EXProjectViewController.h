@@ -33,6 +33,6 @@
 - (instancetype)initWithService:(EXApperyService *)service projectMetadata:(EXProjectMetadata *)projectMetadata;
 - (instancetype)initWithService:(EXApperyService *)service projectCode:(NSString *)projectCode;
 
-- (void) updateContent;
+- (void)updateContent;
 
 @end

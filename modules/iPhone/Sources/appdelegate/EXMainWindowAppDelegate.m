@@ -20,8 +20,6 @@
 @interface EXMainWindowAppDelegate ()
 
 @property (nonatomic, strong) EXApperyService *apperyService;
-//@property (nonatomic, strong) EXSignInViewController *loginViewController;
-//@property (nonatomic, strong) IIViewDeckController *viewDeckController;
 
 - (BOOL)addSkipBackupAttributeToItemAtPath:(NSString *) filePathString;
 - (void)createAndConfigureApperyService;
@@ -34,10 +32,6 @@
 
 @implementation EXMainWindowAppDelegate
 
-@synthesize apperyService = _apperyService;
-//@synthesize loginViewController = _loginViewController;
-//@synthesize viewDeckController = _viewDeckController;
-
 + (EXMainWindowAppDelegate *)appDelegate {
     return [[UIApplication sharedApplication] delegate];
 }
@@ -45,7 +39,6 @@
 + (UIWindow *)mainWindow {
     return [[self appDelegate] window];
 }
-
 
 #pragma mark - UIApplicationDelegate protocol - Monitoring Application State Changes
 
@@ -67,7 +60,7 @@
     
     [[UINavigationBar appearance] setBarTintColor:[UIColor colorFromHEXString:@"#F6F6F6"]];
     [[UINavigationBar appearance] setTintColor:[UIColor colorFromHEXString:@"#4D4D4D"]];
-    [[UINavigationBar appearance] setTitleTextAttributes:@{ NSFontAttributeName: [UIFont fontWithName:@"HelveticaNeue" size:20.], NSForegroundColorAttributeName: [UIColor colorFromHEXString:@"#4D4D4D"] }];
+    [[UINavigationBar appearance] setTitleTextAttributes:@{ NSFontAttributeName:[UIFont fontWithName:@"HelveticaNeue" size:20.], NSForegroundColorAttributeName:[UIColor colorFromHEXString:@"#4D4D4D"] }];
     
     return YES;
 }
@@ -86,8 +79,8 @@
 #pragma mark - Private interface implementation
 
 - (BOOL)addSkipBackupAttributeToItemAtPath:(NSString *)filePathString {
-    NSURL* URL= [NSURL fileURLWithPath: filePathString];
-    assert([[NSFileManager defaultManager] fileExistsAtPath: [URL path]]);
+    NSURL* URL = [NSURL fileURLWithPath:filePathString];
+    assert([[NSFileManager defaultManager] fileExistsAtPath:[URL path]]);
     
     NSError *error = nil;
     BOOL success = [URL setResourceValue:[NSNumber numberWithBool: YES]
@@ -98,8 +91,8 @@
     
     //for test
     id flag = nil;
-    [URL getResourceValue: &flag
-                   forKey: NSURLIsExcludedFromBackupKey error: &error];
+    [URL getResourceValue:&flag
+                   forKey:NSURLIsExcludedFromBackupKey error:&error];
     NSLog (@"NSURLIsExcludedFromBackupKey flag value is %@", flag);
     
     return success;
@@ -109,20 +102,20 @@
     NSAssert(self.apperyService == nil, @"self.apperyService is already initialized");
     
     self.apperyService = [[EXApperyService alloc] init];
-    self.apperyService.baseUrl = [[NSUserDefaults standardUserDefaults] valueForKey: @"baseURL"];
+    self.apperyService.baseUrl = [[NSUserDefaults standardUserDefaults] valueForKey:@"baseURL"];
     
     NSLog(@"Appery service base URL: %@", self.apperyService.baseUrl);
 }
 
 - (BOOL)updateBaseUrl {
     NSString *oldBaseUrl = self.apperyService.baseUrl;
-    self.apperyService.baseUrl = [[NSUserDefaults standardUserDefaults] valueForKey: @"baseURL"];
+    self.apperyService.baseUrl = [[NSUserDefaults standardUserDefaults] valueForKey:@"baseURL"];
     
     return ![self.apperyService.baseUrl isEqualToString:oldBaseUrl];
 }
 
 - (void)hideAllHuds {
-    [MBProgressHUD hideAllHUDsForView: self.window.rootViewController.view animated: NO];
+    [MBProgressHUD hideAllHUDsForView: self.window.rootViewController.view animated:NO];
 }
 
 - (void)cancelApperyServiceActivity {

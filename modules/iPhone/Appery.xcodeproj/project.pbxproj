@@ -76,7 +76,6 @@
 		687FBA5815E63DDF008B956A /* EXUserSettingsStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 687FBA3215E63DDF008B956A /* EXUserSettingsStorage.m */; };
 		687FBA5915E63DDF008B956A /* EXProjectMetadataCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 687FBA3815E63DDF008B956A /* EXProjectMetadataCell.m */; };
 		687FBA5A15E63DDF008B956A /* EXProjectMetadataCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 687FBA3915E63DDF008B956A /* EXProjectMetadataCell.xib */; };
-		687FBA7415E6492F008B956A /* GradientButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 687FBA7315E6492F008B956A /* GradientButton.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		6885325317F9884F0095810A /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 6885325217F9884F0095810A /* config.xml */; };
 		6885330617F989320095810A /* CDVCapture.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 6885330317F989320095810A /* CDVCapture.bundle */; };
 		6885330717F989320095810A /* CDVNotification.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 6885330417F989320095810A /* CDVNotification.bundle */; };
@@ -133,7 +132,6 @@
 		D4E346571A8A1FB5004C57B8 /* icon_jqm.png in Resources */ = {isa = PBXBuildFile; fileRef = D4E3464E1A8A1FB5004C57B8 /* icon_jqm.png */; };
 		D4E346581A8A1FB5004C57B8 /* icon_jqm@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D4E3464F1A8A1FB5004C57B8 /* icon_jqm@2x.png */; };
 		D4E346591A8A1FB5004C57B8 /* icon_jqm@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = D4E346501A8A1FB5004C57B8 /* icon_jqm@3x.png */; };
-		D4F220AB1B04A93800DF9D24 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = D4F220AA1B04A93800DF9D24 /* LaunchScreen.xib */; };
 		D4F876ED1AB994B700CE2C6F /* GAPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = D4F876A71AB994B700CE2C6F /* GAPlugin.m */; };
 		D4F876EE1AB994B700CE2C6F /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4F876A81AB994B700CE2C6F /* libGoogleAnalyticsServices.a */; };
 		D4F876EF1AB994B700CE2C6F /* CDVBarcodeScanner.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4F876AA1AB994B700CE2C6F /* CDVBarcodeScanner.mm */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -278,8 +276,6 @@
 		687FBA3715E63DDF008B956A /* EXProjectMetadataCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXProjectMetadataCell.h; sourceTree = "<group>"; };
 		687FBA3815E63DDF008B956A /* EXProjectMetadataCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXProjectMetadataCell.m; sourceTree = "<group>"; };
 		687FBA3915E63DDF008B956A /* EXProjectMetadataCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EXProjectMetadataCell.xib; sourceTree = "<group>"; };
-		687FBA7215E6492F008B956A /* GradientButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GradientButton.h; sourceTree = "<group>"; };
-		687FBA7315E6492F008B956A /* GradientButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GradientButton.m; sourceTree = "<group>"; };
 		6885325217F9884F0095810A /* config.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
 		6885330317F989320095810A /* CDVCapture.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = CDVCapture.bundle; sourceTree = "<group>"; };
 		6885330417F989320095810A /* CDVNotification.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = CDVNotification.bundle; sourceTree = "<group>"; };
@@ -360,7 +356,6 @@
 		D4E3464E1A8A1FB5004C57B8 /* icon_jqm.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_jqm.png; sourceTree = "<group>"; };
 		D4E3464F1A8A1FB5004C57B8 /* icon_jqm@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_jqm@2x.png"; sourceTree = "<group>"; };
 		D4E346501A8A1FB5004C57B8 /* icon_jqm@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_jqm@3x.png"; sourceTree = "<group>"; };
-		D4F220AA1B04A93800DF9D24 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
 		D4F876A01AB994B700CE2C6F /* GAI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAI.h; sourceTree = "<group>"; };
 		D4F876A11AB994B700CE2C6F /* GAIDictionaryBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIDictionaryBuilder.h; sourceTree = "<group>"; };
 		D4F876A21AB994B700CE2C6F /* GAIFields.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIFields.h; sourceTree = "<group>"; };
@@ -472,10 +467,10 @@
 			isa = PBXGroup;
 			children = (
 				D4F877081AB994F700CE2C6F /* CordovaLib.xcodeproj */,
-				68CB4C5B15BFE38C000D80C3 /* libs */,
+				68CB4C5B15BFE38C000D80C3 /* Libs */,
 				687FBA1015E63DDF008B956A /* Sources */,
 				6F35CB8F14250B0600283C88 /* Resources */,
-				68E6116615BEB427004504DD /* settings */,
+				68E6116615BEB427004504DD /* Settings */,
 				68E6116B15BEB5CF004504DD /* Other Sources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
@@ -516,7 +511,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		361449E21B8F1CE300CD2CE2 /* rootviewcontroller */ = {
+		361449E21B8F1CE300CD2CE2 /* RootViewController */ = {
 			isa = PBXGroup;
 			children = (
 				361449E31B8F1CE300CD2CE2 /* RootNavigationController.h */,
@@ -526,10 +521,11 @@
 				361449E71B8F1CE300CD2CE2 /* RootViewControllerManager.h */,
 				361449E81B8F1CE300CD2CE2 /* RootViewControllerManager.m */,
 			);
+			name = RootViewController;
 			path = rootviewcontroller;
 			sourceTree = "<group>";
 		};
-		3629DEA71B8355360066D254 /* utils */ = {
+		3629DEA71B8355360066D254 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
 				3629DEA81B8355360066D254 /* DeviceModelInfo.h */,
@@ -551,57 +547,62 @@
 				361449EF1B8F33B100CD2CE2 /* UINavigationController+StackUtils.h */,
 				361449F01B8F33B100CD2CE2 /* UINavigationController+StackUtils.m */,
 			);
+			name = Utils;
 			path = utils;
 			sourceTree = "<group>";
 		};
 		687FBA1015E63DDF008B956A /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				687FBA1115E63DDF008B956A /* appdelegate */,
-				687FBA1415E63DDF008B956A /* service */,
-				687FBA2A15E63DDF008B956A /* storage */,
-				687FBA3315E63DDF008B956A /* view */,
-				3629DEA71B8355360066D254 /* utils */,
+				687FBA1115E63DDF008B956A /* Appdelegate */,
+				687FBA1415E63DDF008B956A /* Service */,
+				687FBA2A15E63DDF008B956A /* Storage */,
+				687FBA3315E63DDF008B956A /* View */,
+				3629DEA71B8355360066D254 /* Utils */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
 		};
-		687FBA1115E63DDF008B956A /* appdelegate */ = {
+		687FBA1115E63DDF008B956A /* Appdelegate */ = {
 			isa = PBXGroup;
 			children = (
 				687FBA1215E63DDF008B956A /* EXMainWindowAppDelegate.h */,
 				687FBA1315E63DDF008B956A /* EXMainWindowAppDelegate.m */,
 			);
+			name = Appdelegate;
 			path = appdelegate;
 			sourceTree = "<group>";
 		};
-		687FBA1415E63DDF008B956A /* service */ = {
+		687FBA1415E63DDF008B956A /* Service */ = {
 			isa = PBXGroup;
 			children = (
-				68A76CFC17461ED8000603E1 /* appery */,
+				68A76CFC17461ED8000603E1 /* Appery */,
 			);
+			name = Service;
 			path = service;
 			sourceTree = "<group>";
 		};
-		687FBA2A15E63DDF008B956A /* storage */ = {
+		687FBA2A15E63DDF008B956A /* Storage */ = {
 			isa = PBXGroup;
 			children = (
-				687FBA2B15E63DDF008B956A /* credentials */,
-				687FBA2E15E63DDF008B956A /* settings */,
+				687FBA2B15E63DDF008B956A /* Credentials */,
+				687FBA2E15E63DDF008B956A /* Settings */,
 			);
+			name = Storage;
 			path = storage;
 			sourceTree = "<group>";
 		};
-		687FBA2B15E63DDF008B956A /* credentials */ = {
+		687FBA2B15E63DDF008B956A /* Credentials */ = {
 			isa = PBXGroup;
 			children = (
 				687FBA2C15E63DDF008B956A /* EXCredentialsManager.h */,
 				687FBA2D15E63DDF008B956A /* EXCredentialsManager.m */,
 			);
+			name = Credentials;
 			path = credentials;
 			sourceTree = "<group>";
 		};
-		687FBA2E15E63DDF008B956A /* settings */ = {
+		687FBA2E15E63DDF008B956A /* Settings */ = {
 			isa = PBXGroup;
 			children = (
 				687FBA2F15E63DDF008B956A /* EXUserSettings.h */,
@@ -609,28 +610,30 @@
 				687FBA3115E63DDF008B956A /* EXUserSettingsStorage.h */,
 				687FBA3215E63DDF008B956A /* EXUserSettingsStorage.m */,
 			);
+			name = Settings;
 			path = settings;
 			sourceTree = "<group>";
 		};
-		687FBA3315E63DDF008B956A /* view */ = {
+		687FBA3315E63DDF008B956A /* View */ = {
 			isa = PBXGroup;
 			children = (
-				687FBA3415E63DDF008B956A /* component */,
-				687FBA3A15E63DDF008B956A /* controller */,
-				D4F220AA1B04A93800DF9D24 /* LaunchScreen.xib */,
+				687FBA3415E63DDF008B956A /* Component */,
+				687FBA3A15E63DDF008B956A /* Controller */,
 			);
+			name = View;
 			path = view;
 			sourceTree = "<group>";
 		};
-		687FBA3415E63DDF008B956A /* component */ = {
+		687FBA3415E63DDF008B956A /* Component */ = {
 			isa = PBXGroup;
 			children = (
-				687FBA3615E63DDF008B956A /* universal */,
+				687FBA3615E63DDF008B956A /* Universal */,
 			);
+			name = Component;
 			path = component;
 			sourceTree = "<group>";
 		};
-		687FBA3615E63DDF008B956A /* universal */ = {
+		687FBA3615E63DDF008B956A /* Universal */ = {
 			isa = PBXGroup;
 			children = (
 				687FBA3715E63DDF008B956A /* EXProjectMetadataCell.h */,
@@ -645,14 +648,14 @@
 				36C233A21B949848005C1241 /* EXAppCodeController.h */,
 				36C233A31B949848005C1241 /* EXAppCodeController.m */,
 			);
-			name = universal;
+			name = Universal;
 			path = iPhone;
 			sourceTree = "<group>";
 		};
-		687FBA3A15E63DDF008B956A /* controller */ = {
+		687FBA3A15E63DDF008B956A /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				361449E21B8F1CE300CD2CE2 /* rootviewcontroller */,
+				361449E21B8F1CE300CD2CE2 /* RootViewController */,
 				3629DE9D1B832B050066D254 /* EXSignInViewController.h */,
 				3629DE9E1B832B050066D254 /* EXSignInViewController.m */,
 				3629DE9F1B832B050066D254 /* EXSignInViewController.xib */,
@@ -669,16 +672,8 @@
 				361449F51B8F392800CD2CE2 /* EXBaseViewController.h */,
 				361449F61B8F392800CD2CE2 /* EXBaseViewController.m */,
 			);
+			name = Controller;
 			path = controller;
-			sourceTree = "<group>";
-		};
-		687FBA7115E6492F008B956A /* GradientButtons */ = {
-			isa = PBXGroup;
-			children = (
-				687FBA7215E6492F008B956A /* GradientButton.h */,
-				687FBA7315E6492F008B956A /* GradientButton.m */,
-			);
-			path = GradientButtons;
 			sourceTree = "<group>";
 		};
 		6885330217F989320095810A /* Plugins */ = {
@@ -700,20 +695,21 @@
 			path = MBProgressHUD;
 			sourceTree = "<group>";
 		};
-		68A76CFC17461ED8000603E1 /* appery */ = {
+		68A76CFC17461ED8000603E1 /* Appery */ = {
 			isa = PBXGroup;
 			children = (
-				68A76CFF17461ED8000603E1 /* extensions */,
-				68A76D0A17461ED8000603E1 /* private */,
+				68A76CFF17461ED8000603E1 /* Extensions */,
+				68A76D0A17461ED8000603E1 /* Private */,
 				68A76CFD17461ED8000603E1 /* EXProjectMetadata.h */,
 				68A76CFE17461ED8000603E1 /* EXProjectMetadata.m */,
 				68A76D0617461ED8000603E1 /* EXApperyService.h */,
 				68A76D0717461ED8000603E1 /* EXApperyService.m */,
 			);
+			name = Appery;
 			path = appery;
 			sourceTree = "<group>";
 		};
-		68A76CFF17461ED8000603E1 /* extensions */ = {
+		68A76CFF17461ED8000603E1 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
 				68A76D0017461ED8000603E1 /* CDVCommandDelegateImpl+EXApperyService.h */,
@@ -721,10 +717,11 @@
 				68A76D0417461ED8000603E1 /* NSString+URLUtility.h */,
 				68A76D0517461ED8000603E1 /* NSString+URLUtility.m */,
 			);
+			name = Extensions;
 			path = extensions;
 			sourceTree = "<group>";
 		};
-		68A76D0A17461ED8000603E1 /* private */ = {
+		68A76D0A17461ED8000603E1 /* Private */ = {
 			isa = PBXGroup;
 			children = (
 				68A76D0B17461ED8000603E1 /* EXApperyServiceOperation.h */,
@@ -734,19 +731,20 @@
 				68A76D0F17461ED8000603E1 /* EXApperyServiceOperationLoadProjectsMetadata.h */,
 				68A76D1017461ED8000603E1 /* EXApperyServiceOperationLoadProjectsMetadata.m */,
 			);
+			name = Private;
 			path = private;
 			sourceTree = "<group>";
 		};
-		68CB4C5B15BFE38C000D80C3 /* libs */ = {
+		68CB4C5B15BFE38C000D80C3 /* Libs */ = {
 			isa = PBXGroup;
 			children = (
 				D48DBD5D1B57B1B6002E8B7F /* NSStringMask */,
 				D427B0EC1AF227940086DC08 /* Ono */,
 				D4F8769E1AB994B700CE2C6F /* Plugins */,
-				687FBA7115E6492F008B956A /* GradientButtons */,
 				6886006415CAA00800629AB9 /* MBProgressHUD */,
 				68CB4CC215BFE38C000D80C3 /* ZipArchive */,
 			);
+			name = Libs;
 			path = libs;
 			sourceTree = "<group>";
 		};
@@ -769,13 +767,14 @@
 			path = AppIcon;
 			sourceTree = "<group>";
 		};
-		68E6116615BEB427004504DD /* settings */ = {
+		68E6116615BEB427004504DD /* Settings */ = {
 			isa = PBXGroup;
 			children = (
 				6885325217F9884F0095810A /* config.xml */,
 				68E6116715BEB427004504DD /* Settings.bundle */,
 				68E6116815BEB427004504DD /* Appery-Info.plist */,
 			);
+			name = Settings;
 			path = settings;
 			sourceTree = "<group>";
 		};
@@ -1158,7 +1157,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0600;
+				LastUpgradeCheck = 0700;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
 						SystemCapabilities = {
@@ -1232,7 +1231,6 @@
 				6885325317F9884F0095810A /* config.xml in Resources */,
 				36D82C3F1B90947600BEDEB6 /* name_b@3x.png in Resources */,
 				36150F9D1B85C0B600CFAC17 /* arrow_right@2x.png in Resources */,
-				D4F220AB1B04A93800DF9D24 /* LaunchScreen.xib in Resources */,
 				361449CF1B8EF68400CD2CE2 /* modified.png in Resources */,
 				361449DD1B8EF6AB00CD2CE2 /* back@2x.png in Resources */,
 				6885330817F989320095810A /* scannerOverlay.xib in Resources */,
@@ -1302,7 +1300,6 @@
 				3629DEBC1B8355360066D254 /* UIView+LayerManagement.m in Sources */,
 				D4F877041AB994B700CE2C6F /* CDVCapture.m in Sources */,
 				687FBA5915E63DDF008B956A /* EXProjectMetadataCell.m in Sources */,
-				687FBA7415E6492F008B956A /* GradientButton.m in Sources */,
 				D4F876EF1AB994B700CE2C6F /* CDVBarcodeScanner.mm in Sources */,
 				D4F876F81AB994B700CE2C6F /* CDVDevice.m in Sources */,
 				361449E91B8F1CE300CD2CE2 /* RootNavigationController.m in Sources */,
@@ -1374,6 +1371,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -1398,6 +1396,7 @@
 					"-ObjC",
 					"-all_load",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.exadel.ApperyTester;
 				PRODUCT_NAME = Appery;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
@@ -1417,6 +1416,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Other Sources/Appery_Prefix.pch";
@@ -1438,6 +1438,7 @@
 					"-ObjC",
 					"-all_load",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.exadel.ApperyTester;
 				PRODUCT_NAME = Appery;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
@@ -1453,6 +1454,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_VERSION = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -1463,7 +1465,7 @@
 					"\"$(BUILT_PRODUCTS_DIR)\"",
 					"\"$(SDKROOT)/usr/include/libxml2\"",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PROVISIONING_PROFILE = "";
@@ -1483,6 +1485,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Other Sources/Appery_Prefix.pch";
@@ -1504,6 +1507,7 @@
 					"-ObjC",
 					"-all_load",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.exadel.ApperyTester;
 				PRODUCT_NAME = Appery;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
@@ -1519,6 +1523,8 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_BITCODE = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
 				GCC_VERSION = "";
@@ -1530,7 +1536,7 @@
 					"\"$(BUILT_PRODUCTS_DIR)\"",
 					"\"$(SDKROOT)/usr/include/libxml2\"",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1544,6 +1550,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_VERSION = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -1554,7 +1561,7 @@
 					"\"$(BUILT_PRODUCTS_DIR)\"",
 					"\"$(SDKROOT)/usr/include/libxml2\"",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PROVISIONING_PROFILE = "";
@@ -1570,6 +1577,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_VERSION = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -1580,7 +1588,7 @@
 					"\"$(BUILT_PRODUCTS_DIR)\"",
 					"\"$(SDKROOT)/usr/include/libxml2\"",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PROVISIONING_PROFILE = "";
@@ -1600,6 +1608,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Other Sources/Appery_Prefix.pch";
@@ -1621,6 +1630,7 @@
 					"-ObjC",
 					"-all_load",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.exadel.ApperyTester;
 				PRODUCT_NAME = Appery;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;

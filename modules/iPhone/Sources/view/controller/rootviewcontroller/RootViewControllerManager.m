@@ -120,7 +120,6 @@
 
 - (void)dealloc {
     assert("RootViewControllerManager deallocated!" == NULL);
-    //    [[UserContextManager sharedInstance] removeObserver:self forKeyPath:@"contextStatus" context:NULL];
 }
 
 #pragma mark - Public API implementation

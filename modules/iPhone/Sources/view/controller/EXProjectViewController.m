@@ -98,7 +98,7 @@ static NSString *const kDefaultWebResourceFolder = @"www";
 
 #pragma mark - Public interface implementation
 
-- (void) updateContent {
+- (void)updateContent {
     [self reloadProject];
 }
 

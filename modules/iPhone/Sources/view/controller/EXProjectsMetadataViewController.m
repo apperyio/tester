@@ -71,10 +71,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 @property (nonatomic, strong) EXAppCodeController *appCodeController;
 
 @property (nonatomic, strong) NSIndexPath *selectedItemPath;
-/**
- * @returns reusable custom UITableViewCell object.
- */
-- (EXProjectMetadataCell *) getCustomTableViewCell;
 
 /// @name UI actions
 - (void)logoutAction:(id)sender;
@@ -105,24 +101,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 @implementation EXProjectsMetadataViewController
 
-@synthesize apperyService = _apperyService;
-@synthesize delegate = _delegate;
-
-@synthesize rootTableView = _rootTableView;
-@synthesize toolBar = _toolBar;
-@synthesize refreshControl = _refreshControl;
-
-@synthesize projectsMetadata = _projectsMetadata;
-@synthesize filteredProjectsMetadata = _filteredProjectsMetadata;
-@synthesize projectsObservers = _projectsObservers;
-@synthesize selectFolderController = _selectFolderController;
-@synthesize currentFolder = _currentFolder;
 @synthesize currentProjectsSortingMethod = _currentProjectsSortingMethod;
-@synthesize isObservingRegistered = _isObservingRegistered;
-@synthesize folders = _folders;
-@synthesize toolbarActualItems = _toolbarActualItems;
-@synthesize appCodeController = _appCodeController;
-@synthesize selectedItemPath = _selectedItemPath;
 
 #pragma mark - Life cycle
 
@@ -150,7 +129,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 }
 
 - (void)viewDidLoad {
-    [self registerRotationObserving];
     [super viewDidLoad];
     
     [self.rootTableView registerNib:[UINib nibWithNibName:@"EXProjectMetadataCell" bundle:nil] forCellReuseIdentifier:kEXProjectMetadataCell];
@@ -190,11 +168,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [super viewWillAppear:animated];
     
     [self.navigationController setNavigationBarHidden:NO animated:NO];
-}
-
-- (void)didReceiveMemoryWarning {
-    [self unregisterRotationObserving];
-    [super didReceiveMemoryWarning];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -369,7 +342,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     self.toolbarActualItems = actualTBItems;
 }
 
-- (void) deactivateToolbarItems {
+- (void)deactivateToolbarItems {
     for (EXToolbarItem *item in self.toolbarActualItems) {
         [item setStateToActive:NO];
     }
@@ -439,64 +412,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - UI helpers
 
-- (EXProjectMetadataCell *)getCustomTableViewCell {
-    
-    
-    static NSString *cellIdentifier = @"ProjectMetadataCellIdentifier";
-    EXProjectMetadataCell *cell = (EXProjectMetadataCell *)[self.rootTableView dequeueReusableCellWithIdentifier: cellIdentifier];
-    
-	if(cell == nil) {
-		cell = [[EXProjectMetadataCell alloc] initWithStyle: UITableViewCellStyleDefault reuseIdentifier: cellIdentifier];
-	}
-    
-    return cell;
-}
-
-- (void)showSelectFolderView {
-    UIView *viewToShow = self.selectFolderController.view;
-    
-    __block CGRect frame = viewToShow.frame;
-    frame.origin.x = 0;
-    frame.origin.y = self.view.frame.size.height;
-    frame.size.width = self.view.bounds.size.width;
-    viewToShow.frame = frame;
-    
-    if (![self.view.subviews containsObject:viewToShow]) {
-        [self.view insertSubview:viewToShow belowSubview:self.toolBar];
-    }
-    
-    [UIView animateWithDuration:0.4f animations:^{
-        frame.origin.y = self.view.bounds.size.height - frame.size.height - self.toolBar.bounds.size.height;
-        viewToShow.frame = frame;
-    }];
-}
-
-- (void)hideSelectFolderView {
-    UIView *viewToHide = self.selectFolderController.view;
-    
-    [UIView animateWithDuration:0.4f animations:^{
-        CGRect frame = viewToHide.frame;
-        frame.origin.y = self.view.frame.size.height;
-        viewToHide.frame = frame;
-    } completion:^(BOOL finished) {
-        [viewToHide removeFromSuperview];
-    }];
-}
-
-- (void)deviceOrientationDidChange:(NSNotification *)notification {
-    if (![self.view.subviews containsObject:self.selectFolderController.view]) {
-        return;
-    }
-    
-    UIView *viewToLayout = self.selectFolderController.view;
-    
-    [UIView animateWithDuration:0.4f animations:^{
-        CGRect frame = viewToLayout.frame;
-        frame.origin.y = self.view.bounds.size.height - frame.size.height - self.toolBar.bounds.size.height;
-        viewToLayout.frame = frame;
-    }];
-}
-
 - (void)redefineAvailableFolders {
     NSArray *availableFolders = [self.projectsMetadata valueForKeyPath:@"@distinctUnionOfObjects.creator"];
     NSString *allFolderName = NSLocalizedString(@"All", @"Apps list | Toolbar | Folder button possible value");
@@ -508,36 +423,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     self.selectFolderController.data = self.folders;
     [self.selectFolderController updateUI];
     self.selectFolderController.completion = nil;
-}
-
-- (void)filterProjectsWithOwner:(id)owner {
-    [self.filteredProjectsMetadata removeAllObjects];
-    
-    if ([self.folders indexOfObject:owner] == 0) {
-        [self.filteredProjectsMetadata addObjectsFromArray:self.projectsMetadata];
-    }
-    else {
-        NSPredicate *filterByOwnerPredicate = [NSPredicate predicateWithFormat:@"creator like[cd] %@", owner];
-        [self.filteredProjectsMetadata addObjectsFromArray:[self.projectsMetadata filteredArrayUsingPredicate:filterByOwnerPredicate]];
-    }
-    
-    [self sortByCurrentMethodAndUpdateUI];
-}
-
-#pragma mark - KVO
-
-- (void)registerRotationObserving {
-    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
-    
-    self.isObservingRegistered = YES;
-}
-
-- (void)unregisterRotationObserving {
-    if (self.isObservingRegistered) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
-        self.isObservingRegistered = NO;
-    }
 }
 
 #pragma mark - Projects sorting / filtering
@@ -670,7 +555,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     });
 }
 
-- (NSInteger) tagBySortMethod:(EXSortingMethodType)method {
+- (NSInteger)tagBySortMethod:(EXSortingMethodType)method {
     NSInteger tag = -1;
     switch (method) {
         case EXSortingMethodType_NameAscending:
@@ -720,7 +605,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - EXToolbarItemActionDelegate 
 
-- (void) didActivateToolbarItem:(EXToolbarItem *)item {
+- (void)didActivateToolbarItem:(EXToolbarItem *)item {
     [self setCurrentSortMethodByTag:item.tag];
     [self sortByCurrentMethodAndUpdateUI];
 }

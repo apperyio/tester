@@ -35,7 +35,7 @@ static const NSInteger kAppCodeTextFieldTag = 111;
 
 #pragma mark - Public class logic
 
-- (void) requestCodeWithCompletionHandler:(EXAppControllerCompletionHandler)completionHandler {
+- (void)requestCodeWithCompletionHandler:(EXAppControllerCompletionHandler)completionHandler {
     self.handler = completionHandler;
     
     UIAlertView *shareAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Enter an app code", @"Enter an app code")
