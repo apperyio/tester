@@ -8,8 +8,6 @@
 	<string>Appery.io</string>
 	<key>CFBundleExecutable</key>
 	<string>Appery</string>
-	<key>CFBundleIconFile</key>
-	<string></string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>

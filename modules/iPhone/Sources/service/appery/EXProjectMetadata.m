@@ -21,11 +21,6 @@ static NSString *const kProjectSharedWithSupport = @"sharedWithSupport";
 static NSString *const kProjectSharedWithSupportBy = @"sharedWithSupportBy";
 static NSString *const kProjectType = @"type";
 
-typedef NS_ENUM(NSInteger, FormattedOutputRequirement) {
-    FORDateAndTime = 0,
-    FORDateOnly
-};
-
 #pragma mark - Private interface declaration
 
 @interface EXProjectMetadata ()
@@ -33,18 +28,18 @@ typedef NS_ENUM(NSInteger, FormattedOutputRequirement) {
 /**
  * Format date specifiied in milliseconds (from 1970 year) to convinient string representation.
  */
-- (NSString *)formatDateFromUTCMilliseconds:(NSNumber *) utcDate outputRequirement:(FormattedOutputRequirement) requirement;
+- (NSString *)formatDateFromUTCMilliseconds:(NSNumber *)utcDate;
 
 /**
  * @return - YES if specified value is nil or it's string representation is equal to "null"
  *         - NO - otherwise
  */
-- (BOOL) isEmptyValue: (id) value;
+- (BOOL)isEmptyValue:(id)value;
 
 /**
  * @returns - 'value' if it is not empty (@see isEmptyValue: method) or nil otherwise
  */
-- (id) getCorrectValue: (id) value;
+- (id)getCorrectValue:(id)value;
 
 @end
 
@@ -80,7 +75,7 @@ typedef NS_ENUM(NSInteger, FormattedOutputRequirement) {
 #pragma mark - Getters
 
 - (NSString *)formattedModifiedDate {
-    return [self formatDateFromUTCMilliseconds:self.modifiedDate outputRequirement:FORDateOnly];
+    return [self formatDateFromUTCMilliseconds:self.modifiedDate];
 }
 
 #pragma mark - Override
@@ -91,17 +86,10 @@ typedef NS_ENUM(NSInteger, FormattedOutputRequirement) {
 
 #pragma mark - Private interface implementation
 
-- (NSString *)formatDateFromUTCMilliseconds:(NSNumber *) utcDate outputRequirement:(FormattedOutputRequirement) requirement {
+- (NSString *)formatDateFromUTCMilliseconds:(NSNumber *) utcDate {
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:[utcDate doubleValue] * 0.001];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    switch (requirement) {
-        case FORDateOnly:
-            [dateFormatter setDateFormat:@"MM.dd.yyyy"];
-            break;
-        default:
-            [dateFormatter setDateFormat:@"MM.dd.yyyy kk:mm:ss"];
-            break;
-    }
+    [dateFormatter setDateFormat:@"MM/dd/yy"];
 
     return [dateFormatter stringFromDate: date];
 }

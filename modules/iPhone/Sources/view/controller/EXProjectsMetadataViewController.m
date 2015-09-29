@@ -149,7 +149,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
         [self sortByCurrentMethodAndUpdateUI];
     }
     
-    self.title = NSLocalizedString(@"My Apps", @"EXProjectsViewController title");
+    self.title = NSLocalizedString(@"My apps", @"EXProjectsViewController title");
     
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:@"Loading apps"];
@@ -157,10 +157,19 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     self.refreshControl = refreshControl;
     [self.rootTableView addSubview:self.refreshControl];
     
-    UIBarButtonItem *bbLogout = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"logout"] style:UIBarButtonItemStylePlain target:self action:@selector(logoutAction:)];
+    UIBarButtonItem *bbLogout = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"logout"]
+                                                                 style:UIBarButtonItemStylePlain
+                                                                target:self
+                                                                action:@selector(logoutAction:)];
     self.navigationItem.leftBarButtonItem = bbLogout;
     
-    UIBarButtonItem *bbAppCode = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"AppCode", @"AppCode") style:UIBarButtonItemStylePlain target:self action:@selector(appCodeAction:)];
+    UIBarButtonItem *bbAppCode = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"App code", @"App code")
+                                                                  style:UIBarButtonItemStylePlain
+                                                                 target:self
+                                                                 action:@selector(appCodeAction:)];
+    UIFont *bbFont = [UIFont systemFontOfSize:16];
+    NSDictionary * attributes = @{NSFontAttributeName:bbFont};
+    [bbAppCode setTitleTextAttributes:attributes forState:UIControlStateNormal];
     self.navigationItem.rightBarButtonItem = bbAppCode;
 }
 
