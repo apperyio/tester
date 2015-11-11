@@ -24,7 +24,7 @@ import android.os.Build;
 
 public class RestManager {
 
-    private String baseURL = "https://appery.io";
+    private String baseURL = "http://gamma.dev.appery.io/";
 
     private String idpURL;
 

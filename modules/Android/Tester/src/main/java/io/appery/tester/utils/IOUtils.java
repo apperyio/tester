@@ -79,8 +79,8 @@ public class IOUtils {
     public static final File downloadFile(final BaseActivity ctx, String sUrl, String fileName)
             throws IllegalStateException, Exception {
 
-        String filePath = ProjectStorageManager.getBase_DIR() + "/files";
-        FileUtils.checkDir(filePath);
+        String filePath = io.appery.tester.utils.ProjectStorageManager.getBase_DIR() + "/files";
+        io.appery.tester.utils.FileUtils.checkDir(filePath);
         File file = new File(filePath, fileName);
         if (!file.exists()) {
             file.createNewFile();
