@@ -76,7 +76,7 @@ public interface Constants {
 
         public static final String OLD_APPERY_URL_HTTPS = "https://project.tiggzi.com";
 
-        public static final String NEW_APPERY_URL_HTTPS = "https://appery.io";
+        public static final String NEW_APPERY_URL_HTTPS = "http://gamma.dev.appery.io/";
 
     }
 
