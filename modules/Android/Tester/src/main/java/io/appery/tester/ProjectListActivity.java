@@ -10,6 +10,7 @@ import io.appery.tester.net.api.GetProjectList;
 import io.appery.tester.net.api.callback.ProjectListCallback;
 import io.appery.tester.preview.ProjectPreviewManager;
 import io.appery.tester.utils.Constants;
+
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -18,6 +19,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.cookie.BasicClientCookie;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -31,12 +36,11 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.cookie.BasicClientCookie;
 
 /**
  * @author Daniel Lukashevich
@@ -65,10 +69,6 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
     public static  final int ALL_FOLDERS_POSITION = 0;
 
     public static  final int MY_FOLDER_POSITION = 1;
-
-    private String CORDOVA_LIB_DIR = "/files/resources/lib/";
-
-    private String CORDOVA_ANGULAR_LIB_DIR = "/libs/";
 
     private ProjectListAdapter mProjectAdapter;
 

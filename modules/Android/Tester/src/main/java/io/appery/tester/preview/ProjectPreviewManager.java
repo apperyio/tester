@@ -1,12 +1,5 @@
 package io.appery.tester.preview;
 
-import android.net.Uri;
-
-import org.apache.http.client.ClientProtocolException;
-
-import java.io.File;
-import java.io.IOException;
-
 import io.appery.tester.ApperyActivity;
 import io.appery.tester.BaseActivity;
 import io.appery.tester.R;
@@ -20,6 +13,15 @@ import io.appery.tester.utils.NoProjectSourceException;
 import io.appery.tester.utils.ProjectStorageManager;
 import io.appery.tester.utils.ToastUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.http.client.ClientProtocolException;
+
+import android.net.Uri;
+
 /**
  * Created by Maxim Balyaba on 09.07.2015.
  */
@@ -32,14 +34,20 @@ public class ProjectPreviewManager implements DownloadFileCallback {
     private String DEBUG_ON_SERVICE_PARAM = "debug=true";
 
     private String DEBUG_OFF_SERVICE_PARAM = "debug=false";
-
-    private static final String CORDOVA_LIB_DIR = "/files/resources/lib/";
-
-    private static final String CORDOVA_ANGULAR_LIB_DIR = "/libs/";
+    
+    
+    /**
+     * Contains Cordova resources archive as key and directory as a value. 
+     */
+    private Map<String, String> CORDOVA_RESOURCES;
 
     public ProjectPreviewManager(RestManager restManager, BaseActivity context) {
         this.restManager = restManager;
         this.activityContext = context;
+        
+        CORDOVA_RESOURCES = new HashMap<String, String>();
+        CORDOVA_RESOURCES.put("cordova_resources.zip", "/files/resources/lib/");
+        CORDOVA_RESOURCES.put("cordova_resources_3.0.zip", "/libs/");
     }
 
     public void downloadAndStartProjectPreview(String projectURL) {
@@ -116,18 +124,19 @@ public class ProjectPreviewManager implements DownloadFileCallback {
     }
 
     private void replaceCordovaResources(String dirPath) {
-        String path = dirPath + this.CORDOVA_LIB_DIR;
-        if (!FileUtils.isDirExists(path)) {
-            path = dirPath + this.CORDOVA_ANGULAR_LIB_DIR;
-        }
-        String cordovaAssetArchiveFileName = "cordova_resources.zip";
-        FileUtils.copyAsset(activityContext, cordovaAssetArchiveFileName, path + cordovaAssetArchiveFileName);
-        try {
-            FileUtils.unzip(path + cordovaAssetArchiveFileName, path);
-            FileUtils.removeFile(path + cordovaAssetArchiveFileName);
-        } catch (IOException e) {
-            e.printStackTrace();
-            activityContext.showToast(activityContext.getString(R.string.preview_error_toast));
+        for (String archive : this.CORDOVA_RESOURCES.keySet()) {
+            String path = dirPath + this.CORDOVA_RESOURCES.get(archive);
+            String cordovaArchiveFullPath = path + archive;
+            
+            FileUtils.checkDir(path);
+            FileUtils.copyAsset(activityContext, archive, cordovaArchiveFullPath);
+            try {
+                FileUtils.unzip(cordovaArchiveFullPath, path);
+                FileUtils.removeFile(cordovaArchiveFullPath);
+            } catch (IOException e) {
+                e.printStackTrace();
+                activityContext.showToast(activityContext.getString(R.string.preview_error_toast));
+            }
         }
     }
 

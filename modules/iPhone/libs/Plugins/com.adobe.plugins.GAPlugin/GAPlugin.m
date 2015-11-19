@@ -1,289 +1,135 @@
 #import "GAPlugin.h"
-#import "EXMainWindowAppDelegate.h"
+#import "GAIDictionaryBuilder.h"
+#import "GAIFields.h"
 
 @implementation GAPlugin
+
 - (void) initGA:(CDVInvokedUrlCommand*)command
 {
-    @try {
-        NSString    *callbackId = command.callbackId;
-        NSString    *accountID = [command.arguments objectAtIndex:0];
-        NSInteger   dispatchPeriod = [[command.arguments objectAtIndex:1] intValue];
+    NSString* callbackId = command.callbackId;
+    NSString* accountID = [command.arguments objectAtIndex:0];
+    NSInteger dispatchPeriod = [[command.arguments objectAtIndex:1] intValue];
 
-        [GAI sharedInstance].trackUncaughtExceptions = YES;
+    [GAI sharedInstance].trackUncaughtExceptions = YES;
+    // Optional: set Google Analytics dispatch interval to e.g. 20 seconds.
+    [GAI sharedInstance].dispatchInterval = dispatchPeriod;
+    // Optional: set debug to YES for extra debugging information.
+    //[GAI sharedInstance].debug = YES;
+    // Create tracker instance.
+    [[GAI sharedInstance] trackerWithTrackingId:accountID];
+    inited = YES;
 
-        // Optional: set Google Analytics dispatch interval to e.g. 20 seconds.
-        [GAI sharedInstance].dispatchInterval = dispatchPeriod;
+    [self successWithMessage:[NSString stringWithFormat:@"initGA: accountID = %@; Interval = %ld seconds",accountID, (long)dispatchPeriod] toID:callbackId];
+}
 
-        // Optional: set Logger to VERBOSE for debug information.
-        // [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelVerbose];
-
-        // Create tracker instance.
-        [[GAI sharedInstance] trackerWithTrackingId:accountID];
-
-
-        id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-        if (tracker != nil) {
-            // Set the appVersion equal to the CFBundleVersion
-            [[[GAI sharedInstance] defaultTracker] set:kGAIAppVersion value:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]];
-
-            inited = YES;
-
-            [self successWithMessage:[NSString stringWithFormat:@"initGA: accountID = %@; Interval = %ld seconds",accountID, (long)dispatchPeriod] toID:callbackId];
-
-        } else {
-            [self failWithMessage:@"initGA failed" toID:callbackId withError:nil];
+- (void)addCustomDimensionsToTracker: (id<GAITracker>)tracker
+{
+    if (_customDimensions) {
+        for (NSString* key in _customDimensions) {
+            NSString* value = [_customDimensions objectForKey:key];
+            
+            /* NSLog(@"Setting tracker dimension slot %@: <%@>", key, value); */
+            [tracker set:[GAIFields customDimensionForIndex:[key intValue]]
+                   value:value];
         }
-    }
-    @catch (NSException *exception) {
-        NSLog(@"GAPlugin.initGA: %@", [exception reason]);
-    }
-    @finally {
     }
 }
 
--(void) exitGA:(CDVInvokedUrlCommand*)command
+- (void) setVariable:(CDVInvokedUrlCommand *)command
 {
-    NSString *callbackId = command.callbackId;
+    CDVPluginResult* pluginResult = nil;
+    NSString* key = [command.arguments objectAtIndex:0];
+    NSString* value = [command.arguments objectAtIndex:1];
+    
+    if ( ! _customDimensions) {
+        _customDimensions = [[NSMutableDictionary alloc] init];
+    }
+    
+    _customDimensions[key] = value;
+    [self addCustomDimensionsToTracker:[[GAI sharedInstance] defaultTracker]];
+    
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
 
-    [self successWithMessage:@"exitGA" toID:callbackId];
+- (void) exitGA:(CDVInvokedUrlCommand*)command
+{
+    if (inited) {
+        [[GAI sharedInstance] dispatch];
+    }
+
+    [self successWithMessage:@"exitGA" toID:command.callbackId];
 }
 
 - (void) trackEvent:(CDVInvokedUrlCommand*)command
 {
-    @try {
-        NSString        *callbackId = command.callbackId;
-        NSString        *category = [command.arguments objectAtIndex:0];
-        NSString        *eventAction = [command.arguments objectAtIndex:1];
-        NSString        *eventLabel = [command.arguments objectAtIndex:2];
-        NSString        *eventValueString = [NSString stringWithFormat:@"%@", [command.arguments objectAtIndex:3] ];
-        NSDictionary    *customDimension = [command.arguments objectAtIndex:4];
+    @try  {
+        NSString* category = [command.arguments objectAtIndex:0];
+        NSString* eventAction = [command.arguments objectAtIndex:1];
+        NSString* eventLabel = [command.arguments objectAtIndex:2];
+        id        eventValueObject = [command.arguments objectAtIndex:3];
+        NSNumber* eventValue = nil;
         
-        // Check extra dimension value
-        int intDimensionIndex = 0;
-        NSNumber *dimensionIndex;
-        NSString *dimensionValue;
-        if (![customDimension isEqual: [NSNull null]]) {
-            dimensionIndex = [customDimension objectForKey:@"index"];
-            dimensionValue = [customDimension objectForKey:@"value"];
-            if (dimensionIndex != nil && dimensionIndex != nil) {
-                intDimensionIndex = [dimensionIndex intValue];
-            }
+        if (eventValueObject != [NSNull null]) {
+            eventValue = [NSNumber numberWithInteger:[eventValueObject integerValue]];
         }
         
-        // Check if the eventValueString is valid
-        if ([eventValueString isEqual: [NSNull null]]) {
-            eventValueString = @"";
-        }
-
         if (inited) {
             id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
             
-            if (intDimensionIndex > 0) {
-                [tracker set:[GAIFields customDimensionForIndex:intDimensionIndex] value:dimensionValue];
-            }
+            [self addCustomDimensionsToTracker:tracker];
             
-            if ([eventValueString length] > 0) {
-                [tracker send:[[GAIDictionaryBuilder createEventWithCategory:category
-                                                     action:eventAction
-                                                     label:eventLabel
-                                                     value:[NSNumber numberWithInt:[eventValueString intValue]]]
-                               build]];
-            } else {
-                [tracker send:[[GAIDictionaryBuilder createEventWithCategory:category
-                                                     action:eventAction
-                                                     label:eventLabel
-                                                     value:nil]
-                               build]];    // Event value
-            }
-            [self successWithMessage:[NSString stringWithFormat:@"trackEvent: category = %@; action = %@; label = %@; value = %@", category, eventAction, eventLabel, eventValueString] toID:callbackId];
+            [tracker send:[[GAIDictionaryBuilder
+                            createEventWithCategory: category //required
+                            action: eventAction //required
+                            label: eventLabel
+                            value: eventValueObject] build]];
+            
+            [self successWithMessage:[NSString stringWithFormat:@"trackEvent: category = %@; action = %@; label = %@; value = %d", category, eventAction, eventLabel, [eventValue intValue]] toID:command.callbackId];
+            
+        } else {
+            [self failWithMessage:@"trackEvent failed - not initialized" toID:command.callbackId withError:nil];
         }
-        else
-            [self failWithMessage:@"trackEvent failed - not initialized" toID:callbackId withError:nil];
-    }
-    @catch (NSException *exception) {
-        NSLog(@"GAPlugin.trackEvent: %@", [exception reason]);
-    }
-    @finally {
+        
+    } @catch (NSException* exception) {
+        [self failWithMessage:[NSString stringWithFormat:@"trackEvent failed - exception name: %@, reason: %@", exception.name, exception.reason] toID:command.callbackId withError:nil];
     }
 }
+
 - (void) trackPage:(CDVInvokedUrlCommand*)command
 {
-    @try {
-        NSString            *callbackId = command.callbackId;
-        NSString            *pageURL = [command.arguments objectAtIndex:0];
+    NSString* pageURL = [command.arguments objectAtIndex:0];
 
-        if (inited) {
-            id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    if (inited) {
+        id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
 
-            [tracker set:kGAIScreenName value:pageURL];
+        [tracker set:kGAIScreenName value:pageURL];
+        [tracker send:[[GAIDictionaryBuilder createAppView]  build]];
 
-            [self successWithMessage:[NSString stringWithFormat:@"trackPage: url = %@", pageURL] toID:callbackId];
-        }
-        else
-            [self failWithMessage:@"trackPage failed - not initialized" toID:callbackId withError:nil];
-    }
-    @catch (NSException *exception) {
-        NSLog(@"GAPlugin.trackPage: %@", [exception reason]);
-    }
-    @finally {
+        [self successWithMessage:[NSString stringWithFormat:@"trackPage: url = %@", pageURL] toID:command.callbackId];
+    } else {
+        [self failWithMessage:@"trackPage failed - not initialized" toID:command.callbackId withError:nil];
     }
 }
 
-- (void) trackException:(CDVInvokedUrlCommand *)command
-{
-    @try {
-        NSString            *callbackId = command.callbackId;
-        NSString            *exDescription = [command.arguments objectAtIndex:0];
-        BOOL isFatal = [[command.arguments objectAtIndex:1] boolValue];
-
-        if (inited) {
-            id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-
-            [tracker send:[[GAIDictionaryBuilder createExceptionWithDescription:exDescription withFatal:[NSNumber numberWithBool:isFatal]] build]];
-
-            [self successWithMessage:[NSString stringWithFormat:@"trackException: description = %@", exDescription] toID:callbackId];
-        }
-        else
-            [self failWithMessage:@"trackException failed - not initialized" toID:callbackId withError:nil];
-    }
-    @catch (NSException *exception) {
-        NSLog(@"GAPlugin.trackException: %@", [exception reason]);
-    }
-    @finally {
-    }
-}
-
-- (void) trackTransaction:(CDVInvokedUrlCommand*)command
-{
-    @try {
-        NSString *callbackId = command.callbackId;
-        NSString *transactionId = [command.arguments objectAtIndex:0];
-        NSString *affiliation = [command.arguments objectAtIndex:1];
-        NSString *name = [command.arguments objectAtIndex:2];
-        NSString *sku = [command.arguments objectAtIndex:3];
-        NSNumber *price = [NSNumber numberWithFloat:[[command.arguments objectAtIndex:4] floatValue]];
-        NSNumber *quantity = [NSNumber numberWithInt:[[command.arguments objectAtIndex:5] intValue]];
-        NSNumber *revenue = [NSNumber numberWithFloat:[[command.arguments objectAtIndex:6] floatValue]];
-        NSString *currencyCode = [command.arguments objectAtIndex:7];
-
-        if (inited) {
-            id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-
-            [tracker send:[[GAIDictionaryBuilder createTransactionWithId:transactionId              // (NSString) Transaction ID
-                                                             affiliation:affiliation                // (NSString) Affiliation
-                                                                 revenue:revenue                    // (NSNumber) Order revenue (including tax and shipping)
-                                                                     tax:@0.00F                     // (NSNumber) Tax
-                                                                shipping:@0                         // (NSNumber) Shipping
-                                                            currencyCode:currencyCode] build]];     // (NSString) Currency code
-
-            [tracker send:[[GAIDictionaryBuilder createItemWithTransactionId:transactionId          // (NSString) Transaction ID
-                                                                        name:name                   // (NSString) Product Name
-                                                                         sku:sku                    // (NSString) Product SKU
-                                                                    category:@"In-App-Purchase PEG" // (NSString) Product category
-                                                                       price:price                  // (NSNumber)  Product price
-                                                                    quantity:quantity               // (NSInteger)  Product quantity
-                                                                currencyCode:currencyCode] build]]; // (NSString) Currency code
-
-            NSLog(@"Transaction tracked ok");
-
-            [self successWithMessage:[NSString stringWithFormat:@"trackTransaction: transctionId = %@; item = %@", transactionId, name] toID:callbackId];
-        }
-        else
-            [self failWithMessage:@"trackTransaction failed - not initialized" toID:callbackId withError:nil];
-    }
-    @catch (NSException *exception) {
-        NSLog(@"GAPlugin.trackTransaction: %@", [exception reason]);
-    }
-    @finally {
-    }
-}
-
-- (void) setCustomDimension:(CDVInvokedUrlCommand*)command
-{
-    @try {
-        NSString            *callbackId = command.callbackId;
-        NSInteger           index = [[command.arguments objectAtIndex:0] intValue];
-        NSString            *value = [command.arguments objectAtIndex:1];
-
-        if (inited) {
-            id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-
-            // Set the custom dimension value on the tracker using its index.
-            [tracker set:[GAIFields customDimensionForIndex:index] value:value];
-
-            [self successWithMessage:[NSString stringWithFormat:@"setVariable: index = %ld, value = %@;", (long)index, value] toID:callbackId];
-        }
-        else
-            [self failWithMessage:@"setVariable failed - not initialized" toID:callbackId withError:nil];
-    }
-    @catch (NSException *exception) {
-        NSLog(@"GAPlugin.setVariable: %@", [exception reason]);
-    }
-    @finally {
-    }
-}
-
-- (void) setCustomMetric:(CDVInvokedUrlCommand*)command
-{
-    @try {
-        NSString            *callbackId = command.callbackId;
-        NSInteger           index = [[command.arguments objectAtIndex:0] intValue];
-        NSString            *value = [command.arguments objectAtIndex:1];
-        
-        if (inited) {
-            id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-            
-            // Set the custom dimension value on the tracker using its index.
-            [tracker set:[GAIFields customMetricForIndex:index] value:value];
-            
-            [self successWithMessage:[NSString stringWithFormat:@"setVariable: index = %ld, value = %@;", (long)index, value] toID:callbackId];
-        }
-        else
-            [self failWithMessage:@"setVariable failed - not initialized" toID:callbackId withError:nil];
-    }
-    @catch (NSException *exception) {
-        NSLog(@"GAPlugin.setVariable: %@", [exception reason]);
-    }
-    @finally {
-    }
-}
-
-- (void) setOptOut:(CDVInvokedUrlCommand*)command
-{
-    @try {
-        NSString  *callbackId = command.callbackId;
-        BOOL status = [[command.arguments objectAtIndex:1] boolValue];
-
-        if (inited) {
-            // Set the custom dimension value on the tracker using its index.
-            [[GAI sharedInstance] setOptOut:status];
-
-            [self successWithMessage:[NSString stringWithFormat:@"setOptOut: value = %d;", status] toID:callbackId];
-        }
-        else
-            [self failWithMessage:@"setOptOut failed - not initialized" toID:callbackId withError:nil];
-    }
-    @catch (NSException *exception) {
-        NSLog(@"GAPlugin.setOptOut: %@", [exception reason]);
-    }
-    @finally {
-    }
-}
-
--(void)successWithMessage:(NSString *)message toID:(NSString *)callbackID
+- (void) successWithMessage:(NSString *)message toID:(NSString *)callbackID
 {
     CDVPluginResult *commandResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:message];
-
-    [self.commandDelegate sendPluginResult:commandResult callbackId:callbackID];
-}
-
--(void)failWithMessage:(NSString *)message toID:(NSString *)callbackID withError:(NSError *)error
-{
-    NSString        *errorMessage = (error) ? [NSString stringWithFormat:@"%@ - %@", message, [error localizedDescription]] : message;
-    CDVPluginResult *commandResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:errorMessage];
     
     [self.commandDelegate sendPluginResult:commandResult callbackId:callbackID];
 }
 
+- (void) failWithMessage:(NSString *)message toID:(NSString *)callbackID withError:(NSError *)error
+{
+    NSString        *errorMessage = (error) ? [NSString stringWithFormat:@"%@ - %@", message, [error localizedDescription]] : message;
+    CDVPluginResult *commandResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:errorMessage];
+
+    [self.commandDelegate sendPluginResult:commandResult callbackId:callbackID];
+}
+
+- (void)dealloc
+{
+    [[GAI sharedInstance] dispatch];
+}
 
 @end
