@@ -9,17 +9,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
-
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 
 /**
  * @author Daniel Lukashevich
  */
-public abstract class BaseActivity extends SherlockActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
     // Toasts
     public void showToast(String message) {

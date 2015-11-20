@@ -1,8 +1,5 @@
 package io.appery.tester;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-
 import io.appery.tester.dialogs.EnterAppCodeDialog;
 import io.appery.tester.net.api.BaseResponse;
 import io.appery.tester.net.api.DoSAML;
@@ -24,6 +21,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
@@ -43,6 +42,7 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             // Activity was brought to front and not created,
@@ -50,7 +50,6 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
             finish();
             return;
         }
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.login);
         bindUI();
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);

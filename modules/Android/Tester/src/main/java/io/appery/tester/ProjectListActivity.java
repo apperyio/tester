@@ -28,19 +28,18 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
 import android.widget.ListView;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.SubMenu;
 
 /**
  * @author Daniel Lukashevich
@@ -175,17 +174,8 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
     private void customizeActionBar(){
         ActionBar bar = getSupportActionBar();
         View title = LayoutInflater.from(this).inflate(R.layout.actionbar_tittle , null , false);
-        /*mIndicatorView = (ImageView)title.findViewById(R.id.im_indicator);
-        mIndicatorView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                   mSlidingMenu.toggle(true);
-            }
-        });*/
-
         FrameLayout.LayoutParams prms = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER_VERTICAL);
-
         title.setLayoutParams(prms);
         bar.setCustomView(title);
         bar.setDisplayShowCustomEnabled(true);
@@ -311,10 +301,11 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         subMenu.add(0, Constants.MENU_OPTIONS.SORT_BY_NAME, Menu.NONE, R.string.sort_by_name);
         subMenu.add(0, Constants.MENU_OPTIONS.SORT_BY_CREATE,Menu.NONE, R.string.sort_by_createdate);
         subMenu.add(0, Constants.MENU_OPTIONS.SORT_BY_EDIT,Menu.NONE, R.string.sort_by_modifydate);
-        subMenu.add(0, Constants.MENU_OPTIONS.LOGOUT,Menu.NONE, R.string.logout_mi);
+        subMenu.add(0, Constants.MENU_OPTIONS.LOGOUT, Menu.NONE, R.string.logout_mi);
 
         MenuItem subMenu1Item = subMenu.getItem();
-        subMenu1Item.setIcon(R.drawable.abs__ic_menu_moreoverflow_normal_holo_light);
+        //TODO : change to open menu
+        subMenu1Item.setIcon(R.drawable.icon_settings);
         subMenu1Item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS );
         return super.onCreateOptionsMenu(menu);
     }
