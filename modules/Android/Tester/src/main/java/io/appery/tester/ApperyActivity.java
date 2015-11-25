@@ -31,9 +31,9 @@ public class ApperyActivity extends org.apache.cordova.CordovaActivity {
 
         String indexPath = "file://" + getStartFileName();
 
-
-        loadUrlTimeoutValue = 60000;
-        clearCache();
+        //TODO: not ability after update cordova
+        //loadUrlTimeoutValue = 60000;
+        //clearCache();
         loadUrl(indexPath);
     }
 
@@ -76,7 +76,7 @@ public class ApperyActivity extends org.apache.cordova.CordovaActivity {
         
         // End activity if return to projects list
         if (result) {
-            endActivity();
+            finish();
         }
         
         return result;

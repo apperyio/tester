@@ -82,7 +82,7 @@ public final class AddressBookResultHandler extends ResultHandler {
     super(activity, result);
     AddressBookParsedResult addressResult = (AddressBookParsedResult) result;
     String[] addresses = addressResult.getAddresses();
-    boolean hasAddress = addresses != null && addresses.length > 0 && addresses[0].length() > 0;
+    boolean hasAddress = addresses != null && addresses.length > 0 && addresses[0] != null && !addresses[0].isEmpty();
     String[] phoneNumbers = addressResult.getPhoneNumbers();
     boolean hasPhoneNumber = phoneNumbers != null && phoneNumbers.length > 0;
     String[] emails = addressResult.getEmails();
@@ -123,6 +123,7 @@ public final class AddressBookResultHandler extends ResultHandler {
     switch (action) {
       case 0:
         addContact(addressResult.getNames(),
+                   addressResult.getNicknames(),
                    addressResult.getPronunciation(),
                    addressResult.getPhoneNumbers(),
                    addressResult.getPhoneTypes(),
@@ -134,19 +135,18 @@ public final class AddressBookResultHandler extends ResultHandler {
                    address1Type,
                    addressResult.getOrg(),
                    addressResult.getTitle(),
-                   addressResult.getURL(),
-                   addressResult.getBirthday());
+                   addressResult.getURLs(),
+                   addressResult.getBirthday(),
+                   addressResult.getGeo());
         break;
       case 1:
-        String[] names = addressResult.getNames();
-        String title = names != null ? names[0] : null;
-        searchMap(address1, title);
+        searchMap(address1);
         break;
       case 2:
         dialPhone(addressResult.getPhoneNumbers()[0]);
         break;
       case 3:
-        sendEmail(addressResult.getEmails()[0], null, null);
+        sendEmail(addressResult.getEmails(), null, null, null, null);
         break;
       default:
         break;
@@ -173,7 +173,7 @@ public final class AddressBookResultHandler extends ResultHandler {
     int namesLength = contents.length();
 
     String pronunciation = result.getPronunciation();
-    if (pronunciation != null && pronunciation.length() > 0) {
+    if (pronunciation != null && !pronunciation.isEmpty()) {
       contents.append("\n(");
       contents.append(pronunciation);
       contents.append(')');
@@ -185,14 +185,16 @@ public final class AddressBookResultHandler extends ResultHandler {
     String[] numbers = result.getPhoneNumbers();
     if (numbers != null) {
       for (String number : numbers) {
-        ParsedResult.maybeAppend(PhoneNumberUtils.formatNumber(number), contents);
+        if (number != null) {
+          ParsedResult.maybeAppend(PhoneNumberUtils.formatNumber(number), contents);
+        }
       }
     }
     ParsedResult.maybeAppend(result.getEmails(), contents);
-    ParsedResult.maybeAppend(result.getURL(), contents);
+    ParsedResult.maybeAppend(result.getURLs(), contents);
 
     String birthday = result.getBirthday();
-    if (birthday != null && birthday.length() > 0) {
+    if (birthday != null && !birthday.isEmpty()) {
       Date date = parseDate(birthday);
       if (date != null) {
         ParsedResult.maybeAppend(DateFormat.getDateInstance(DateFormat.MEDIUM).format(date.getTime()), contents);
