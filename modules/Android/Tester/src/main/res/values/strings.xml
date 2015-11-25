@@ -6,7 +6,7 @@
     <string name="login_label">Login: </string>
     <string name="password_label">Password: </string>
     <string name="url_label">URL: </string>
-    <string name="loading_label">Loading...</string>
+    <string name="login_tester">TESTER</string>
     <string name="rights">© 2015 Appery, LLC. All rights reserved</string>
     <string name="edited_label">Edited:</string>
     <string name="xmpp_server">XMPP server:</string>
@@ -38,6 +38,7 @@
     <string name="enter_app_code_cancel_button">CANCEL</string>
 
     <!-- MENU ITEMS -->
+    <string name="tool_bar_title_projects">My apps</string>
     <string name="logout_mi">Logout</string>
     <string name="preferences_mi">Preferences</string>
     <string name="refresh_mi">Refresh</string>

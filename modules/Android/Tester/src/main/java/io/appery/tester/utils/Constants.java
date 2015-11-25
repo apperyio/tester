@@ -5,6 +5,8 @@ package io.appery.tester.utils;
  */
 public interface Constants {
 
+    public static final String EMPTY_STRING = "";
+
     public interface API {
         public static final String LOGIN = "/idp/doLogin";
 
@@ -32,21 +34,6 @@ public interface Constants {
         public static final int PROJECT_ACTION = 4;
 
         public static final int SORT = 6;
-    }
-
-    public interface MENU_OPTIONS {
-
-        public static final int REFRESH = 2;
-
-        public static final int SORT = 3;
-
-        public static final int FILTER = 4;
-
-        public static final int SORT_BY_NAME =5 ;
-        public static final int SORT_BY_CREATE =6 ;
-        public static final int SORT_BY_EDIT =7 ;
-        public static final int SELECT_FOLDER =8 ;
-        public static final int LOGOUT =9 ;
     }
 
     public interface PREFERENCES {

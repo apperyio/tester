@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_refresh"
+        android:title="@string/refresh_mi"/>
+    <item
+        android:id="@+id/menu_sort_by_name"
+        android:title="@string/sort_by_name"/>
+    <item
+        android:id="@+id/menu_sort_by_create_date"
+        android:title="@string/sort_by_createdate"/>
+    <item
+        android:id="@+id/menu_sort_by_modify_date"
+        android:title="@string/sort_by_modifydate"/>
+    <item
+        android:id="@+id/menu_logout"
+        android:title="@string/logout_mi"/>
+
+</menu>

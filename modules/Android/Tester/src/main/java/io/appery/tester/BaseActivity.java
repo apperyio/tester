@@ -1,19 +1,22 @@
 package io.appery.tester;
 
-import io.appery.tester.net.RestManager;
-import io.appery.tester.net.api.Logout;
-import io.appery.tester.utils.Constants;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.LayoutRes;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import butterknife.ButterKnife;
+import io.appery.tester.net.RestManager;
+import io.appery.tester.net.api.Logout;
+import io.appery.tester.utils.Constants;
 
 /**
  * @author Daniel Lukashevich
@@ -25,29 +28,36 @@ public abstract class BaseActivity extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
-    public void showToast(int id) {
-        String message = getString(id);
-        showToast(message);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(getResId());
+        ButterKnife.bind(this);
+        afterViews(savedInstanceState);
     }
 
-    // Dialogs
+    protected void afterViews(Bundle savedInstanceState) {
+
+    }
+
+    @LayoutRes
+    abstract protected int getResId();
 
     @Override
     protected Dialog onCreateDialog(int id) {
         switch (id) {
-        case Constants.DIALOGS.PROGRESS:
-            ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setCancelable(false);
-            progressDialog.setMessage(getString(R.string.please_wait));
+            case Constants.DIALOGS.PROGRESS:
+                ProgressDialog progressDialog = new ProgressDialog(this);
+                progressDialog.setCancelable(false);
+                progressDialog.setMessage(getString(R.string.please_wait));
 
-            return progressDialog;
+                return progressDialog;
 
-        default:
-            break;
+            default:
+                break;
         }
         return super.onCreateDialog(id);
     }
-
 
 
     @Override
@@ -60,25 +70,17 @@ public abstract class BaseActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    // Menu
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-      //  getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-        case R.id.menu_logout:
-            logout();
-            startActivity(LoginActivity.class);
-            return true;
+            case R.id.menu_logout:
+                logout();
+                startActivity(LoginActivity.class);
+                return true;
 
-        default:
-            break;
+            default:
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -106,7 +108,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public String getBaseURL() {
-        return ((TesterApplication) getApplication()).getRestManager().getBaseURL();
+        return getRestManager().getBaseURL();
     }
 
     public RestManager getRestManager() {
@@ -130,7 +132,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             String serverURL = getPreferenceAsString(Constants.PREFERENCES.BASE_URL, "");
             if (serverURL.equals(Constants.SERVER_CONSTANTS.OLD_APPERY_URL_HTTPS)
                     || serverURL.equals(Constants.SERVER_CONSTANTS.OLD_APPERY_URL_HTTP)) {
-                // updating server url to https://appery.io
                 setPreference(Constants.PREFERENCES.BASE_URL, Constants.SERVER_CONSTANTS.NEW_APPERY_URL_HTTPS);
                 return Constants.SERVER_CONSTANTS.NEW_APPERY_URL_HTTPS;
             }

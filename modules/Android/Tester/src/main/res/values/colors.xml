@@ -1,9 +1,27 @@
+<resources>
+    <color name="windowBackground">#FFFFFFFF</color>
+    <color name="primary_text">#FF616161</color>
+    <color name="secondary_text">#FF616161</color>
+    <color name="list_background">#FFfafafa</color>
+    <color name="list_items_divider">#FFdddddd</color>
+    <color name="button_enabled_color">#FF0585ED</color>
 
-    <resources>
-        <color name="windowBackground">#FFFFFFFF</color>
-        <color name="primary_text">#FF616161</color>
-        <color name="secondary_text">#FF616161</color>
-        <color name="list_background">#FFfafafa</color>
-        <color name="list_items_divider">#FFdddddd</color>
-        <color name="button_enabled_color">#FF0585ED</color>
-    </resources>
+    <!-- new themes colors-->
+    <color name="bg_blue_light">#25a3eb</color>
+    <color name="bg_blue_dark">#137dba</color>
+    <color name="bg_green">#88d243</color>
+    <color name="bg_red">#f35c34</color>
+    <color name="bg_black">#131415</color>
+    <color name="bg_black_light">#1e2326</color>
+    <color name="bg_black_lightest">#2b3236</color>
+    <color name="bg_grey_darkest">#666666</color>
+    <color name="bg_grey_dark">#999999</color>
+    <color name="bg_grey">#cccccc</color>
+    <color name="bg_grey_light">#eeeeee</color>
+
+    <color name="bg_black_transparent_90">#dd131415</color>
+    <color name="bg_black_transparent_50">#77131415</color>
+    <color name="bg_grey_transparent_90">#e3cccccc</color>
+    <color name="bg_achievement_progress">#e36b8487</color>
+    <color name="white">#ffffff</color>
+</resources>
