@@ -30,5 +30,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.+'
-    compile 'com.google.zxing:core:3.1.0'
+    compile 'com.google.zxing:core:3.2.1'
+    compile 'com.google.zxing:android-core:3.2.1'
 }
