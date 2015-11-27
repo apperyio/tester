@@ -10,19 +10,19 @@
 
 @implementation NSString (URLUtility)
 
-- (NSString *) decodedUrlString
+- (NSString *)decodedUrlString
 {
     return (NSString *)CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapes(NULL, (CFStringRef)[self mutableCopy], CFSTR("")));
 }
 
-- (NSString *) encodedUrlString
+- (NSString *)encodedUrlString
 {
     return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)[self mutableCopy], NULL, 
                                                                (CFStringRef)@"!*'();:@&=+$,/?%#[].",
                                                                kCFStringEncodingUTF8 ));
 }
 
-- (NSString *) URLByAddingResourceComponent: (NSString *)resourcePath
+- (NSString *)URLByAddingResourceComponent:(NSString *)resourcePath
 {
     if (self.length > 0) {
         return [self stringByAppendingString: resourcePath];
@@ -31,7 +31,7 @@
     }
 }
 
-- (NSString *) removeTrailingSlashes
+- (NSString *)removeTrailingSlashes
 {
     if (self.length > 0) {
         NSUInteger nonSlashSymbolPos = self.length;

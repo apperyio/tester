@@ -12,14 +12,13 @@
 
 @interface EXApperyServiceOperation () <NSURLConnectionDelegate>
 
+/** Status at the end of the operation */
 @property (nonatomic, assign, readwrite) BOOL isSuccessfull;
 
 /** Reference to connection */
 @property (nonatomic, strong) NSURLConnection *connection;
     
-/**
- * Finished code block reference
- */
+/** Finished code block reference */
 @property (nonatomic, copy) void(^completion)(EXApperyServiceOperation *);
 
 @end
@@ -28,7 +27,7 @@
 
 #pragma mark - Life cycle
 
-- (id) initWithCompletionHendler: (void (^)(EXApperyServiceOperation *))completion
+- (id)initWithCompletionHendler:(void (^)(EXApperyServiceOperation *))completion
 {
     NSAssert(completion != nil, @"completion callback block is not defined");
 
@@ -44,19 +43,19 @@
 
 #pragma mark - Public interface implementation
 
-- (void) start
+- (void)start
 {
     NSAssert(self.connection != nil, @"Connection was not initialized");
     
     [self.connection start];
 }
 
-- (void) cancel
+- (void)cancel
 {
     [self.connection cancel];
 }
 
-- (NSMutableData *) receivedData
+- (NSMutableData *)receivedData
 {
     if (!_receivedData) {
         _receivedData = [[NSMutableData alloc] init];
@@ -65,10 +64,10 @@
     return _receivedData;
 }
 
-- (void) setRequest:(NSURLRequest *)request
+- (void)setRequest:(NSURLRequest *)request
 {
     if (request != _request) {
-        self.connection = [[NSURLConnection alloc] initWithRequest: request delegate: self startImmediately: NO];
+        self.connection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:NO];
         self.responce = nil;
         _request = request;
     }
@@ -76,7 +75,7 @@
 
 #pragma mark - Protected interface
 
-- (BOOL) processReceivedData: (NSData *)data
+- (BOOL)processReceivedData:(NSData *)data
 {
     // Do nothing for operations wich do not need data processing
     return (((NSHTTPURLResponse *)self.responce).statusCode == 200) ? YES : NO;
@@ -84,7 +83,7 @@
 
 #pragma mark - NSURLConnectionDataDelegate protocol implementation
 
-- (void) connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
     NSAssert(self.receivedData != nil, @"receivedData property was not initialized");
     
@@ -92,15 +91,15 @@
     self.responce = response;
 }
 
-- (void) connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
     [self.receivedData appendData: data];
 }
 
-- (void) connectionDidFinishLoading:(NSURLConnection *)connection
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
     self.connection = nil;
-    self.isSuccessfull = [self processReceivedData: self.receivedData];
+    self.isSuccessfull = [self processReceivedData:self.receivedData];
 
     if(self.completion) {
         self.completion(self);
@@ -109,7 +108,7 @@
 
 #pragma mark - NSURLConnectionDelegate protocol implementation
 
-- (void) connection: (NSURLConnection *)connection didFailWithError: (NSError *)error
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
     self.connection = nil;
     self.isSuccessfull = NO;

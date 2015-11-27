@@ -23,7 +23,7 @@
  *
  * @return YES - if adding was successfull, NO - otherwise
  */
-+ (BOOL) addPassword: (NSString *) password forUser: (NSString *) userName;
++ (BOOL)addPassword:(NSString *)password forUser:(NSString *)userName;
 
 /**
  * Removes password for the specified user.
@@ -32,7 +32,7 @@
  *
  * @return YES - if removing was successfull, NO - otherwise
  */
-+ (BOOL) removePasswordForUser: (NSString *) userName;
++ (BOOL)removePasswordForUser:(NSString *)userName;
 
 /**
  * Retreives password for the specified user.
@@ -41,6 +41,6 @@
  *
  * @return password if it exist for the specified user, nil - otherwise
  */
-+ (NSString *) retreivePasswordForUser: (NSString *) userName;
++ (NSString *)retreivePasswordForUser:(NSString *)userName;
 
 @end

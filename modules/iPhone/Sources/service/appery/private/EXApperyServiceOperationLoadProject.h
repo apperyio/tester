@@ -28,11 +28,11 @@
 /**
  * @return loaded project's folder full path.
  */
-@property (nonatomic, readonly, retain) NSString *projectLocation;
+@property (nonatomic, retain, readonly) NSString *projectLocation;
 
 /**
  * @return loaded project's start page name (root html file name).
  */
-@property (nonatomic, readonly, retain) NSString *projectStartPageName;
+@property (nonatomic, retain, readonly) NSString *projectStartPageName;
 
 @end

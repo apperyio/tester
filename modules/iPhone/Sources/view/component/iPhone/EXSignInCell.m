@@ -30,14 +30,16 @@
 
 #pragma mark - Lifecycle
 
-- (void)awakeFromNib {
+- (void)awakeFromNib
+{
     [super awakeFromNib];
+    
     self.type = SignInCellTypeUnknown;
     
     UIImage *img = [UIImage imageNamed:@"arrow_right"];
     
     UIButton *btn = self.bProceed;
-    btn.hidden = YES;
+    [btn setHidden:YES];
     [btn setTitle:nil forState:UIControlStateNormal];
     [btn setImage:img forState:UIControlStateNormal];
     
@@ -51,7 +53,8 @@
 
 #pragma mark - Action handlers
 
-- (IBAction)proceedAction:(id)sender {
+- (IBAction)proceedAction:(id)sender
+{
     #pragma unused(sender)
     id<EXSignInCellActionDelegate> del = self.delegate;
     if ([del respondsToSelector:@selector(needToExecuteActionForCell:)]) {
@@ -61,18 +64,23 @@
 
 #pragma mark - Public class logic
 
-+ (CGFloat)height {
++ (CGFloat)height
+{
     return 54.;
 }
 
-- (void)configureCellForType:(SignInCellType) type {
+- (void)configureCellForType:(SignInCellType) type
+{
     [self configureCellForType:type withText:nil];
 }
 
-- (void)configureCellForType:(SignInCellType)type withText:(NSString *)text {
+- (void)configureCellForType:(SignInCellType)type withText:(NSString *)text
+{
     UIButton *btn = self.bProceed;
     UITextField *tf = self.tfCredential;
+    
     self.type = type;
+    
     switch (self.type) {
         case SignInCellTypeLogin:
             btn.hidden = YES;
@@ -90,6 +98,7 @@
     }
     
     tf.text = text;
+    
     [self bringSubviewToFront:tf];
     [self setNeedsLayout];
     [self layoutIfNeeded];
@@ -97,15 +106,18 @@
 
 #pragma mark - UITextFieldDelegate
 
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
     id<EXSignInCellActionDelegate> del = self.delegate;
     if ([del respondsToSelector:@selector(cell:didUpdateText:)]) {
         [del cell:self didUpdateText:[textField.text stringByReplacingCharactersInRange:range withString:string]];
     }
+    
     return YES;
 }
 
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
     [textField resignFirstResponder];
     return YES;
 }

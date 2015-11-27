@@ -15,7 +15,7 @@
  */
 @interface EXUserSettingsStorage : NSObject
 
-+ (instancetype) sharedUserSettingsStorage;
++ (instancetype)sharedUserSettingsStorage;
 
 /**
  * Declare compile time errors
@@ -30,24 +30,24 @@
 /**
  * Stores specified user settings.
  */
-- (void) storeSettings: (EXUserSettings *) settings;
+- (void)storeSettings:(EXUserSettings *)settings;
 
 /**
  * Removes user settings for the specified user.
  */
-- (void) removeSettingsForUser: (NSString *) userName;
+- (void)removeSettingsForUser:(NSString *)userName;
 
 /**
  * Retreives last stored user settings.
  *
  * @return last stored user settings
  */
-- (EXUserSettings *) retreiveLastStoredSettings;
+- (EXUserSettings *)retreiveLastStoredSettings;
 
 /**
  * Retreives all stored users settings.
  *
  * @return dictionary where keys is user name and value is correspond user settings (EXUserSettings object) */
-- (NSDictionary *) retreiveAllSettings;
+- (NSDictionary *)retreiveAllSettings;
 
 @end

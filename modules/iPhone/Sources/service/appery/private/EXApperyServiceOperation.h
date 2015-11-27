@@ -15,12 +15,6 @@
 @interface EXApperyServiceOperation : NSObject
 
 /**
- * @name Credential properties
-@property (nonatomic, strong) NSString *userName;
-@property (nonatomic, strong) NSString *userPassword;
- */
-
-/**
  * @name Operation properties
  */
 @property (nonatomic, assign, readonly) BOOL isSuccessfull;

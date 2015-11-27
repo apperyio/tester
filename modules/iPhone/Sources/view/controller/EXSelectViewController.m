@@ -23,6 +23,7 @@
     if (self = [super initWithNibName:NSStringFromClass(self.class) bundle:nil]) {
         self.title = title;
     }
+    
     return self;
 }
 
@@ -73,6 +74,7 @@
     if (row < self.data.count) {
         return [self.data objectAtIndex:row];
     }
+    
     return nil;
 }
 

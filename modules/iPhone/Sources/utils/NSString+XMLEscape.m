@@ -10,6 +10,7 @@
     if (nil == srcString) {
         return nil;
     }
+    
     CFStringRef result = CFURLCreateStringByAddingPercentEscapes(NULL, (__bridge CFStringRef)srcString, NULL, CFSTR("￼=,!$&'()*+;@?\n\"<>#\t :/"), kCFStringEncodingUTF8);
     return CFBridgingRelease(result);
 }

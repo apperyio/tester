@@ -108,6 +108,6 @@
 /**
  * Sets deferred navigation block to nil, if there was any.
  */
-- (void) clearDeferredNavigation;
+- (void)clearDeferredNavigation;
 
 @end

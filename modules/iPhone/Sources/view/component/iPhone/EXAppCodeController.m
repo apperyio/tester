@@ -23,19 +23,19 @@ static const NSInteger kAppCodeTextFieldTag = 111;
 
 #pragma mark - Lifecycle
 
-- (instancetype)init {
-    self = [super init];
-    if (self == nil) {
-        return nil;
+- (instancetype)init
+{
+    if (self = [super init]) {
+        _mask = [[NSStringMask alloc] initWithPattern:@"(\\d{3})-(\\d{3})-(\\d{3})" placeholder:@"_"];
     }
     
-    _mask = [[NSStringMask alloc] initWithPattern:@"(\\d{3})-(\\d{3})-(\\d{3})" placeholder:@"_"];
     return self;
 }
 
 #pragma mark - Public class logic
 
-- (void)requestCodeWithCompletionHandler:(EXAppControllerCompletionHandler)completionHandler {
+- (void)requestCodeWithCompletionHandler:(EXAppControllerCompletionHandler)completionHandler
+{
     self.handler = completionHandler;
     
     UIAlertView *shareAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Enter an app code", @"Enter an app code")
@@ -58,7 +58,8 @@ static const NSInteger kAppCodeTextFieldTag = 111;
 
 #pragma mark - UIAlertViewDelegate implementation
 
-- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
     if (buttonIndex == 0) {
         return;
     }
@@ -70,18 +71,21 @@ static const NSInteger kAppCodeTextFieldTag = 111;
     }
 }
 
-- (BOOL)alertViewShouldEnableFirstOtherButton:(UIAlertView *)alertView {
+- (BOOL)alertViewShouldEnableFirstOtherButton:(UIAlertView *)alertView
+{
     return YES;
 }
 
 #pragma mark - UITextField delegaete
 
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
     [textField resignFirstResponder];
     return YES;
 }
 
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
     if (textField.tag != kAppCodeTextFieldTag) {
         return YES;
     }
@@ -104,6 +108,7 @@ static const NSInteger kAppCodeTextFieldTag = 111;
     
     textField.text = mutableString;
     [textField setValue:[NSValue valueWithRange:newRange] forKey:@"selectionRange"];
+    
     return NO;
 }
 

@@ -24,10 +24,9 @@ static NSString *const kDefaultWebResourceFolder = @"www";
 
 @interface EXProjectViewController ()
 
-@property (nonatomic, retain) EXProjectMetadata *projectMetadata;
+@property (nonatomic, strong) EXProjectMetadata *projectMetadata;
 @property (nonatomic, copy) NSString *appCode;
 @property (nonatomic, assign) BOOL isShare;
-
 
 @end
 
@@ -40,7 +39,8 @@ static NSString *const kDefaultWebResourceFolder = @"www";
 
 #pragma mark - Lifecycle
 
-- (instancetype)initWithService:(EXApperyService *)service projectMetadata:(EXProjectMetadata *)projectMetadata {
+- (instancetype)initWithService:(EXApperyService *)service projectMetadata:(EXProjectMetadata *)projectMetadata
+{
     self = [super init];
     if (self == nil) {
         return nil;
@@ -52,7 +52,8 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     return self;
 }
 
-- (instancetype)initWithService:(EXApperyService *)service projectCode:(NSString *)projectCode {
+- (instancetype)initWithService:(EXApperyService *)service projectCode:(NSString *)projectCode
+{
     self = [super init];
     if (self == nil) {
         return nil;
@@ -66,7 +67,8 @@ static NSString *const kDefaultWebResourceFolder = @"www";
 
 #pragma mark - View management
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     
     NSString *title = nil;
@@ -76,39 +78,46 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     else if (self.appCode.length > 0) {
         title = self.appCode;
     }
+    
     self.title = (title.length == 0) ? [self defaultTitle] : title;
     
     self.edgesForExtendedLayout = UIRectEdgeNone;
     [self configureNavigationBar];
 }
 
-- (void)didReceiveMemoryWarning {
+- (void)didReceiveMemoryWarning
+{
     [super didReceiveMemoryWarning];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:NO];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
+- (void)viewWillDisappear:(BOOL)animated
+{
     [super viewWillDisappear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:NO];
 }
 
 #pragma mark - Public interface implementation
 
-- (void)updateContent {
+- (void)updateContent
+{
     [self reloadProject];
 }
 
 #pragma mark - Private interface implementation
 
-- (NSString *)defaultTitle {
+- (NSString *)defaultTitle
+{
     return NSLocalizedString(@"App Preview", @"App view controller | Default title");
 }
 
-- (void) configureNavigationBar {
+- (void)configureNavigationBar
+{
     UIBarButtonItem *projectsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"back"]
                                                           style:UIBarButtonItemStylePlain
                                                          target:self
@@ -122,11 +131,13 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     self.navigationItem.rightBarButtonItem = reloadProjectButton;
 }
 
-- (void) back {
+- (void)back
+{
     [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
-- (void)showProjectsViewController {
+- (void)showProjectsViewController
+{
     RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
     UIViewController *sideController = [manager topSidebarController];
     if (sideController != nil) {
@@ -142,7 +153,8 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     }
 }
 
-- (void)reloadProject {
+- (void)reloadProject
+{
     if (self.isShare && self.appCode.length > 0) {
         [self loadProjectForAppCode:self.appCode];
         return;
@@ -160,7 +172,8 @@ static NSString *const kDefaultWebResourceFolder = @"www";
                       otherButtonTitles:nil] show];
 }
 
-- (void)loadProjectForAppCode:(NSString *)appCode {
+- (void)loadProjectForAppCode:(NSString *)appCode
+{
     if (appCode.length == 0) {
         [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Application code is not given.", @"Application code is not given.")
                                     message:NSLocalizedString(@"There is no application code to load the project.", @"There is no application code to load the project.")
@@ -175,7 +188,7 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     }
     
     UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
-    MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
+    MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo:rootView animated:YES];
     progressHud.labelText = NSLocalizedString(@"Loading app", @"Loading app progress hud title");
     
     __weak EXApperyService *weakService = self.apperyService;
@@ -213,7 +226,8 @@ static NSString *const kDefaultWebResourceFolder = @"www";
      ];
 }
 
-- (void)loadProjectForMetadata:(EXProjectMetadata *)projectMetadata {
+- (void)loadProjectForMetadata:(EXProjectMetadata *)projectMetadata
+{
     if (projectMetadata == nil) {
         [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Project's metadata is not given.", @"Project's metadata is not given.")
                                     message:NSLocalizedString(@"There is no project's metadata to load the project.", @"There is no project's metadata to load the project.")
@@ -292,15 +306,18 @@ static NSString *const kDefaultWebResourceFolder = @"www";
 
 #pragma mark - EXProjectControllerActionDelegate
 
-- (void)masterControllerDidLogout {
+- (void)masterControllerDidLogout
+{
     [[EXMainWindowAppDelegate appDelegate] navigateToStartPage];
 }
 
-- (void)masterControllerDidLoadMetadata:(EXProjectMetadata *)metadata {
+- (void)masterControllerDidLoadMetadata:(EXProjectMetadata *)metadata
+{
     [self loadProjectForMetadata:metadata];
 }
 
-- (void)masterControllerDidAcquireAppCode:(NSString *)appCode {
+- (void)masterControllerDidAcquireAppCode:(NSString *)appCode
+{
     [self loadProjectForAppCode:appCode];
 }
 

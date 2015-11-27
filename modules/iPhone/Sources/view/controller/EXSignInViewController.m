@@ -66,11 +66,13 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 
 #pragma mark - Lifecycle
 
-- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
     return [self initWithNibName:nibNameOrNil bundle:nibBundleOrNil service:nil];
 }
 
-- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil service:(EXApperyService *)service {
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil service:(EXApperyService *)service
+{
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self == nil) {
         return nil;
@@ -85,7 +87,8 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 
 #pragma mark - View management
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
 
     self.title = NSLocalizedString(@"Login", @"EXSignInViewController title");
@@ -123,16 +126,19 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     l.textAlignment = NSTextAlignmentCenter;
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:animated];
     
     [self.navigationController setNavigationBarHidden:YES animated:NO];
+    
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     [center addObserver:self selector:@selector(keyboardWillShowNotification:) name:UIKeyboardWillShowNotification object:nil];
     [center addObserver:self selector:@selector(keyboardWillHideNotification:) name:UIKeyboardWillHideNotification object:nil];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
+- (void)viewWillDisappear:(BOOL)animated
+{
     [super viewWillDisappear:animated];
     
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
@@ -140,7 +146,8 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     [center removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
 
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.tvSignIn reloadData];
     });
@@ -148,7 +155,8 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 
 #pragma mark - Private class logic
 
-- (void) signIn {
+- (void)signIn
+{
     UIView *rootView = [[[EXMainWindowAppDelegate mainWindow] rootViewController] view];
     MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
     progressHud.labelText = NSLocalizedString(@"Login", @"Login progress hud title");
@@ -187,7 +195,8 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
                                    }];
 }
 
-- (void) saveUserSettings {
+- (void)saveUserSettings
+{
     EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
     
     // save user settings
@@ -199,13 +208,14 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     [usStorage storeSettings: userSettings];    
 }
 
-- (void) composeUIForMetadata:(NSArray *)metadata appCode:(NSString *)appCode location:(NSString *)location startPage:(NSString *)startPage {
+- (void)composeUIForMetadata:(NSArray *)metadata appCode:(NSString *)appCode location:(NSString *)location startPage:(NSString *)startPage
+{
     RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
+    
     if (metadata != nil) {
         EXProjectsMetadataViewController *pmvc = [[EXProjectsMetadataViewController alloc] initWithNibName:nil bundle:nil service:self.apperyService projectsMetadata:metadata];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectMetadata:nil];
-            
             pvc.wwwFolderName = location;
             pvc.startPage = startPage;
             pmvc.delegate = pvc;
@@ -236,7 +246,8 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 
 #pragma mark - Action handlers
 
-- (IBAction)appCodeAction:(id)sender {
+- (IBAction)appCodeAction:(id)sender
+{
     self.appCodeController = [[EXAppCodeController alloc] init];
     [self.appCodeController requestCodeWithCompletionHandler:^(NSString *appCode){
         [self composeUIForMetadata:nil appCode:appCode location:@"www" startPage:@"index.html"];
@@ -246,25 +257,29 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 
 #pragma mark - UITableViewDataSource
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
     #pragma unused(tableView)
     return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
     #pragma unused(tableView, section)
     return 2;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kEXSignInCellIdentifier];
-    if (cell == nil)
-    {
+    if (cell == nil) {
         NSArray *content = [[NSBundle mainBundle] loadNibNamed:kEXSignInCellIdentifier owner:nil options:nil];
         cell = content[0];
     }
+    
     EXSignInCell *siCell = [cell as:[EXSignInCell class]];
     siCell.delegate = self;
+    
     if (indexPath.row == 0) {
         EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
         EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
@@ -278,17 +293,21 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"UNEXPECTED_CELL"];
     }
+    
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
     return cell;
 }
 
 #pragma mark - UITableViewDelegate
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     return [EXSignInCell height];
 }
 
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
     if ([cell respondsToSelector:@selector(tintColor)]) {
         CGFloat cornerRadius = 5.;
         cell.backgroundColor = [UIColor clearColor];
@@ -330,6 +349,7 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
             lineLayer.backgroundColor = tableView.separatorColor.CGColor;
             [layer addSublayer:lineLayer];
         }
+        
         UIView *testView = [[UIView alloc] initWithFrame:bounds];
         [testView.layer insertSublayer:layer atIndex:0];
         testView.backgroundColor = UIColor.clearColor;
@@ -337,17 +357,20 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     }
 }
 
-- (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath {
+- (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
+{
     return NO;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
 #pragma mark - ExSignInCellActionDelegate
 
-- (void)cell:(EXSignInCell *)cell didUpdateText:(NSString *)text {
+- (void)cell:(EXSignInCell *)cell didUpdateText:(NSString *)text
+{
     switch (cell.type) {
         case SignInCellTypeLogin:
             self.uname = text;
@@ -360,7 +383,8 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     }
 }
 
-- (void)needToExecuteActionForCell:(EXSignInCell *)cell {
+- (void)needToExecuteActionForCell:(EXSignInCell *)cell
+{
     switch (cell.type) {
         case SignInCellTypePassword:
             [self signIn];
@@ -372,7 +396,8 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 
 #pragma mark - Keyboard notification handlers
 
-- (void)keyboardWillShowNotification:(NSNotification *)notification {
+- (void)keyboardWillShowNotification:(NSNotification *)notification
+{
     NSValue *val = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] as:[NSValue class]];
     CGRect keyboardEndFrame = val.CGRectValue;
     CGRect convertedKeyboardEndFrame = [self.view convertRect:keyboardEndFrame fromView:self.view.window];
@@ -382,7 +407,8 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     self.svScroll.contentInset = inset;
 }
 
-- (void)keyboardWillHideNotification:(NSNotification *)notification {
+- (void)keyboardWillHideNotification:(NSNotification *)notification
+{
     #pragma unused(notification)
     self.svScroll.contentInset = UIEdgeInsetsZero;
 }

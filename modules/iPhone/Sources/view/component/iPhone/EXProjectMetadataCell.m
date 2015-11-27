@@ -30,7 +30,8 @@ NSString *const kEXProjectMetadataCell = @"EXProjectMetadataCell";
 
 #pragma mark - ViewManagement/Lifecycle
 
-- (void)awakeFromNib {
+- (void)awakeFromNib
+{
     [super awakeFromNib];
     
     UILabel *l = self.lDivider;
@@ -49,7 +50,8 @@ NSString *const kEXProjectMetadataCell = @"EXProjectMetadataCell";
 
 #pragma mark - Public class logic
 
-- (void)updateWithMetadata:(EXProjectMetadata *)metadata {
+- (void)updateWithMetadata:(EXProjectMetadata *)metadata
+{
     UIImageView *iv = self.ivIcon;
     iv.image = [self iconForProjectType:metadata.type];
 
@@ -59,13 +61,15 @@ NSString *const kEXProjectMetadataCell = @"EXProjectMetadataCell";
     l.text = [NSString stringWithFormat:@"%@, %@", metadata.creator, metadata.formattedModifiedDate];
 }
 
-+ (CGFloat)height {
++ (CGFloat)height
+{
     return 64.;
 }
 
 #pragma mark - Private class logic
 
-- (UIImage *)iconForProjectType:(NSNumber *)type {
+- (UIImage *)iconForProjectType:(NSNumber *)type
+{
     UIImage *icon = nil;
     switch ([type integerValue]) {
         case 1:

@@ -13,21 +13,21 @@
 /**
  * @return - encoded URL string with adding percent escape to reserved URL characters.
  */
-- (NSString*) encodedUrlString;
+- (NSString*)encodedUrlString;
 
 /**
  * @return - decoded URL string with replaced percent escape sequences with their character equivalent.
  */
-- (NSString*) decodedUrlString;
+- (NSString*)decodedUrlString;
 
 /**
  * @return - string by adding resource component.
  */
-- (NSString *) URLByAddingResourceComponent: (NSString *) resourcePath;
+- (NSString *)URLByAddingResourceComponent:(NSString *)resourcePath;
 
 /**
  * Removes trailing slashes from the specified string.
  */
-- (NSString *) removeTrailingSlashes;
+- (NSString *)removeTrailingSlashes;
 
 @end

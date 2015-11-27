@@ -7,7 +7,6 @@
 @interface NSObject (Utils)
 
 - (id)as:(Class)expectedClass;
-
 - (id)asStringOrNumber;
 
 @end

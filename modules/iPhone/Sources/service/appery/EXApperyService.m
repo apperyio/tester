@@ -39,39 +39,39 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
 /**
  * Execute with HTML document
  */
-- (NSError *) executeFormFromData:(NSData *) data completion:(void(^)(ONOXMLDocument *document))completion;
+- (NSError *)executeFormFromData:(NSData *)data completion:(void(^)(ONOXMLDocument *document))completion;
 
 /**
  * Filter HTML source, remove coments
  */
-- (NSString *) filterHtml:(NSString *) html;
+- (NSString *)filterHtml:(NSString *)html;
 
 /**
  * @throw NSException if current service state is logged out.
  */
-- (void) throwExceptionIfServiceIsLoggedOut;
+- (void)throwExceptionIfServiceIsLoggedOut;
 
 /**
  * @throw NSException if current service state is logged in.
  */
-- (void) throwExceptionIfServiceIsLoggedIn;
+- (void)throwExceptionIfServiceIsLoggedIn;
 
 /**
  * Removes local autentication data.
  */
-- (void) removeLocalAuthentication;
+- (void)removeLocalAuthentication;
 
 /**
  * Changes logged status to specified value.
  * 
  * @param status - provide new logged status value.
  */
-- (void) changeLoggedStatusTo: (BOOL) status;
+- (void)changeLoggedStatusTo:(BOOL)status;
 
 /**
  * Remembers specified user's name and user's password to private section;
  */
-- (void) rememberUserName: (NSString *) userName password: (NSString *) password;
+- (void)rememberUserName:(NSString *)userName password:(NSString *)password;
 
 @end
 
@@ -91,7 +91,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
 
 #pragma mark - Lifecycle
 
-- (void) dealloc
+- (void)dealloc
 {
     self.userName = nil;
     self.userPassword = nil;
@@ -99,12 +99,12 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
 
 #pragma mark - Getters/Setters
 
-- (NSString *) baseUrl
+- (NSString *)baseUrl
 {
     return _baseUrl == nil ? BASE_URL_STRING : _baseUrl;
 }
 
-- (void) setBaseUrl: (NSString *)baseUrl
+- (void)setBaseUrl:(NSString *)baseUrl
 {
     _baseUrl = nil;
 
@@ -113,12 +113,12 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     }
 }
 
-- (BOOL) isLoggedIn
+- (BOOL)isLoggedIn
 {
     return _isLoggedIn;
 }
 
-- (BOOL) isLoggedOut
+- (BOOL)isLoggedOut
 {
     return !self.isLoggedIn;
 }
@@ -130,9 +130,9 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
 
 #pragma mark - Public interface implementation
 
-- (void)loginWithUsername: (NSString *)userName password: (NSString *)password
-                  succeed: (void (^)(NSArray *))succeed
-                   failed: (void (^)(NSError *))failed
+- (void)loginWithUsername:(NSString *)userName password:(NSString *)password
+                  succeed:(void (^)(NSArray *))succeed
+                   failed:(void (^)(NSError *))failed
 {
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");
@@ -236,18 +236,18 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     [self.currentOperation start];
 }
 
-- (void) quickLogout
+- (void)quickLogout
 {
     [self removeLocalAuthentication];
     [self changeLoggedStatusTo: NO];
 }
 
-- (void) cancelCurrentOperation
+- (void)cancelCurrentOperation
 {
     [_currentOperation cancel];
 }
 
-- (void) logoutSucceed: (void (^)(void))succeed failed: (void (^)(NSError *))failed
+- (void)logoutSucceed:(void (^)(void))succeed failed:(void (^)(NSError *))failed
 {
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");
@@ -266,7 +266,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     
     self.currentOperation = logoutOperation;
     
-    NSURL *logoutUrl = [NSURL URLWithString:[[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent: LOGOUT_PATH_URL_STRING]];
+    NSURL *logoutUrl = [NSURL URLWithString:[[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:LOGOUT_PATH_URL_STRING]];
     NSMutableURLRequest *logoutRequest = [NSMutableURLRequest requestWithURL:logoutUrl
                                                                  cachePolicy:NSURLRequestUseProtocolCachePolicy
                                                              timeoutInterval:60.0];
@@ -276,7 +276,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     [self quickLogout];
 }
 
-- (void) loadProjectsMetadata: (void (^)(NSArray *))succeed failed: (void (^)(NSError *))failed
+- (void)loadProjectsMetadata:(void (^)(NSArray *))succeed failed:(void (^)(NSError *))failed
 {
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");
@@ -293,7 +293,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
         self.currentOperation = nil;
     }];
     
-    NSURL *loadProjectsUrl = [NSURL URLWithString:[[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent: PROJECTS_PATH_URL_STRING]];
+    NSURL *loadProjectsUrl = [NSURL URLWithString:[[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:PROJECTS_PATH_URL_STRING]];
     NSMutableURLRequest *loadProjectsRequest = [NSMutableURLRequest requestWithURL:loadProjectsUrl
                                                                        cachePolicy:NSURLRequestUseProtocolCachePolicy
                                                                    timeoutInterval:60.0];
@@ -302,9 +302,9 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     [self.currentOperation start];
 }
 
-- (void) loadProjectForMetadata: (EXProjectMetadata *) projectMetadata
-                        succeed: (void (^)(NSString *projectLocation, NSString *startPageName)) succeed
-                         failed: (void (^)(NSError *error)) failed
+- (void)loadProjectForMetadata:(EXProjectMetadata *)projectMetadata
+                       succeed:(void (^)(NSString *projectLocation, NSString *startPageName))succeed
+                        failed:(void (^)(NSError *error))failed
 {
     NSAssert(projectMetadata != nil, @"projectMetadata is undefined");
     NSAssert(succeed != nil, @"succeed callback block is not specified");
@@ -318,13 +318,13 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
         if (operation.isSuccessfull) {
             succeed(loadProjectOperation.projectLocation, loadProjectOperation.projectStartPageName);
         } else {
-            failed (operation.error);
+            failed(operation.error);
         }
         
         self.currentOperation = nil;
     }];
     
-    NSURL *loadProjectUrl = [NSURL URLWithString:[[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent: [NSString stringWithFormat:PROJECT_PATH_URL_STRING, projectMetadata.guid]]];
+    NSURL *loadProjectUrl = [NSURL URLWithString:[[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:[NSString stringWithFormat:PROJECT_PATH_URL_STRING, projectMetadata.guid]]];
     NSMutableURLRequest *loadProjectRequest = [NSMutableURLRequest requestWithURL:loadProjectUrl
                                                                       cachePolicy:NSURLRequestUseProtocolCachePolicy
                                                                   timeoutInterval:60.0];
@@ -335,9 +335,9 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     [self.currentOperation start];
 }
 
-- (void) loadProjectForAppCode: (NSString *) appCode
-                       succeed: (void (^)(NSString *projectLocation, NSString *startPageName)) succeed
-                        failed: (void (^)(NSError *error)) failed
+- (void)loadProjectForAppCode:(NSString *) appCode
+                      succeed:(void (^)(NSString *projectLocation, NSString *startPageName))succeed
+                       failed:(void (^)(NSError *error)) failed
 {
     NSAssert(appCode != nil, @"application code is undefined");
     NSAssert(succeed != nil, @"succeed callback block is not specified");
@@ -352,20 +352,18 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
             //404 (Invalid access code) - No app is associated with this code.
             //403 (Invalid access code) - The code you have entered has expired or no longer valid.
             
-            if(((NSHTTPURLResponse *)operation.responce).statusCode == 404)
-            {
+            if(((NSHTTPURLResponse *)operation.responce).statusCode == 404) {
                 NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
                                           NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"No app is associated with this code", nil)};
                 operation.error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
             }
-            else if(((NSHTTPURLResponse *)operation.responce).statusCode == 403)
-            {
+            else if(((NSHTTPURLResponse *)operation.responce).statusCode == 403) {
                 NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
                                           NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"The code you have entered has expired or no longer valid", nil)};
                 operation.error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
             }
             
-            failed (operation.error);
+            failed(operation.error);
         }
         
         self.currentOperation = nil;
@@ -387,69 +385,65 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
 
 #pragma mark - Private interface implementation
 
-- (NSError *) executeFormFromData:(NSData *) data completion:(void(^)(ONOXMLDocument *document))completion
+- (NSError *)executeFormFromData:(NSData *)data completion:(void(^)(ONOXMLDocument *document))completion
 {
     NSError *error = nil;
-    if ([data length] > 0)
-    {
+    
+    if ([data length] > 0) {
         NSString *dirtyHtml = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
         NSString *cleanHtml = [self filterHtml:dirtyHtml];
         ONOXMLDocument *document = [ONOXMLDocument XMLDocumentWithData:[cleanHtml dataUsingEncoding:NSUTF8StringEncoding] error:&error];
         
-        if(!error && completion)
-        {
+        if(!error && completion) {
             completion(document);
         }
-        else
-        {
+        else {
             NSLog(@"Parse error");
         }
     }
+    
     return error;
 }
 
-- (NSString *) filterHtml:(NSString *) html
+- (NSString *)filterHtml:(NSString *)html
 {
     NSString *text = nil;
     NSScanner *scanner = [NSScanner scannerWithString:html];
     
-    while ([scanner isAtEnd] == NO)
-    {
+    while ([scanner isAtEnd] == NO) {
         [scanner scanUpToString:@"<!--" intoString:NULL];
         [scanner scanUpToString:@"-->" intoString:&text];
         
-        if (text != nil)
-        {
+        if (text != nil) {
             html = [html stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@-->", text] withString:@""];
         }
     }
+    
     return html;
 }
 
-- (void) throwExceptionIfServiceIsLoggedOut
+- (void)throwExceptionIfServiceIsLoggedOut
 {
-    if (self.isLoggedOut)
-    {
+    if (self.isLoggedOut) {
         @throw [NSException exceptionWithName: @"IllegalStateException"
                                        reason: @"Service is already logged out" userInfo: nil];
     }
 }
 
-- (void) throwExceptionIfServiceIsLoggedIn
+- (void)throwExceptionIfServiceIsLoggedIn
 {
-    if (self.isLoggedIn)
-    {
+    if (self.isLoggedIn) {
         @throw [NSException exceptionWithName: @"IllegalStateException"
                                        reason: @"Service is already logged in" userInfo: nil];
     }
 }
 
-- (void) changeLoggedStatusTo: (BOOL)status
+- (void)changeLoggedStatusTo:(BOOL)status
 {
     _isLoggedIn = status;
 }
 
-- (void) rememberUserName: (NSString *)userName password: (NSString *)password
+- (void)rememberUserName:(NSString *)userName password:(NSString *)password
 {
     NSAssert(userName != nil, @"userName is not specified");
     NSAssert(password != nil, @"password is not specified");
@@ -458,7 +452,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     self.userPassword = password;
 }
 
-- (void) removeLocalAuthentication
+- (void)removeLocalAuthentication
 {
     self.userName = nil;
     self.userPassword = nil;
@@ -466,7 +460,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     [self removeAutenticationCookies];
 }
 
-- (void) removeAutenticationCookies
+- (void)removeAutenticationCookies
 {
     NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
     
@@ -475,7 +469,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     }
 }
 
-- (NSArray *) findAuthenticationCookies
+- (NSArray *)findAuthenticationCookies
 {
     NSMutableArray *authenticationCookies = [[NSMutableArray alloc] init];
     NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];

@@ -1,5 +1,6 @@
 //
 //  DeviceModelInfo.m
+//
 
 #import "DeviceModelInfo.h"
 #import <sys/utsname.h>
@@ -13,6 +14,7 @@ static NSDictionary *deviceDetailsByModel = nil;
     struct utsname systemInfo;
     uname(&systemInfo);
     NSString *deviceModel = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+    
     if (0 >= [deviceModel length]) {
         deviceModel = @"Unknown";
     }
@@ -20,7 +22,8 @@ static NSDictionary *deviceDetailsByModel = nil;
     return deviceModel;
 }
 
-+ (NSString *)deviceModelDetails {
++ (NSString *)deviceModelDetails
+{
     if (nil == deviceDetailsByModel) {
         deviceDetailsByModel = @{ @"i386"      :@"Simulator",
                                   @"iPod1,1"   :@"iPod Touch (1st Gen)",                      // (Original)
@@ -55,6 +58,7 @@ static NSDictionary *deviceDetailsByModel = nil;
     
     NSString *deviceModel = [self deviceModel];
     NSString *deviceModelDetails = (NSString *)deviceDetailsByModel[deviceModel];
+    
     if (0 >= [deviceModelDetails length]) {
         if ([deviceModel rangeOfString:@"iPod"].location != NSNotFound) {
             deviceModelDetails = @"iPod Touch";
@@ -73,8 +77,10 @@ static NSDictionary *deviceDetailsByModel = nil;
     return deviceModelDetails;
 }
 
-+ (NSNumber *)iPhone4Family {
++ (NSNumber *)iPhone4Family
+{
     NSString* device = [self deviceModel];
+    
     if ([device isEqualToString:@"iPhone3,1"] || [device isEqualToString:@"iPhone3,3"] || [device isEqualToString:@"iPhone4,1"]) {
         return @YES;
     }
@@ -82,16 +88,24 @@ static NSDictionary *deviceDetailsByModel = nil;
     return @NO;
 }
 
-+ (NSNumber *)iPhone5Family {
++ (NSNumber *)iPhone5Family
+{
     NSString* device = [self deviceModel];
-    if ([device isEqualToString:@"iPhone5,1"] || [device isEqualToString:@"iPhone5,2"] || [device isEqualToString:@"iPhone5,3"] || [device isEqualToString:@"iPhone5,4"] || [device isEqualToString:@"iPhone6,1"] || [device isEqualToString:@"iPhone6,2"]) {
+    
+    if ([device isEqualToString:@"iPhone5,1"] ||
+        [device isEqualToString:@"iPhone5,2"] ||
+        [device isEqualToString:@"iPhone5,3"] ||
+        [device isEqualToString:@"iPhone5,4"] ||
+        [device isEqualToString:@"iPhone6,1"] ||
+        [device isEqualToString:@"iPhone6,2"]) {
         return @YES;
     }
     
     return @NO;
 }
 
-+ (NSNumber *)iPhone6 {
++ (NSNumber *)iPhone6
+{
     NSString* device = [self deviceModel];
     if ([device isEqualToString:@"iPhone7,2"]) {
         return @YES;
@@ -100,8 +114,10 @@ static NSDictionary *deviceDetailsByModel = nil;
     return @NO;
 }
 
-+ (NSNumber *)iPhone6Plus {
++ (NSNumber *)iPhone6Plus
+{
     NSString* device = [self deviceModel];
+    
     if ([device isEqualToString:@"iPhone7,1"]) {
         return @YES;
     }
@@ -109,8 +125,10 @@ static NSDictionary *deviceDetailsByModel = nil;
     return @NO;
 }
 
-+ (NSNumber *)iPadFamily {
++ (NSNumber *)iPadFamily
+{
     NSString* device = [self deviceModel];
+    
     if ([device isEqualToString:@"iPad1,1"] || [device isEqualToString:@"iPad2,1"] || [device isEqualToString:@"iPad2,5"]) {
         return @YES;
     }
@@ -118,7 +136,8 @@ static NSDictionary *deviceDetailsByModel = nil;
     return @NO;
 }
 
-+ (NSNumber *)iPadRetinaFamily {
++ (NSNumber *)iPadRetinaFamily
+{
     if (![[self iPadFamily] boolValue] && [[self deviceModel] rangeOfString:@"iPad"].location != NSNotFound) {
         return @YES;
     }

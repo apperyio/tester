@@ -12,7 +12,7 @@ static NSString *const kLastUser = @"lastUser";
 
 @implementation EXUserSettingsStorage
 
-+ (instancetype) sharedUserSettingsStorage
++ (instancetype)sharedUserSettingsStorage
 {
     static dispatch_once_t pred;
     static id shared = nil;
@@ -24,7 +24,7 @@ static NSString *const kLastUser = @"lastUser";
     return shared;
 }
 
-- (instancetype) initUniqueUserSettingsStorage
+- (instancetype)initUniqueUserSettingsStorage
 {
     return [super init];
 }
@@ -33,17 +33,17 @@ static NSString *const kLastUser = @"lastUser";
 
 - (NSString *)pathForStorageFile
 {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentDirectory = [paths objectAtIndex: 0];
+    NSArray  *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentDirectory = [paths objectAtIndex:0];
     
     return [documentDirectory stringByAppendingPathComponent: @"users_settings.plist"];
 }
 
 - (NSMutableDictionary *)retreiveAllSettingsPrivate
 {
-    if ([[NSFileManager defaultManager] fileExistsAtPath: [self pathForStorageFile]]) {
-        NSData *rawSettings = [NSData dataWithContentsOfFile: [self pathForStorageFile]];
-        return [NSMutableDictionary dictionaryWithDictionary: [NSKeyedUnarchiver unarchiveObjectWithData: rawSettings]];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[self pathForStorageFile]]) {
+        NSData *rawSettings = [NSData dataWithContentsOfFile:[self pathForStorageFile]];
+        return [NSMutableDictionary dictionaryWithDictionary:[NSKeyedUnarchiver unarchiveObjectWithData:rawSettings]];
     } else {
         return [NSMutableDictionary dictionary];
     }
@@ -53,9 +53,9 @@ static NSString *const kLastUser = @"lastUser";
 {
     NSAssert(allSettings != nil, @"allSettings is not defined");
     
-    NSData *serializedData = [NSKeyedArchiver archivedDataWithRootObject: allSettings];
+    NSData *serializedData = [NSKeyedArchiver archivedDataWithRootObject:allSettings];
     
-    return [serializedData writeToFile: [self pathForStorageFile] atomically: YES];
+    return [serializedData writeToFile:[self pathForStorageFile] atomically:YES];
 }
 
 #pragma mark - Public interface implementation
@@ -66,8 +66,8 @@ static NSString *const kLastUser = @"lastUser";
     
     NSMutableDictionary *allSettings = [self retreiveAllSettingsPrivate];
     
-    [allSettings setValue: settings forKey: settings.userName];
-    [allSettings setValue: settings forKey: kLastUser];
+    [allSettings setValue:settings forKey:settings.userName];
+    [allSettings setValue:settings forKey:kLastUser];
 
     if ([self storeAllSettingsPrivate: allSettings] == NO) {
         NSLog(@"Settings for user: %@ was not stored.", settings.userName);
@@ -79,11 +79,11 @@ static NSString *const kLastUser = @"lastUser";
     NSAssert(userName != nil, @"userName is undefined");
 
     NSMutableDictionary *allSettings = [self retreiveAllSettingsPrivate];
-    [allSettings removeObjectForKey: userName];
+    [allSettings removeObjectForKey:userName];
     
     EXUserSettings *lastUserSettings = [allSettings objectForKey: kLastUser];
     
-    if (lastUserSettings != nil && [lastUserSettings.userName isEqualToString: userName]) {
+    if (lastUserSettings != nil && [lastUserSettings.userName isEqualToString:userName]) {
         // removed user was last stored, so lastUser shoud removed
         [allSettings removeObjectForKey: kLastUser];
     }
@@ -99,7 +99,7 @@ static NSString *const kLastUser = @"lastUser";
 - (NSDictionary *)retreiveAllSettings
 {
     NSMutableDictionary *allSettings = [self retreiveAllSettingsPrivate];
-    [allSettings removeObjectForKey: kLastUser];
+    [allSettings removeObjectForKey:kLastUser];
     
     return allSettings;
 }

@@ -105,7 +105,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - Life cycle
 
-- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil service:(EXApperyService *)service projectsMetadata:(NSArray *)metadata {
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil service:(EXApperyService *)service projectsMetadata:(NSArray *)metadata
+{
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self == nil) {
         return nil;
@@ -116,19 +117,23 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     _filteredProjectsMetadata = [[NSMutableArray alloc] init];
     _selectFolderController = [[EXSelectViewController alloc] initWithTitle:NSLocalizedString(@"Folders", @"Folders")];
     _currentProjectsSortingMethod = EXSortingMethodType_DateDescending;
+    
     if (metadata.count > 0) {
         [self initializeProjectsMetadata:metadata];
     }
     
     self.preferredContentSize = CGSizeMake(320., 480.);
+    
     return self;
 }
 
-- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
     return [self initWithNibName:nibNameOrNil bundle:nibBundleOrNil service:nil projectsMetadata:nil];
 }
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     
     [self.rootTableView registerNib:[UINib nibWithNibName:@"EXProjectMetadataCell" bundle:nil] forCellReuseIdentifier:kEXProjectMetadataCell];
@@ -173,25 +178,27 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     self.navigationItem.rightBarButtonItem = bbAppCode;
 }
 
-- (void) viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:animated];
     
     [self.navigationController setNavigationBarHidden:NO animated:NO];
 }
 
-- (void)viewWillLayoutSubviews {
+- (void)viewWillLayoutSubviews
+{
     [super viewWillLayoutSubviews];
     
-    CGRect viewRect = self.view.frame;
-    
     CGRect frm = self.toolBar.frame;
+    CGRect viewRect = self.view.frame;
     frm.size.width = viewRect.size.width;
     self.toolBar.frame = frm;
 }
 
 #pragma mark - UI actions
 
-- (void)reloadProjects {
+- (void)reloadProjects
+{
     void(^reloadProjectsInfo)(void) = ^{
         [self loadProjectsMetadataCompletion:^(BOOL succeeded) {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -230,13 +237,15 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }
 }
 
-- (void)logoutAction:(id)sender {
+- (void)logoutAction:(id)sender
+{
     #pragma unused(sender)
     _currentProjectsSortingMethod = EXSortingMethodType_DateDescending;
     [self logoutFromService];
 }
 
-- (void)appCodeAction:(id)sender {
+- (void)appCodeAction:(id)sender
+{
     #pragma unused(sender)
     self.appCodeController = [[EXAppCodeController alloc] init];
     [self.appCodeController requestCodeWithCompletionHandler:^(NSString *appCode) {
@@ -262,34 +271,42 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - UITableViewDataSource protocol implementation
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
     return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
     return self.filteredProjectsMetadata != nil ? self.filteredProjectsMetadata.count : 0;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     NSAssert(self.filteredProjectsMetadata != nil, @"No data to feed EXProjectsViewController");
     NSAssert(indexPath.row < self.filteredProjectsMetadata.count , @"No data for the specified indexPath");
     
     EXProjectMetadata* projectMetadata = [self.filteredProjectsMetadata objectAtIndex:indexPath.row];
     EXProjectMetadataCell* cell = [tableView dequeueReusableCellWithIdentifier:kEXProjectMetadataCell];
+    
     if (cell == nil) {
         return [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"UNEXPECTED_CELL"];
     }
+    
     [cell updateWithMetadata:projectMetadata];
+    
     return cell;
 }
 
 #pragma mark - UITableViewDelegete protocol implementation
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     return [EXProjectMetadataCell height];
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
     NSAssert(indexPath.row < self.filteredProjectsMetadata.count , @"No data for the specified indexPath");
     
     EXProjectMetadata *projectMetadata = [self.filteredProjectsMetadata objectAtIndex: indexPath.row];
@@ -314,7 +331,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - Configuration helpers
 
-- (void)configureToolbar {
+- (void)configureToolbar
+{
     NSMutableArray *actualTBItems = [NSMutableArray array];
     
     EXToolbarItem *name = [[EXToolbarItem alloc] initWithImageName:@"name" activeImageName:@"name_b" title:NSLocalizedString(@"Name", @"Name")];
@@ -351,13 +369,15 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     self.toolbarActualItems = actualTBItems;
 }
 
-- (void)deactivateToolbarItems {
+- (void)deactivateToolbarItems
+{
     for (EXToolbarItem *item in self.toolbarActualItems) {
         [item setStateToActive:NO];
     }
 }
 
-- (void)initializeProjectsMetadata:(NSArray *)projectsMetadata {
+- (void)initializeProjectsMetadata:(NSArray *)projectsMetadata
+{
     NSArray *enabledProjectsMetadata = [self getEnabledProjectsMetadata:projectsMetadata];
     self.projectsMetadata = enabledProjectsMetadata;
     [self.filteredProjectsMetadata removeAllObjects];
@@ -367,7 +387,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [self sortByCurrentMethodAndUpdateUI];
 }
 
-- (void)loadProjectsMetadataCompletion:(EXProjectsMetadataViewControllerCompletionBlock)completion {
+- (void)loadProjectsMetadataCompletion:(EXProjectsMetadataViewControllerCompletionBlock)completion
+{
     NSAssert(self.apperyService != nil, @"apperyService property is not defined");
     
     [self.apperyService loadProjectsMetadata: ^(NSArray *projectsMetadata) {
@@ -379,11 +400,11 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     } failed:^(NSError *error) {
         DLog(@"Apps loading failed due to: %@", error.localizedDescription);
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[[UIAlertView alloc] initWithTitle: error.localizedDescription
-                                        message: error.localizedRecoverySuggestion
-                                       delegate: nil
-                              cancelButtonTitle: NSLocalizedString(@"Ok", nil)
-                              otherButtonTitles: nil] show];
+            [[[UIAlertView alloc] initWithTitle:error.localizedDescription
+                                        message:error.localizedRecoverySuggestion
+                                       delegate:nil
+                              cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                              otherButtonTitles:nil] show];
             
         });
         
@@ -393,7 +414,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }];
 }
 
-- (void)logoutFromService {
+- (void)logoutFromService
+{
     UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
     MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
     progressHud.labelText = NSLocalizedString(@"Logout", @"Logout progress hud title");
@@ -421,14 +443,16 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - UI helpers
 
-- (void)redefineAvailableFolders {
+- (void)redefineAvailableFolders
+{
     NSArray *availableFolders = [self.projectsMetadata valueForKeyPath:@"@distinctUnionOfObjects.creator"];
     NSString *allFolderName = NSLocalizedString(@"All", @"Apps list | Toolbar | Folder button possible value");
     self.folders = [[NSArray arrayWithObject:allFolderName] arrayByAddingObjectsFromArray:availableFolders];
     self.currentFolder = allFolderName;
 }
 
-- (void)configureSelectFolderViewController {
+- (void)configureSelectFolderViewController
+{
     self.selectFolderController.data = self.folders;
     [self.selectFolderController updateUI];
     self.selectFolderController.completion = nil;
@@ -436,7 +460,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - Projects sorting / filtering
 
-- (void)setCurrentProjectsSortingMethod:(EXSortingMethodType) type {
+- (void)setCurrentProjectsSortingMethod:(EXSortingMethodType)type
+{
     _currentProjectsSortingMethod = type;
     
     EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
@@ -448,7 +473,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }
 }
 
-- (EXSortingMethodType)currentProjectsSortingMethod {
+- (EXSortingMethodType)currentProjectsSortingMethod
+{
     EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
     EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
     
@@ -459,12 +485,14 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     return _currentProjectsSortingMethod;
 }
 
-- (NSArray *)getEnabledProjectsMetadata:(NSArray *)projectsMetadata {
+- (NSArray *)getEnabledProjectsMetadata:(NSArray *)projectsMetadata
+{
     NSPredicate *enabledProjectsPredicate = [NSPredicate predicateWithFormat:@"disabled == %@", @0];
     return [projectsMetadata filteredArrayUsingPredicate:enabledProjectsPredicate];
 }
 
-- (void)sortMetadataArray:(NSMutableArray *)metadata withMethod:(EXSortingMethodType)sortMethod {
+- (void)sortMetadataArray:(NSMutableArray *)metadata withMethod:(EXSortingMethodType)sortMethod
+{
     [metadata sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
         EXProjectMetadata *first = [obj1 as:[EXProjectMetadata class]];
         EXProjectMetadata *second = [obj2 as:[EXProjectMetadata class]];
@@ -503,7 +531,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }];
 }
 
-- (void)setupNameSortMethod {
+- (void)setupNameSortMethod
+{
     switch (self.currentProjectsSortingMethod) {
         case EXSortingMethodType_NameAscending:
             self.currentProjectsSortingMethod = EXSortingMethodType_NameDescending;
@@ -514,7 +543,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }
 }
 
-- (void)setupCreationDateSortMethod {
+- (void)setupCreationDateSortMethod
+{
     switch (self.currentProjectsSortingMethod) {
         case EXSortingMethodType_DateDescending:
             self.currentProjectsSortingMethod = EXSortingMethodType_DateAscending;
@@ -525,7 +555,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }
 }
 
-- (void)setupModificationDateSortMethod {
+- (void)setupModificationDateSortMethod
+{
     switch (self.currentProjectsSortingMethod) {
         case EXSortingMethodType_ModificationdDescending:
             self.currentProjectsSortingMethod = EXSortingMethodType_ModificationAscending;
@@ -536,7 +567,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }
 }
 
-- (void)setupCreatorUserSortMethod {
+- (void)setupCreatorUserSortMethod
+{
     switch (self.currentProjectsSortingMethod) {
         case EXSortingMethodType_CreatorAscending:
             self.currentProjectsSortingMethod = EXSortingMethodType_CreatorDescending;
@@ -547,7 +579,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }
 }
 
-- (void)sortByCurrentMethodAndUpdateUI {
+- (void)sortByCurrentMethodAndUpdateUI
+{
     MBProgressHUD *localHud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     [localHud setLabelText:NSLocalizedString(@"Sorting...", @"Sorting...")];
     
@@ -564,7 +597,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     });
 }
 
-- (NSInteger)tagBySortMethod:(EXSortingMethodType)method {
+- (NSInteger)tagBySortMethod:(EXSortingMethodType)method
+{
     NSInteger tag = -1;
     switch (method) {
         case EXSortingMethodType_NameAscending:
@@ -589,11 +623,13 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     return tag;
 }
 
-- (NSInteger)tagByCurrentSortMethod {
+- (NSInteger)tagByCurrentSortMethod
+{
     return [self tagBySortMethod:self.currentProjectsSortingMethod];
 }
 
-- (void)setCurrentSortMethodByTag:(NSInteger)tag {
+- (void)setCurrentSortMethodByTag:(NSInteger)tag
+{
     switch (tag) {
         case 0:
             [self setupNameSortMethod];
@@ -614,7 +650,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - EXToolbarItemActionDelegate 
 
-- (void)didActivateToolbarItem:(EXToolbarItem *)item {
+- (void)didActivateToolbarItem:(EXToolbarItem *)item
+{
     [self setCurrentSortMethodByTag:item.tag];
     [self sortByCurrentMethodAndUpdateUI];
 }

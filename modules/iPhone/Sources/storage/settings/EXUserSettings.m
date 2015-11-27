@@ -25,7 +25,8 @@ static NSString *const kSortMethod = @"sortMethod";
 
 #pragma mark - NSCoding protocol implementation
 
-- (instancetype)initWithCoder:(NSCoder *)decoder {
+- (instancetype)initWithCoder:(NSCoder *)decoder
+{
     self = [super init];
     if (self == nil) {
         return nil;
@@ -37,7 +38,8 @@ static NSString *const kSortMethod = @"sortMethod";
     return self;
 }
 
-- (void)encodeWithCoder:(NSCoder *)encoder {
+- (void)encodeWithCoder:(NSCoder *)encoder
+{
     [encoder encodeObject:self.userName forKey:kUserName];
     [encoder encodeBool:self.shouldRememberMe forKey:kShouldRememberMe];
     [encoder encodeInteger:self.sortMethodType forKey:kSortMethod];

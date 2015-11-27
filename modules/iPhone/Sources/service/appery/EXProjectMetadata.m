@@ -47,26 +47,27 @@ static NSString *const kProjectType = @"type";
 
 #pragma mark - Initialization
 
-- (instancetype)initWithMetadata:(NSDictionary *)metadata {
+- (instancetype)initWithMetadata:(NSDictionary *)metadata
+{
     if (self = [super init]) {
-        self._id =  [self getCorrectValue:[metadata objectForKey: kProjectId]];
-        self.creationDate =  [self getCorrectValue:[metadata objectForKey: kProjectCreationDate]];
+        self._id =  [self getCorrectValue:[metadata objectForKey:kProjectId]];
+        self.creationDate =  [self getCorrectValue:[metadata objectForKey:kProjectCreationDate]];
         if (self.creationDate == nil) {
             self.creationDate = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSinceReferenceDate] * 1000];
         }
-        self.modifiedDate =  [self getCorrectValue:[metadata objectForKey: kProjectModifiedDate]];
+        self.modifiedDate =  [self getCorrectValue:[metadata objectForKey:kProjectModifiedDate]];
         if (self.modifiedDate == nil) {
             self.modifiedDate = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSinceReferenceDate] * 1000];
         }
-        self.creator = [self getCorrectValue:[metadata objectForKey: kProjectCreator]];
-        self.disabled = [self getCorrectValue:[metadata objectForKey: kProjectDisabled]];
-        self.guid = [self getCorrectValue:[metadata objectForKey: kProjectGuid]];
-        self.name = [self getCorrectValue:[metadata objectForKey: kProjectName]];
-        self.openWith = [self getCorrectValue:[metadata objectForKey: kProjectOpenWith]];
-        self.pushNotification = [self getCorrectValue:[metadata objectForKey: kProjectPushNotification]];
-        self.sharedWithSupport = [self getCorrectValue:[metadata objectForKey: kProjectSharedWithSupport]];
-        self.sharedWithSupportBy = [self getCorrectValue:[metadata objectForKey: kProjectSharedWithSupportBy]];
-        self.type = [self getCorrectValue:[metadata objectForKey: kProjectType]];
+        self.creator = [self getCorrectValue:[metadata objectForKey:kProjectCreator]];
+        self.disabled = [self getCorrectValue:[metadata objectForKey:kProjectDisabled]];
+        self.guid = [self getCorrectValue:[metadata objectForKey:kProjectGuid]];
+        self.name = [self getCorrectValue:[metadata objectForKey:kProjectName]];
+        self.openWith = [self getCorrectValue:[metadata objectForKey:kProjectOpenWith]];
+        self.pushNotification = [self getCorrectValue:[metadata objectForKey:kProjectPushNotification]];
+        self.sharedWithSupport = [self getCorrectValue:[metadata objectForKey:kProjectSharedWithSupport]];
+        self.sharedWithSupportBy = [self getCorrectValue:[metadata objectForKey:kProjectSharedWithSupportBy]];
+        self.type = [self getCorrectValue:[metadata objectForKey:kProjectType]];
     }
     
     return self;
@@ -74,31 +75,36 @@ static NSString *const kProjectType = @"type";
 
 #pragma mark - Getters
 
-- (NSString *)formattedModifiedDate {
+- (NSString *)formattedModifiedDate
+{
     return [self formatDateFromUTCMilliseconds:self.modifiedDate];
 }
 
 #pragma mark - Override
 
-- (NSString *)description {
+- (NSString *)description
+{
     return [NSString stringWithFormat: @"guid = %@, name = %@", self.guid, self.name];
 }
 
 #pragma mark - Private interface implementation
 
-- (NSString *)formatDateFromUTCMilliseconds:(NSNumber *) utcDate {
+- (NSString *)formatDateFromUTCMilliseconds:(NSNumber *)utcDate
+{
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:[utcDate doubleValue] * 0.001];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"MM/dd/yy"];
 
-    return [dateFormatter stringFromDate: date];
+    return [dateFormatter stringFromDate:date];
 }
 
-- (BOOL)isEmptyValue:(id)value {
+- (BOOL)isEmptyValue:(id)value
+{
     return (value == nil) || value == [NSNull null];
 }
                     
-- (id)getCorrectValue:(id)value {
+- (id)getCorrectValue:(id)value
+{
     return [self isEmptyValue: value] ? nil : value;
 }
     

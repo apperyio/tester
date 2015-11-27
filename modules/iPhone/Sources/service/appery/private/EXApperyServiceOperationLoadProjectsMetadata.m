@@ -21,7 +21,7 @@
 
 #pragma mark - EXApperyServiceOperation protected interface implementation
 
-- (BOOL) processReceivedData: (NSData *)data
+- (BOOL)processReceivedData:(NSData *)data
 {
     if (![super processReceivedData:data]) {
         NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
@@ -34,7 +34,7 @@
     NSLog(@"Apps metadata was loaded");
 
     NSError *err = nil;
-    NSArray *serializedProjectsMetadata = [NSJSONSerialization JSONObjectWithData: data options: NSJSONReadingMutableContainers error: &err];
+    NSArray *serializedProjectsMetadata = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&err];
     if (![serializedProjectsMetadata isKindOfClass:[NSArray class]]) {
         NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
                                   NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Bad request", nil)};
@@ -43,14 +43,14 @@
         return NO;
     }
     
-    NSMutableArray *projectsMetadata = [[NSMutableArray alloc] initWithCapacity: serializedProjectsMetadata.count];
+    NSMutableArray *projectsMetadata = [[NSMutableArray alloc] initWithCapacity:serializedProjectsMetadata.count];
     
     for (NSDictionary *serializedProjectMetadata in serializedProjectsMetadata) {
-        EXProjectMetadata *projectMetadata = [[EXProjectMetadata alloc] initWithMetadata: serializedProjectMetadata];
-        [projectsMetadata addObject: projectMetadata];
+        EXProjectMetadata *projectMetadata = [[EXProjectMetadata alloc] initWithMetadata:serializedProjectMetadata];
+        [projectsMetadata addObject:projectMetadata];
     }
     
-    self.projectsMetadata = [[NSArray alloc] initWithArray: projectsMetadata];
+    self.projectsMetadata = [[NSArray alloc] initWithArray:projectsMetadata];
     
     return YES;
 }

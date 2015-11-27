@@ -37,7 +37,8 @@
 
 #pragma mark - Lifecycle
 
-- (instancetype)initWithImageName:(NSString *)imageName activeImageName:(NSString *)activeImageName title:(NSString *)title {
+- (instancetype)initWithImageName:(NSString *)imageName activeImageName:(NSString *)activeImageName title:(NSString *)title
+{
     self = [super initWithFrame:CGRectMake(0., 0., 44., 44.)];
     if (self == nil) {
         return nil;
@@ -67,17 +68,20 @@
 
 #pragma mark - Getter/Setter
 
-- (NSString *)title {
+- (NSString *)title
+{
     return self.lTitle.text;
 }
 
-- (void)setTitle:(NSString *)title {
+- (void)setTitle:(NSString *)title
+{
     self.lTitle.text = title;
 }
 
 #pragma mark - Public class logic
 
-- (void)setStateToActive:(BOOL)active {
+- (void)setStateToActive:(BOOL)active
+{
     self.isActive = active;
     if (self.isActive) {
         self.lTitle.textColor = [UIColor colorFromHEXString:@"#2581FF"];
@@ -95,7 +99,8 @@
 
 #pragma mark - Action handler 
 
-- (void)toolbarItemAction:(id)sender {
+- (void)toolbarItemAction:(id)sender
+{
     id<EXToolbarItemActionDelegate> del = self.delegate;
     if ([del respondsToSelector:@selector(didActivateToolbarItem:)]) {
         [del didActivateToolbarItem:self];
@@ -104,7 +109,8 @@
 
 #pragma mark - View management
 
-- (void)layoutSubviews {
+- (void)layoutSubviews
+{
     [super layoutSubviews];
     
     CGSize imSize = self.ivImage.image.size;

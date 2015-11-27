@@ -48,9 +48,9 @@
  *
  * @exception NSException - if user has already made login
  */
-- (void) loginWithUsername: (NSString *)userName password: (NSString *) password
-                   succeed: (void (^)(NSArray *projectsMetadata)) succeed
-                    failed: (void (^)(NSError *error)) failed;
+- (void)loginWithUsername:(NSString *)userName password:(NSString *)password
+                  succeed:(void (^)(NSArray *projectsMetadata))succeed
+                   failed:(void (^)(NSError *error))failed;
 
 /**
  * Logout current user from the service and make quick logout (@see quickLogout).
@@ -61,20 +61,19 @@
  *
  * @exception NSException - if user is not logged in
  */
-- (void) logoutSucceed: (void(^)(void)) succeed failed: (void(^)(NSError *error)) failed;
+- (void)logoutSucceed:(void(^)(void))succeed failed:(void(^)(NSError *error))failed;
 
 /**
  * Change log state to logout, and clear local autentication credentials.
  *
  * @exception NSException - if user is not logged in
  */
-- (void) quickLogout;
+- (void)quickLogout;
 
 /**
  * Interrupt current appery.io service operation, for example loadProjectsMetadata:succeed:failed.
  */
-- (void) cancelCurrentOperation;
-
+- (void)cancelCurrentOperation;
 
 /**
  * Load projects from the service.
@@ -85,7 +84,7 @@
  *
  * @exception NSException - if user is not logged in
  */
-- (void) loadProjectsMetadata: (void (^)(NSArray *projectsMetadata)) succeed failed: (void (^)(NSError *error)) failed;
+- (void)loadProjectsMetadata:(void (^)(NSArray *projectsMetadata))succeed failed:(void (^)(NSError *error))failed;
 
 /**
  * Load project correspond to specified poject metadata and store it to the specified folder.
@@ -97,9 +96,9 @@
  *
  * @exception NSException - if user is not logged in
  */
-- (void) loadProjectForMetadata: (EXProjectMetadata *) projectMetadata
-                        succeed: (void (^)(NSString *projectLocation, NSString *startPageName)) succeed
-                         failed: (void (^)(NSError *error)) failed;
+- (void)loadProjectForMetadata:(EXProjectMetadata *)projectMetadata
+                       succeed:(void (^)(NSString *projectLocation, NSString *startPageName))succeed
+                        failed:(void (^)(NSError *error)) failed;
 
 /**
  * Load project correspond to specified poject code and store it to the specified folder.
@@ -111,8 +110,8 @@
  *
  * @exception NSException - if user is not logged in
  */
-- (void) loadProjectForAppCode: (NSString *) appCode
-                       succeed: (void (^)(NSString *projectLocation, NSString *startPageName)) succeed
-                        failed: (void (^)(NSError *error)) failed;
+- (void)loadProjectForAppCode:(NSString *) appCode
+                      succeed:(void (^)(NSString *projectLocation, NSString *startPageName))succeed
+                       failed:(void (^)(NSError *error))failed;
 
 @end
