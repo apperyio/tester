@@ -27,7 +27,7 @@
 
 #pragma mark - Life cycle
 
-- (id)initWithCompletionHendler:(void (^)(EXApperyServiceOperation *))completion
+- (instancetype)initWithCompletionHendler:(void (^)(EXApperyServiceOperation *))completion
 {
     NSAssert(completion != nil, @"completion callback block is not defined");
 

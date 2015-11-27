@@ -42,7 +42,6 @@
 		3629DEA61B8334CD0066D254 /* EXSignInCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3629DEA51B8334CD0066D254 /* EXSignInCell.xib */; };
 		3629DEB61B8355360066D254 /* DeviceModelInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3629DEA91B8355360066D254 /* DeviceModelInfo.m */; };
 		3629DEB71B8355360066D254 /* NSObject+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 3629DEAB1B8355360066D254 /* NSObject+Utils.m */; };
-		3629DEB81B8355360066D254 /* NSString+XMLEscape.m in Sources */ = {isa = PBXBuildFile; fileRef = 3629DEAD1B8355360066D254 /* NSString+XMLEscape.m */; };
 		3629DEB91B8355360066D254 /* NSThread+BlockExecution.m in Sources */ = {isa = PBXBuildFile; fileRef = 3629DEAF1B8355360066D254 /* NSThread+BlockExecution.m */; };
 		3629DEBA1B8355360066D254 /* UIColor+hexColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 3629DEB11B8355360066D254 /* UIColor+hexColor.m */; };
 		3629DEBB1B8355360066D254 /* UIDevice+System.m in Sources */ = {isa = PBXBuildFile; fileRef = 3629DEB31B8355360066D254 /* UIDevice+System.m */; };
@@ -84,7 +83,6 @@
 		6886006715CAA00800629AB9 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 6886006615CAA00800629AB9 /* MBProgressHUD.m */; };
 		68A76D1117461ED8000603E1 /* EXProjectMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 68A76CFE17461ED8000603E1 /* EXProjectMetadata.m */; };
 		68A76D1217461ED8000603E1 /* CDVCommandDelegateImpl+EXApperyService.m in Sources */ = {isa = PBXBuildFile; fileRef = 68A76D0117461ED8000603E1 /* CDVCommandDelegateImpl+EXApperyService.m */; };
-		68A76D1417461ED8000603E1 /* NSString+URLUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 68A76D0517461ED8000603E1 /* NSString+URLUtility.m */; };
 		68A76D1517461ED8000603E1 /* EXApperyService.m in Sources */ = {isa = PBXBuildFile; fileRef = 68A76D0717461ED8000603E1 /* EXApperyService.m */; };
 		68A76D1717461ED8000603E1 /* EXApperyServiceOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 68A76D0C17461ED8000603E1 /* EXApperyServiceOperation.m */; };
 		68A76D1817461ED8000603E1 /* EXApperyServiceOperationLoadProject.m in Sources */ = {isa = PBXBuildFile; fileRef = 68A76D0E17461ED8000603E1 /* EXApperyServiceOperationLoadProject.m */; };
@@ -118,8 +116,6 @@
 		D4B59F4419F7CB2F00649292 /* EXProjectsMetadataViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B59F3619F7CB2F00649292 /* EXProjectsMetadataViewController.m */; };
 		D4B59F4519F7CB2F00649292 /* EXProjectsMetadataViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D4B59F3719F7CB2F00649292 /* EXProjectsMetadataViewController.xib */; };
 		D4B59F4719F7CB2F00649292 /* EXProjectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B59F3B19F7CB2F00649292 /* EXProjectViewController.m */; };
-		D4B59F4819F7CB2F00649292 /* EXSelectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B59F3D19F7CB2F00649292 /* EXSelectViewController.m */; };
-		D4B59F4919F7CB2F00649292 /* EXSelectViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D4B59F3E19F7CB2F00649292 /* EXSelectViewController.xib */; };
 		D4B773EE1BDECE1400D08421 /* GAPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B773A81BDECE1400D08421 /* GAPlugin.m */; };
 		D4B773EF1BDECE1400D08421 /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4B773A91BDECE1400D08421 /* libGoogleAnalyticsServices.a */; };
 		D4B773F01BDECE1400D08421 /* CDVBattery.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B773AC1BDECE1400D08421 /* CDVBattery.m */; };
@@ -155,6 +151,7 @@
 		D4B774171BDED22D00D08421 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D4B774161BDED22D00D08421 /* libz.tbd */; };
 		D4B774191BDED24000D08421 /* libxml2.2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D4B774181BDED24000D08421 /* libxml2.2.tbd */; };
 		D4B7741B1BDED25C00D08421 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D4B7741A1BDED25C00D08421 /* libiconv.tbd */; };
+		D4CE76511C0DE2C50091C2B1 /* NSString+URLUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = D4CE76501C0DE2C50091C2B1 /* NSString+URLUtility.m */; };
 		D4E346511A8A1FB5004C57B8 /* icon_bootsrap.png in Resources */ = {isa = PBXBuildFile; fileRef = D4E346481A8A1FB5004C57B8 /* icon_bootsrap.png */; };
 		D4E346521A8A1FB5004C57B8 /* icon_bootsrap@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D4E346491A8A1FB5004C57B8 /* icon_bootsrap@2x.png */; };
 		D4E346531A8A1FB5004C57B8 /* icon_bootsrap@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = D4E3464A1A8A1FB5004C57B8 /* icon_bootsrap@3x.png */; };
@@ -231,8 +228,6 @@
 		3629DEA91B8355360066D254 /* DeviceModelInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceModelInfo.m; sourceTree = "<group>"; };
 		3629DEAA1B8355360066D254 /* NSObject+Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+Utils.h"; sourceTree = "<group>"; };
 		3629DEAB1B8355360066D254 /* NSObject+Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Utils.m"; sourceTree = "<group>"; };
-		3629DEAC1B8355360066D254 /* NSString+XMLEscape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+XMLEscape.h"; sourceTree = "<group>"; };
-		3629DEAD1B8355360066D254 /* NSString+XMLEscape.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+XMLEscape.m"; sourceTree = "<group>"; };
 		3629DEAE1B8355360066D254 /* NSThread+BlockExecution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSThread+BlockExecution.h"; sourceTree = "<group>"; };
 		3629DEAF1B8355360066D254 /* NSThread+BlockExecution.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSThread+BlockExecution.m"; sourceTree = "<group>"; };
 		3629DEB01B8355360066D254 /* UIColor+hexColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+hexColor.h"; sourceTree = "<group>"; };
@@ -291,8 +286,6 @@
 		68A76CFE17461ED8000603E1 /* EXProjectMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXProjectMetadata.m; sourceTree = "<group>"; };
 		68A76D0017461ED8000603E1 /* CDVCommandDelegateImpl+EXApperyService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "CDVCommandDelegateImpl+EXApperyService.h"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		68A76D0117461ED8000603E1 /* CDVCommandDelegateImpl+EXApperyService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = "CDVCommandDelegateImpl+EXApperyService.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		68A76D0417461ED8000603E1 /* NSString+URLUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+URLUtility.h"; sourceTree = "<group>"; };
-		68A76D0517461ED8000603E1 /* NSString+URLUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+URLUtility.m"; sourceTree = "<group>"; };
 		68A76D0617461ED8000603E1 /* EXApperyService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = EXApperyService.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		68A76D0717461ED8000603E1 /* EXApperyService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EXApperyService.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		68A76D0B17461ED8000603E1 /* EXApperyServiceOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXApperyServiceOperation.h; sourceTree = "<group>"; };
@@ -344,9 +337,6 @@
 		D4B59F3719F7CB2F00649292 /* EXProjectsMetadataViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EXProjectsMetadataViewController.xib; sourceTree = "<group>"; };
 		D4B59F3A19F7CB2F00649292 /* EXProjectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXProjectViewController.h; sourceTree = "<group>"; };
 		D4B59F3B19F7CB2F00649292 /* EXProjectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXProjectViewController.m; sourceTree = "<group>"; };
-		D4B59F3C19F7CB2F00649292 /* EXSelectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXSelectViewController.h; sourceTree = "<group>"; };
-		D4B59F3D19F7CB2F00649292 /* EXSelectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSelectViewController.m; sourceTree = "<group>"; };
-		D4B59F3E19F7CB2F00649292 /* EXSelectViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EXSelectViewController.xib; sourceTree = "<group>"; };
 		D4B773A11BDECE1400D08421 /* GAI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAI.h; sourceTree = "<group>"; };
 		D4B773A21BDECE1400D08421 /* GAIDictionaryBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIDictionaryBuilder.h; sourceTree = "<group>"; };
 		D4B773A31BDECE1400D08421 /* GAIFields.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIFields.h; sourceTree = "<group>"; };
@@ -414,6 +404,8 @@
 		D4B774161BDED22D00D08421 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		D4B774181BDED24000D08421 /* libxml2.2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.2.tbd; path = usr/lib/libxml2.2.tbd; sourceTree = SDKROOT; };
 		D4B7741A1BDED25C00D08421 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
+		D4CE764F1C0DE2C50091C2B1 /* NSString+URLUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+URLUtility.h"; sourceTree = "<group>"; };
+		D4CE76501C0DE2C50091C2B1 /* NSString+URLUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+URLUtility.m"; sourceTree = "<group>"; };
 		D4D5C18A1A516C0B0069A40F /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		D4E346481A8A1FB5004C57B8 /* icon_bootsrap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_bootsrap.png; sourceTree = "<group>"; };
 		D4E346491A8A1FB5004C57B8 /* icon_bootsrap@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_bootsrap@2x.png"; sourceTree = "<group>"; };
@@ -543,8 +535,8 @@
 				3629DEA91B8355360066D254 /* DeviceModelInfo.m */,
 				3629DEAA1B8355360066D254 /* NSObject+Utils.h */,
 				3629DEAB1B8355360066D254 /* NSObject+Utils.m */,
-				3629DEAC1B8355360066D254 /* NSString+XMLEscape.h */,
-				3629DEAD1B8355360066D254 /* NSString+XMLEscape.m */,
+				D4CE764F1C0DE2C50091C2B1 /* NSString+URLUtility.h */,
+				D4CE76501C0DE2C50091C2B1 /* NSString+URLUtility.m */,
 				3629DEAE1B8355360066D254 /* NSThread+BlockExecution.h */,
 				3629DEAF1B8355360066D254 /* NSThread+BlockExecution.m */,
 				3629DEB01B8355360066D254 /* UIColor+hexColor.h */,
@@ -677,9 +669,6 @@
 				36F9E5B81B8DAFFF0071A021 /* EXProjectControllerActionDelegate.h */,
 				D4B59F3A19F7CB2F00649292 /* EXProjectViewController.h */,
 				D4B59F3B19F7CB2F00649292 /* EXProjectViewController.m */,
-				D4B59F3C19F7CB2F00649292 /* EXSelectViewController.h */,
-				D4B59F3D19F7CB2F00649292 /* EXSelectViewController.m */,
-				D4B59F3E19F7CB2F00649292 /* EXSelectViewController.xib */,
 				361449F51B8F392800CD2CE2 /* EXBaseViewController.h */,
 				361449F61B8F392800CD2CE2 /* EXBaseViewController.m */,
 			);
@@ -726,8 +715,6 @@
 			children = (
 				68A76D0017461ED8000603E1 /* CDVCommandDelegateImpl+EXApperyService.h */,
 				68A76D0117461ED8000603E1 /* CDVCommandDelegateImpl+EXApperyService.m */,
-				68A76D0417461ED8000603E1 /* NSString+URLUtility.h */,
-				68A76D0517461ED8000603E1 /* NSString+URLUtility.m */,
 			);
 			name = Extensions;
 			path = extensions;
@@ -1268,7 +1255,6 @@
 				361449D11B8EF68400CD2CE2 /* modified@3x.png in Resources */,
 				361449DC1B8EF6AB00CD2CE2 /* back.png in Resources */,
 				D4B59F4319F7CB2F00649292 /* EXMainWindow.xib in Resources */,
-				D4B59F4919F7CB2F00649292 /* EXSelectViewController.xib in Resources */,
 				361449D01B8EF68400CD2CE2 /* modified@2x.png in Resources */,
 				36D82C3A1B90947600BEDEB6 /* modified_b.png in Resources */,
 				36D82C3E1B90947600BEDEB6 /* name_b@2x.png in Resources */,
@@ -1318,7 +1304,6 @@
 				D4B773F31BDECE1400D08421 /* UIImage+CropScaleOrientation.m in Sources */,
 				361449E91B8F1CE300CD2CE2 /* RootNavigationController.m in Sources */,
 				D4271EAC19D9ACD300B7DA2D /* ioapi.c in Sources */,
-				3629DEB81B8355360066D254 /* NSString+XMLEscape.m in Sources */,
 				D4271EB019D9ACD300B7DA2D /* ZipArchive.m in Sources */,
 				D4B774051BDECE1400D08421 /* CDVReachability.m in Sources */,
 				3629DEBB1B8355360066D254 /* UIDevice+System.m in Sources */,
@@ -1332,6 +1317,7 @@
 				D4B773FE1BDECE1400D08421 /* CDVFileTransfer.m in Sources */,
 				D4B59F4719F7CB2F00649292 /* EXProjectViewController.m in Sources */,
 				3629DEB71B8355360066D254 /* NSObject+Utils.m in Sources */,
+				D4CE76511C0DE2C50091C2B1 /* NSString+URLUtility.m in Sources */,
 				68A76D1117461ED8000603E1 /* EXProjectMetadata.m in Sources */,
 				361449F71B8F392800CD2CE2 /* EXBaseViewController.m in Sources */,
 				D4271EAD19D9ACD300B7DA2D /* mztools.c in Sources */,
@@ -1344,11 +1330,9 @@
 				D4B774031BDECE1400D08421 /* CDVCapture.m in Sources */,
 				361449EE1B8F314A00CD2CE2 /* UIViewController+RotationManagement.m in Sources */,
 				361449EB1B8F1CE300CD2CE2 /* RootViewControllerManager.m in Sources */,
-				68A76D1417461ED8000603E1 /* NSString+URLUtility.m in Sources */,
 				D4B774081BDECE1400D08421 /* zxing-all-in-one.cpp in Sources */,
 				36C233A41B949848005C1241 /* EXAppCodeController.m in Sources */,
 				D4B773EE1BDECE1400D08421 /* GAPlugin.m in Sources */,
-				D4B59F4819F7CB2F00649292 /* EXSelectViewController.m in Sources */,
 				68A76D1517461ED8000603E1 /* EXApperyService.m in Sources */,
 				68A76D1717461ED8000603E1 /* EXApperyServiceOperation.m in Sources */,
 				D4B773F81BDECE1400D08421 /* CDVAccelerometer.m in Sources */,

@@ -17,15 +17,12 @@
 
 + (instancetype)sharedUserSettingsStorage;
 
-/**
- * Declare compile time errors
- */
-+ (instancetype) alloc __attribute__((unavailable("alloc not avalible, call sharedUserSettingsStorage instead")));
-- (instancetype) init __attribute__((unavailable("init not avalible, call sharedUserSettingsStorage instead")));
-- (instancetype) copy __attribute__((unavailable("copy not avalible, call sharedUserSettingsStorage instead")));
-+ (instancetype) new __attribute__((unavailable("new not avalible, call sharedUserSettingsStorage instead")));
-- (instancetype) allocWithZone:(NSZone *)zone __attribute__((unavailable("allocWithZone not avalible, call sharedUserSettingsStorage instead")));
-- (instancetype) copyWithZone:(NSZone *)zone __attribute__((unavailable("copyWithZone not avalible, call sharedUserSettingsStorage instead")));
++ (instancetype) alloc NS_UNAVAILABLE;
+- (instancetype) init  NS_UNAVAILABLE;
+- (instancetype) copy  NS_UNAVAILABLE;
++ (instancetype) new   NS_UNAVAILABLE;
+- (instancetype) allocWithZone:(NSZone *)zone NS_UNAVAILABLE;
+- (instancetype) copyWithZone:(NSZone *)zone  NS_UNAVAILABLE;
 
 /**
  * Stores specified user settings.

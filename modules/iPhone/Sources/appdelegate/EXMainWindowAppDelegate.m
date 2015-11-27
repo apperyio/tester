@@ -32,6 +32,8 @@
 
 @implementation EXMainWindowAppDelegate
 
+#pragma mark - Public methods
+
 + (EXMainWindowAppDelegate *)appDelegate
 {
     return [[UIApplication sharedApplication] delegate];
@@ -40,6 +42,22 @@
 + (UIWindow *)mainWindow
 {
     return [[self appDelegate] window];
+}
+
+- (void)navigateToStartPage
+{
+    RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
+    
+    if (manager.isSidebarShown) {
+        __weak RootViewControllerManager *weakManager = manager;
+        [manager setSidebarEnabled:NO animated:NO completionBlock:^{
+            RootViewControllerManager *blockManager = weakManager;
+            [blockManager setSidebarViewController:nil];
+        }];
+    }
+    
+    EXSignInViewController *signIn = [[EXSignInViewController alloc] initWithNibName:nil bundle:nil service:self.apperyService];
+    [[RootViewControllerManager sharedInstance] pushRootViewController:signIn animated:NO completionBlock:nil];
 }
 
 #pragma mark - UIApplicationDelegate protocol - Monitoring Application State Changes
@@ -87,10 +105,10 @@
 - (BOOL)addSkipBackupAttributeToItemAtPath:(NSString *)filePathString
 {
     NSURL* URL = [NSURL fileURLWithPath:filePathString];
-    assert([[NSFileManager defaultManager] fileExistsAtPath:[URL path]]);
+    NSAssert([[NSFileManager defaultManager] fileExistsAtPath:[URL path]], @"The project folder does not exist");
     
     NSError *error = nil;
-    BOOL success = [URL setResourceValue:[NSNumber numberWithBool:YES]
+    BOOL success = [URL setResourceValue:@YES
                                   forKey:NSURLIsExcludedFromBackupKey error:&error];
     if(!success) {
         NSLog(@"Error excluding %@ from backup %@", [URL lastPathComponent], error);
@@ -100,7 +118,7 @@
     id flag = nil;
     [URL getResourceValue:&flag
                    forKey:NSURLIsExcludedFromBackupKey error:&error];
-    NSLog (@"NSURLIsExcludedFromBackupKey flag value is %@", flag);
+    NSLog(@"NSURLIsExcludedFromBackupKey flag value is %@", flag);
     
     return success;
 }
@@ -135,22 +153,6 @@
     if (self.apperyService.isLoggedIn) {
         [self.apperyService quickLogout];
     }
-}
-
-- (void)navigateToStartPage
-{
-    RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
-    
-    if ( manager.isSidebarShown ) {
-        __weak RootViewControllerManager *weakManager = manager;
-        [manager setSidebarEnabled:NO animated:NO completionBlock:^{
-            RootViewControllerManager *blockManager = weakManager;
-            [blockManager setSidebarViewController:nil];
-        }];
-    }
-    
-    EXSignInViewController *signIn = [[EXSignInViewController alloc] initWithNibName:nil bundle:nil service:self.apperyService];
-    [[RootViewControllerManager sharedInstance] pushRootViewController:signIn animated:NO completionBlock:nil];
 }
 
 @end

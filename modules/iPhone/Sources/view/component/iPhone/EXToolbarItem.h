@@ -18,7 +18,10 @@
 @property (nonatomic, assign, readonly) BOOL isActive;
 @property (nonatomic, weak) id<EXToolbarItemActionDelegate> delegate;
 
-- (instancetype)initWithImageName:(NSString *)imageName activeImageName:(NSString *)activeImageName title:(NSString *)title;
+- (instancetype)initWithCoder:(NSCoder *)aDecoder NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+
+- (instancetype)initWithImageName:(NSString *)imageName activeImageName:(NSString *)activeImageName title:(NSString *)title NS_DESIGNATED_INITIALIZER;
 
 - (void)setStateToActive:(BOOL)active;
 

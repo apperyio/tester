@@ -10,7 +10,7 @@
 
 - (void)pushTopViewController:(UIViewController*)viewController animated:(BOOL)animated
 {
-    assert(viewController != nil);
+    NSAssert(viewController != nil, @"The controller does not have to be nil");
     
     if( viewController == nil || self.topViewController == viewController ) {
         return;

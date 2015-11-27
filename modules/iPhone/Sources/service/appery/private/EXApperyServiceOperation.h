@@ -32,12 +32,12 @@
  * @param url - full operation URL
  * @param finished - block of code invoked when operation performing is finished
  */
-- (id) initWithCompletionHendler: (void (^)(EXApperyServiceOperation *operation)) completion;
+- (instancetype)initWithCompletionHendler:(void (^)(EXApperyServiceOperation *operation))completion;
 
 /**
  *  Starts operation asynchronously.
  */
-- (void) start;
+- (void)start;
 
 /**
  * @name Protected section
@@ -51,11 +51,11 @@
  * @param received raw data
  * @return result of processing received data (YES - successfull, NO - otherwise)
  */
-- (BOOL) processReceivedData: (NSData *) data;
+- (BOOL)processReceivedData:(NSData *)data;
 
 /**
  * Cancel operation.
  */
-- (void) cancel;
+- (void)cancel;
 
 @end

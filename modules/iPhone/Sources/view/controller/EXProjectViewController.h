@@ -25,13 +25,16 @@
  */
 @property (nonatomic, strong, readonly) EXApperyService *apperyService;
 
+- (instancetype)initWithCoder:(NSCoder *)aDecoder NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil NS_UNAVAILABLE;
+
 /**
  * Initialize with view controller and configures it with loaded project correspond to the specified project metadata.
  *
  * @param projectMetadata - project metadata for loading project, if nil empty view will be shown
  */
-- (instancetype)initWithService:(EXApperyService *)service projectMetadata:(EXProjectMetadata *)projectMetadata;
-- (instancetype)initWithService:(EXApperyService *)service projectCode:(NSString *)projectCode;
+- (instancetype)initWithService:(EXApperyService *)service projectMetadata:(EXProjectMetadata *)projectMetadata NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithService:(EXApperyService *)service projectCode:(NSString *)projectCode NS_DESIGNATED_INITIALIZER;
 
 - (void)updateContent;
 

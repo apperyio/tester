@@ -50,24 +50,28 @@ static NSString *const kProjectType = @"type";
 - (instancetype)initWithMetadata:(NSDictionary *)metadata
 {
     if (self = [super init]) {
-        self._id =  [self getCorrectValue:[metadata objectForKey:kProjectId]];
-        self.creationDate =  [self getCorrectValue:[metadata objectForKey:kProjectCreationDate]];
-        if (self.creationDate == nil) {
-            self.creationDate = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSinceReferenceDate] * 1000];
+        __id =  [self getCorrectValue:[metadata objectForKey:kProjectId]];
+        _creationDate =  [self getCorrectValue:[metadata objectForKey:kProjectCreationDate]];
+        
+        if (_creationDate == nil) {
+            _creationDate = @([[NSDate date] timeIntervalSinceReferenceDate] * 1000);
         }
-        self.modifiedDate =  [self getCorrectValue:[metadata objectForKey:kProjectModifiedDate]];
-        if (self.modifiedDate == nil) {
-            self.modifiedDate = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSinceReferenceDate] * 1000];
+        
+        _modifiedDate =  [self getCorrectValue:[metadata objectForKey:kProjectModifiedDate]];
+        
+        if (_modifiedDate == nil) {
+            _modifiedDate = @([[NSDate date] timeIntervalSinceReferenceDate] * 1000);
         }
-        self.creator = [self getCorrectValue:[metadata objectForKey:kProjectCreator]];
-        self.disabled = [self getCorrectValue:[metadata objectForKey:kProjectDisabled]];
-        self.guid = [self getCorrectValue:[metadata objectForKey:kProjectGuid]];
-        self.name = [self getCorrectValue:[metadata objectForKey:kProjectName]];
-        self.openWith = [self getCorrectValue:[metadata objectForKey:kProjectOpenWith]];
-        self.pushNotification = [self getCorrectValue:[metadata objectForKey:kProjectPushNotification]];
-        self.sharedWithSupport = [self getCorrectValue:[metadata objectForKey:kProjectSharedWithSupport]];
-        self.sharedWithSupportBy = [self getCorrectValue:[metadata objectForKey:kProjectSharedWithSupportBy]];
-        self.type = [self getCorrectValue:[metadata objectForKey:kProjectType]];
+        
+        _creator = [self getCorrectValue:[metadata objectForKey:kProjectCreator]];
+        _disabled = [self getCorrectValue:[metadata objectForKey:kProjectDisabled]];
+        _guid = [self getCorrectValue:[metadata objectForKey:kProjectGuid]];
+        _name = [self getCorrectValue:[metadata objectForKey:kProjectName]];
+        _openWith = [self getCorrectValue:[metadata objectForKey:kProjectOpenWith]];
+        _pushNotification = [self getCorrectValue:[metadata objectForKey:kProjectPushNotification]];
+        _sharedWithSupport = [self getCorrectValue:[metadata objectForKey:kProjectSharedWithSupport]];
+        _sharedWithSupportBy = [self getCorrectValue:[metadata objectForKey:kProjectSharedWithSupportBy]];
+        _type = [self getCorrectValue:[metadata objectForKey:kProjectType]];
     }
     
     return self;

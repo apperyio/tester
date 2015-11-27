@@ -425,16 +425,16 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
 - (void)throwExceptionIfServiceIsLoggedOut
 {
     if (self.isLoggedOut) {
-        @throw [NSException exceptionWithName: @"IllegalStateException"
-                                       reason: @"Service is already logged out" userInfo: nil];
+        @throw [NSException exceptionWithName:@"IllegalStateException"
+                                       reason:@"Service is already logged out" userInfo:nil];
     }
 }
 
 - (void)throwExceptionIfServiceIsLoggedIn
 {
     if (self.isLoggedIn) {
-        @throw [NSException exceptionWithName: @"IllegalStateException"
-                                       reason: @"Service is already logged in" userInfo: nil];
+        @throw [NSException exceptionWithName:@"IllegalStateException"
+                                       reason:@"Service is already logged in" userInfo:nil];
     }
 }
 

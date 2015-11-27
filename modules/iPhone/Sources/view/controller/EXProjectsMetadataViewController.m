@@ -15,7 +15,6 @@
 #import "EXCredentialsManager.h"
 #import "EXUserSettingsStorage.h"
 #import "EXProjectMetadataCell.h"
-#import "EXSelectViewController.h"
 #import "EXProjectViewController.h"
 
 #import "EXToolbarItem.h"
@@ -51,9 +50,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 /// Contains projects observers list.
 @property (nonatomic, strong) NSMutableArray *projectsObservers;
-
-/// Handles view controller for folder selection.
-@property (nonatomic, strong) EXSelectViewController *selectFolderController;
 
 /// Current selected folder name.
 @property (nonatomic, strong) NSString *currentFolder;
@@ -115,8 +111,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     _apperyService = service;
     _projectsObservers = [[NSMutableArray alloc] init];
     _filteredProjectsMetadata = [[NSMutableArray alloc] init];
-    _selectFolderController = [[EXSelectViewController alloc] initWithTitle:NSLocalizedString(@"Folders", @"Folders")];
-    _currentProjectsSortingMethod = EXSortingMethodType_DateDescending;
     
     if (metadata.count > 0) {
         [self initializeProjectsMetadata:metadata];
@@ -125,11 +119,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     self.preferredContentSize = CGSizeMake(320., 480.);
     
     return self;
-}
-
-- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    return [self initWithNibName:nibNameOrNil bundle:nibBundleOrNil service:nil projectsMetadata:nil];
 }
 
 - (void)viewDidLoad
@@ -383,7 +372,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [self.filteredProjectsMetadata removeAllObjects];
     [self.filteredProjectsMetadata addObjectsFromArray:enabledProjectsMetadata];
     [self redefineAvailableFolders];
-    [self configureSelectFolderViewController];
     [self sortByCurrentMethodAndUpdateUI];
 }
 
@@ -447,15 +435,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 {
     NSArray *availableFolders = [self.projectsMetadata valueForKeyPath:@"@distinctUnionOfObjects.creator"];
     NSString *allFolderName = NSLocalizedString(@"All", @"Apps list | Toolbar | Folder button possible value");
-    self.folders = [[NSArray arrayWithObject:allFolderName] arrayByAddingObjectsFromArray:availableFolders];
+    self.folders = [@[allFolderName] arrayByAddingObjectsFromArray:availableFolders];
     self.currentFolder = allFolderName;
-}
-
-- (void)configureSelectFolderViewController
-{
-    self.selectFolderController.data = self.folders;
-    [self.selectFolderController updateUI];
-    self.selectFolderController.completion = nil;
 }
 
 #pragma mark - Projects sorting / filtering

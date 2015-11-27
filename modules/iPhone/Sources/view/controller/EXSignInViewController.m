@@ -66,11 +66,6 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 
 #pragma mark - Lifecycle
 
-- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    return [self initWithNibName:nibNameOrNil bundle:nibBundleOrNil service:nil];
-}
-
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil service:(EXApperyService *)service
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -79,8 +74,9 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     }
     
     _apperyService = service;
-    self.edgesForExtendedLayout = UIRectEdgeNone;
     self.shouldHideNavigationBar = YES;
+    
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     
     return self;
 }

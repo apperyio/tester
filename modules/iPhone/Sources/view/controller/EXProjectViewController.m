@@ -41,7 +41,7 @@ static NSString *const kDefaultWebResourceFolder = @"www";
 
 - (instancetype)initWithService:(EXApperyService *)service projectMetadata:(EXProjectMetadata *)projectMetadata
 {
-    self = [super init];
+    self = [super initWithNibName:nil bundle:nil];
     if (self == nil) {
         return nil;
     }
@@ -49,12 +49,13 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     _apperyService = service;
     _projectMetadata = projectMetadata;
     _isShare = NO;
+    
     return self;
 }
 
 - (instancetype)initWithService:(EXApperyService *)service projectCode:(NSString *)projectCode
 {
-    self = [super init];
+    self = [super initWithNibName:nil bundle:nil];
     if (self == nil) {
         return nil;
     }
@@ -62,6 +63,7 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     _apperyService = service;
     _appCode = projectCode;
     _isShare = YES;
+    
     return self;
 }
 

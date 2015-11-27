@@ -34,6 +34,9 @@ typedef void(^EXProjectsMetadataViewControllerCompletionBlock)(BOOL succeeded);
 
 @property (nonatomic, weak) id<EXProjectControllerActionDelegate> delegate;
 
+- (instancetype)initWithCoder:(NSCoder *)aDecoder NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil NS_UNAVAILABLE;
+
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil service:(EXApperyService *)service projectsMetadata:(NSArray *)metadata NS_DESIGNATED_INITIALIZER;
 
 @end

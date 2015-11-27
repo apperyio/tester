@@ -35,6 +35,7 @@ static NSString *const kSortMethod = @"sortMethod";
     _userName = [decoder decodeObjectForKey:kUserName];
     _shouldRememberMe = [decoder decodeBoolForKey:kShouldRememberMe];
     _sortMethodType = [decoder decodeIntegerForKey:kSortMethod];
+    
     return self;
 }
 

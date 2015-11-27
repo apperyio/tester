@@ -1,25 +1,21 @@
 //
 //  NSString+URLUtility.m
-//  Appery
-//
-//  Created by Sergey Seroshtan on 03.07.12.
-//  Copyright (c) 2013 Exadel Inc. All rights reserved.
 //
 
 #import "NSString+URLUtility.h"
 
 @implementation NSString (URLUtility)
 
-- (NSString *)decodedUrlString
-{
-    return (NSString *)CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapes(NULL, (CFStringRef)[self mutableCopy], CFSTR("")));
-}
-
 - (NSString *)encodedUrlString
 {
-    return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)[self mutableCopy], NULL, 
-                                                               (CFStringRef)@"!*'();:@&=+$,/?%#[].",
-                                                               kCFStringEncodingUTF8 ));
+    CFStringRef result = CFURLCreateStringByAddingPercentEscapes(NULL, (__bridge CFStringRef)[self copy], NULL, CFSTR("￼=,.!$&%[]{}'()*+;@?\n\"<>#\t :/"), kCFStringEncodingUTF8);
+    return CFBridgingRelease(result);
+}
+
+- (NSString *)decodedUrlString
+{
+    CFStringRef result = CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL, (__bridge CFStringRef)[self copy], CFSTR(""), kCFStringEncodingUTF8);
+    return CFBridgingRelease(result);
 }
 
 - (NSString *)URLByAddingResourceComponent:(NSString *)resourcePath

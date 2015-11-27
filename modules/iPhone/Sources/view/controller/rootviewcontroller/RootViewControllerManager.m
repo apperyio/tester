@@ -121,7 +121,7 @@
 
 - (void)dealloc
 {
-    assert("RootViewControllerManager deallocated!" == NULL);
+    NSAssert(NO, @"RootViewControllerManager deallocated!");
 }
 
 #pragma mark - Public API implementation
@@ -331,7 +331,8 @@
 
 - (void)pushRootViewController:(UIViewController *)rootController animated:(BOOL)animated completionBlock:(void (^)(void))completionBlock
 {
-    assert(rootController);
+    NSAssert(rootController != nil, @"The root controller does not have to be nil");
+
     if (self.mainControllerAnimating) {
         __weak RootViewControllerManager *weakSelf = self;
         @synchronized(self) {
@@ -371,7 +372,8 @@
     }
     
     UIWindow *window = [EXMainWindowAppDelegate mainWindow];
-    assert(window != nil);
+    NSAssert(window != nil, @"The window does not have to be nil");
+    
     
     void (^presentationBlock)(void) = ^(void) {
         [self.rootNavigationController setViewControllers:@[rootController] animated:animated];
@@ -419,7 +421,7 @@
     }
     
     UIViewController *controllerToPop = [self.rootNavigationController.viewControllers objectAtIndex:navStackDepth - 2];
-    assert(nil != controllerToPop);
+    NSAssert(controllerToPop != nil, @"The controller does not have to be nil");
     
     if (animated && completionBlock != nil) {
         self.mainControllerAnimating = YES;
@@ -457,7 +459,7 @@
 - (void)setRootViewController:(UIViewController *)rootController animated:(BOOL)animated completionBlock:(void (^)(void))completionBlock
 {
     UIWindow* window = [EXMainWindowAppDelegate mainWindow];
-    assert(window != nil);
+    NSAssert(window != nil, @"The window does not have to be nil");
     
     if (window.rootViewController != rootController) {
         if (CGAffineTransformIsIdentity(self.sidebarNavigationController.view.transform)) {
