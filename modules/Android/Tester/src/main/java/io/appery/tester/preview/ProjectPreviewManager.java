@@ -1,7 +1,7 @@
 package io.appery.tester.preview;
 
 import io.appery.tester.ApperyActivity;
-import io.appery.tester.BaseActivity;
+import io.appery.tester.ui.base.activity.BaseActivity;
 import io.appery.tester.R;
 import io.appery.tester.net.RestManager;
 import io.appery.tester.tasks.DownloadFileTask;
@@ -11,7 +11,7 @@ import io.appery.tester.utils.FileUtils;
 import io.appery.tester.utils.IntentUtils;
 import io.appery.tester.utils.NoProjectSourceException;
 import io.appery.tester.utils.ProjectStorageManager;
-import io.appery.tester.utils.ToastUtils;
+import io.appery.tester.utils.CommonUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.client.ClientProtocolException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import android.net.Uri;
 
@@ -26,7 +28,7 @@ import android.net.Uri;
  * Created by Maxim Balyaba on 09.07.2015.
  */
 public class ProjectPreviewManager implements DownloadFileCallback {
-
+    private static final Logger logger = LoggerFactory.getLogger(ProjectPreviewManager.class);
     private RestManager restManager;
 
     private BaseActivity activityContext;
@@ -70,11 +72,11 @@ public class ProjectPreviewManager implements DownloadFileCallback {
                     NoProjectSourceException noSourceException = (NoProjectSourceException) exception;
                     if (noSourceException.getErrorCode() != null) {
                         if (noSourceException.getErrorCode().intValue() == 404) {
-                            ToastUtils.showMessage(activityContext, activityContext.getString(R.string.preview_by_code_not_found_error_toast));
+                            CommonUtil.showMessage(activityContext, activityContext.getString(R.string.preview_by_code_not_found_error_toast));
                             return;
                         }
                         if (noSourceException.getErrorCode().intValue() == 403) {
-                            ToastUtils.showMessage(activityContext, activityContext.getString(R.string.preview_by_code_expired_error_toast));
+                            CommonUtil.showMessage(activityContext, activityContext.getString(R.string.preview_by_code_expired_error_toast));
                             return;
                         }
                     }
@@ -87,25 +89,23 @@ public class ProjectPreviewManager implements DownloadFileCallback {
 
     private void processErrorException(Throwable exception) {
         if (exception != null && exception instanceof ClientProtocolException) {
-            ToastUtils.showMessage(activityContext, "Can't execute request");
+            CommonUtil.showMessage(activityContext, "Can't execute request");
             return;
         }
         if (exception != null && exception instanceof IOException) {
-            ToastUtils.showMessage(activityContext, "Unable to connect");
+            CommonUtil.showMessage(activityContext, "Unable to connect");
             return;
         }
-        ToastUtils.showMessage(activityContext, activityContext.getString(R.string.application_download_error_toast));
+        CommonUtil.showMessage(activityContext, activityContext.getString(R.string.application_download_error_toast));
     }
 
     @Override
     public void onFileDownloaded(File file) {
-        //  TODO - Check filename and do what you need
-        // apk file - install
         String fName = file.getName();
         if (Constants.FILENAME_APK.equals(fName)) {
             boolean install = new IntentUtils(activityContext).installApk(file);
             if (!install) {
-                activityContext.showToast(activityContext.getString(R.string.application_download_error_toast));
+                CommonUtil.showToast(activityContext.getString(R.string.application_download_error_toast));
             }
         } else if (Constants.FILENAME_ZIP.equals(fName)) {
             // Unzip
@@ -117,8 +117,8 @@ public class ProjectPreviewManager implements DownloadFileCallback {
                 replaceCordovaResources(dirPath);
                 activityContext.startActivity(ApperyActivity.class);
             } catch (IOException e) {
-                e.printStackTrace();
-                activityContext.showToast(activityContext.getString(R.string.preview_error_toast));
+                logger.error("Not able , try again later", e);
+                CommonUtil.showToast(activityContext.getString(R.string.preview_error_toast));
             }
         }
     }
@@ -134,8 +134,8 @@ public class ProjectPreviewManager implements DownloadFileCallback {
                 FileUtils.unzip(cordovaArchiveFullPath, path);
                 FileUtils.removeFile(cordovaArchiveFullPath);
             } catch (IOException e) {
-                e.printStackTrace();
-                activityContext.showToast(activityContext.getString(R.string.preview_error_toast));
+                logger.error("Not able , try again later", e);
+                CommonUtil.showToast(activityContext.getString(R.string.preview_error_toast));
             }
         }
     }

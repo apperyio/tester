@@ -10,14 +10,17 @@ import android.app.Application;
  * 
  */
 public class TesterApplication extends Application {
-
+    private static TesterApplication instance;
     private RestManager restManager = null;
 
-    /**
-     * Create new instance of application.
-     */
-    public TesterApplication() {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        instance = this;
+    }
 
+    public static TesterApplication getInstance() {
+        return instance;
     }
 
     public void setBaseURL(String serverUrl) {

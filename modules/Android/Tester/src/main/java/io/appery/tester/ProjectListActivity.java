@@ -18,8 +18,6 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,8 +25,8 @@ import java.util.Comparator;
 import java.util.List;
 
 import butterknife.Bind;
-import io.appery.tester.adaptors.FolderAdapter;
-import io.appery.tester.adaptors.ProjectListAdapter;
+import io.appery.tester.ui.main.adaptors.FolderAdapter;
+import io.appery.tester.ui.main.adaptors.ProjectListAdapter;
 import io.appery.tester.comparators.ProjectComparator;
 import io.appery.tester.data.Project;
 import io.appery.tester.data.SerializedCookie;
@@ -36,6 +34,8 @@ import io.appery.tester.net.api.BaseResponse;
 import io.appery.tester.net.api.GetProjectList;
 import io.appery.tester.net.api.callback.ProjectListCallback;
 import io.appery.tester.preview.ProjectPreviewManager;
+import io.appery.tester.ui.base.activity.BaseActivity;
+import io.appery.tester.utils.CommonUtil;
 import io.appery.tester.utils.Constants;
 
 /**
@@ -146,30 +146,6 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         customizeActionBar();
     }
 
-
-    private static boolean sHackReady;
-    private static boolean sHackAvailable;
-    private static Field sRecreateDisplayList;
-    private static Method sGetDisplayList;
-
-    OnItemClickListener onFolderClick = new OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
-            mFolderAdapter.setSelected(i, view);
-            updateProjectsList(sortBy);
-            //mSlidingMenu.toggle();
-        }
-    };
-    View.OnClickListener onRefreshClick = new View.OnClickListener() {
-
-        @Override
-        public void onClick(View view) {
-            GetProjectList getProjectList = new GetProjectList(ProjectListActivity.this.getRestManager(), ProjectListActivity.this);
-            showDialog(Constants.DIALOGS.PROGRESS);
-            getProjectList.execute();
-        }
-    };
-
     private void customizeActionBar() {
         setSupportActionBar(toolbar);
     }
@@ -208,7 +184,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
                 }
 
                 if (response.hasError()) {
-                    showToast(response.getMessage());
+                    CommonUtil.showToast(response.getMessage());
                     return;
                 }
                 projectList = projects;

@@ -50,10 +50,23 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.+'
     compile 'com.android.support:design:23.+'
     compile project(':BarcodeScanner')
-    compile project(':CordovaLib')
+    //compile project(':CordovaLib')
     compile 'com.android.support:support-v4:+'
-    //compile 'org.apache.cordova:cordova:3.7.1'
-    //compile 'org.apache.cordova:cordova-core:3.7.1'
+    compile 'org.apache.cordova:cordova:3.7.1'
+    compile 'org.apache.cordova:cordova-core:3.7.1'
     compile 'com.google:analytics:2.3.1'
+
+    //Inject views
     compile 'com.jakewharton:butterknife:7.0.1'
+
+    //Retrofit for REST
+    compile('com.squareup.retrofit:retrofit:1.9.0') {
+        exclude group: 'commons-io', module: 'commons-io'
+    }
+    //compile 'com.squareup.okhttp:okhttp:2.2.0'
+    //compile 'com.squareup.okhttp:okhttp-urlconnection:2.2.0'
+    //Logger libs
+    compile 'com.github.tony19:logback-android-core:1.1.1-3'
+    compile 'com.github.tony19:logback-android-classic:1.1.1-3'
+    compile 'org.slf4j:slf4j-api:1.7.7'
 }

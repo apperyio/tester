@@ -3,14 +3,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar_home"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_gravity="top"
-        android:visibility="visible"/>
-
     <TextView
         android:id="@+id/rights"
         style="@style/Rights"
@@ -25,7 +17,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_above="@+id/rights"
-        android:layout_below="@+id/toolbar_home"
+
         android:layout_centerInParent="true">
 
         <LinearLayout

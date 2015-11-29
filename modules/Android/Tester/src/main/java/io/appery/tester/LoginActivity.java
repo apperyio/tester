@@ -14,7 +14,8 @@ import android.widget.EditText;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-import io.appery.tester.dialogs.EnterAppCodeDialog;
+import io.appery.tester.ui.base.activity.BaseActivity;
+import io.appery.tester.ui.dialogs.EnterAppCodeDialog;
 import io.appery.tester.net.api.BaseResponse;
 import io.appery.tester.net.api.DoSAML;
 import io.appery.tester.net.api.GetSAML;
@@ -24,6 +25,7 @@ import io.appery.tester.net.api.callback.DoSAMLCallback;
 import io.appery.tester.net.api.callback.GetSAMLCallback;
 import io.appery.tester.net.api.callback.LoginCallback;
 import io.appery.tester.preview.ProjectPreviewManager;
+import io.appery.tester.utils.CommonUtil;
 import io.appery.tester.utils.Constants;
 import io.appery.tester.utils.WidgetUtils;
 
@@ -33,15 +35,11 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
     private String username;
 
     private String password;
-
     private ProjectPreviewManager projectPreviewManager;
-
-    @Bind(R.id.toolbar_home)
-    protected Toolbar toolbar;
 
     @Override
     protected int getResId() {
-        return R.layout.login;
+        return R.layout.ac_auth;
     }
 
     @Override
@@ -58,24 +56,6 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
         ((TesterApplication) getApplication()).setBaseURL(getServerURL());
         projectPreviewManager = new ProjectPreviewManager(getRestManager(), this);
 
-        setSupportActionBar(toolbar);
-        toolbar.setTitle(Constants.EMPTY_STRING);
-        getSupportActionBar().setTitle(null);
-    }
-
-    @OnClick(R.id.enter_code_btn)
-    protected void enterCodeClick() {
-        openEnterCodeDialog();
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        username = getPreferenceAsString(Constants.PREFERENCES.USERNAME, "");
-        password = getPreferenceAsString(Constants.PREFERENCES.PASSWORD, "");
-        WidgetUtils.setText(this, R.id.login_et, username);
-        WidgetUtils.setText(this, R.id.password_et, password);
     }
 
     @Override
@@ -106,9 +86,9 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
             public void run() {
                 removeDialog(Constants.DIALOGS.SIGN_IN);
                 if (errorMessage.toLowerCase().equals("unauthorized")) {
-                    showToast(getString(R.string.unautorized_toast));
+                    CommonUtil.showToast(getString(R.string.unautorized_toast));
                 } else {
-                    showToast(errorMessage);
+                    CommonUtil.showToast(errorMessage);
                 }
             }
         });
@@ -119,10 +99,8 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
         setPreference(Constants.PREFERENCES.USERNAME, username);
         setPreference(Constants.PREFERENCES.PASSWORD, password);
         runOnUiThread(new Runnable() {
-
             @Override
             public void run() {
-                // showToast(getString(R.string.autorized_toast));
                 removeDialog(Constants.DIALOGS.SIGN_IN);
             }
         });
@@ -149,24 +127,7 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.mn_login, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_preferences: {
-                Intent intent = new Intent(LoginActivity.this, PreferencesActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                return true;
-            }
-        }
-        return false;
-    }
 
     @Override
     protected Dialog onCreateDialog(int id) {
@@ -198,11 +159,7 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
         loginApi.execute();
     }
 
-    public void openEnterCodeDialog() {
-        ((TesterApplication) getApplication()).setBaseURL(getPreferenceAsString(Constants.PREFERENCES.BASE_URL, ""));
-        EnterAppCodeDialog enterAppCodeDialog = new EnterAppCodeDialog(this, this.projectPreviewManager);
-        enterAppCodeDialog.show();
-    }
+
 
     @Override
     public void onGetSAMLComplete(BaseResponse response) {

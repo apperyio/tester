@@ -1,4 +1,4 @@
-package io.appery.tester.dialogs;
+package io.appery.tester.ui.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
