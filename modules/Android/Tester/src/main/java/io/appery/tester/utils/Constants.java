@@ -45,6 +45,7 @@ public interface Constants {
 
         public static final String FIX_VERSION = "fix_version";
 
+        String LOCATION = "location";
     }
 
     public interface EXTRAS {

@@ -20,7 +20,7 @@ import io.appery.tester.utils.Constants;
 /**
  * @author Daniel Lukashevich
  */
-public abstract class BaseActivity extends ButterKnifeActivity {
+public abstract class BaseActivity extends SpiceActivity {
 
     @Override
     protected Dialog onCreateDialog(int id) {

@@ -19,9 +19,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
     public void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-
         addPreferencesFromResource(R.xml.preferences);
-
         initPreference(Constants.PREFERENCES.BASE_URL);
         initPreference(Constants.PREFERENCES.USERNAME);
     }
