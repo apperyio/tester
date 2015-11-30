@@ -63,7 +63,7 @@
         android:theme="@style/TesterTheme">
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".ui.login.activity.AuthActivity"
             android:configChanges="keyboardHidden|orientation"
             android:label="@string/application_name"
             android:theme="@style/LoginActivityTheme"

@@ -1,6 +1,6 @@
 package io.appery.tester.tasks;
 
-import io.appery.tester.BaseActivity;
+import io.appery.tester.ui.base.activity.BaseActivity;
 import io.appery.tester.tasks.callback.DownloadFileCallback;
 import io.appery.tester.utils.Constants;
 import io.appery.tester.utils.IOUtils;

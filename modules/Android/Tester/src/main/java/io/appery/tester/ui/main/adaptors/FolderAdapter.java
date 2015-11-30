@@ -1,4 +1,4 @@
-package io.appery.tester.adaptors;
+package io.appery.tester.ui.main.adaptors;
 
 import android.R;
 
@@ -11,9 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.

@@ -1,6 +1,6 @@
 package io.appery.tester.utils;
 
-import io.appery.tester.BaseActivity;
+import io.appery.tester.ui.base.activity.BaseActivity;
 import io.appery.tester.net.RestClient;
 
 import java.io.BufferedReader;
@@ -10,9 +10,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
-import android.content.Context;
-import android.util.Log;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
