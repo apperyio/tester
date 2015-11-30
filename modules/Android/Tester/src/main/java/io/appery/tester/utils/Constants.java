@@ -59,13 +59,10 @@ public interface Constants {
 
     }
 
-    public interface SERVER_CONSTANTS {
-        public static final String OLD_APPERY_URL_HTTP = "http://project.tiggzi.com";
-
-        public static final String OLD_APPERY_URL_HTTPS = "https://project.tiggzi.com";
-
-        public static final String NEW_APPERY_URL_HTTPS = "http://gamma.dev.appery.io/";
-
+    public interface PARAMS {
+        public static final String USERNAME_PARAM = "cn";
+        public static final String PASSWORD_PARAM = "pwd";
+        public static final String TARGET_PARAM = "target";
     }
 
     public static final String FILENAME_APK = "app.apk";

@@ -2,6 +2,7 @@ package io.appery.tester.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,8 @@ public class PrefsUtil {
     private SharedPreferences mSharedPreferences;
 
     private PrefsUtil() {
-        mSharedPreferences = TesterApplication.getInstance().getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+       // mSharedPreferences = TesterApplication.getInstance().getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(TesterApplication.getInstance());;
     }
 
     public static PrefsUtil getInstance() {

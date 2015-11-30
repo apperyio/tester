@@ -1,4 +1,4 @@
-package io.appery.tester.preferences;
+package io.appery.tester.ui.widget;
 
 import io.appery.tester.R;
 import android.content.Context;

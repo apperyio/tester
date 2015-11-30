@@ -44,7 +44,7 @@ public class RestManager {
     public RestManager(String baseURL) {
         this.baseURL = baseURL;
         this.baseURLConstant = baseURL;
-        this.idpURL = new StringBuilder(baseURL).insert("https://".length(), "idp.").toString();
+        this.idpURL = baseURL;
 
         cookieStore = new BasicCookieStore();
         httpContext = new BasicHttpContext();

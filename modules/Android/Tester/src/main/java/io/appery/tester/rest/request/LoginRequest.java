@@ -1,6 +1,8 @@
 package io.appery.tester.rest.request;
 
+import io.appery.tester.db.entity.User;
 import io.appery.tester.rest.IWebApi;
+import io.appery.tester.utils.UserHelper;
 import retrofit.client.Response;
 
 /**
@@ -14,6 +16,7 @@ public class LoginRequest extends BaseRequest<Response, IWebApi> {
 
     @Override
     Response loadData() {
-        return getService().doLogin();
+        User user = UserHelper.getUser();
+        return getService().doLogin(user.getUsername(), user.getPassword(), user.getTarget());
     }
 }

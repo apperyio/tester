@@ -10,16 +10,17 @@ import java.util.Collection;
 import java.util.List;
 
 import io.appery.tester.TesterApplication;
+import retrofit.client.Header;
 
 /**
  * Created by Maxim Balyaba on 14.07.2015.
  */
 public class CommonUtil {
 
-    public static void showMessage(Context context,String message){
-        Toast toast = Toast.makeText(context,message, Toast.LENGTH_LONG);
+    public static void showMessage(Context context, String message) {
+        Toast toast = Toast.makeText(context, message, Toast.LENGTH_LONG);
         TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
-        if( v != null) v.setGravity(Gravity.CENTER);
+        if (v != null) v.setGravity(Gravity.CENTER);
         toast.show();
     }
 
@@ -57,5 +58,16 @@ public class CommonUtil {
 
     public static <T> List<T> getNewArrayList() {
         return new ArrayList<T>();
+    }
+
+    static public Header getHeaderByName(List<Header> headersList, String name) {
+        Header result = null;
+        for (Header temp : headersList) {
+            if (temp.getName().equals(name)) {
+                result = temp;
+                break;
+            }
+        }
+        return result;
     }
 }

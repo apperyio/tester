@@ -8,7 +8,6 @@ import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import io.appery.tester.LoginActivity;
 import io.appery.tester.R;
@@ -86,13 +85,8 @@ public abstract class BaseActivity extends SpiceActivity {
         }
     }
 
-    public String getBaseURL() {
-        return getRestManager().getBaseURL();
-    }
-
     public RestManager getRestManager() {
-        RestManager manager = ((TesterApplication) getApplication()).getRestManager();
-        return manager;
+        return TesterApplication.getInstance().getRestManager();
     }
 
     /**
@@ -105,18 +99,7 @@ public abstract class BaseActivity extends SpiceActivity {
     }
 
     protected String getServerURL() {
-        String fixVersion = getPreferenceAsString(Constants.PREFERENCES.FIX_VERSION, "-1");
-        if (fixVersion.equals("-1") || fixVersion.equals("1")) {
-            setPreference(Constants.PREFERENCES.FIX_VERSION, "2");
-            String serverURL = getPreferenceAsString(Constants.PREFERENCES.BASE_URL, "");
-            if (serverURL.equals(Constants.SERVER_CONSTANTS.OLD_APPERY_URL_HTTPS)
-                    || serverURL.equals(Constants.SERVER_CONSTANTS.OLD_APPERY_URL_HTTP)) {
-                setPreference(Constants.PREFERENCES.BASE_URL, Constants.SERVER_CONSTANTS.NEW_APPERY_URL_HTTPS);
-                return Constants.SERVER_CONSTANTS.NEW_APPERY_URL_HTTPS;
-            }
-        }
-        return getPreferenceAsString(Constants.PREFERENCES.BASE_URL, "");
-
+        return getString(R.string.base_url);
     }
 
 }

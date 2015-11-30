@@ -1,13 +1,13 @@
 package io.appery.tester;
 
-import io.appery.tester.net.RestManager;
 import android.app.Application;
+
+import io.appery.tester.net.RestManager;
 
 /**
  * Application for this project.
- * 
+ *
  * @author ayakovenko
- * 
  */
 public class TesterApplication extends Application {
     private static TesterApplication instance;
@@ -24,12 +24,6 @@ public class TesterApplication extends Application {
     }
 
     public void setBaseURL(String serverUrl) {
-        if (serverUrl == null) {
-            throw new RuntimeException();
-        }
-        if (!serverUrl.startsWith("https")){
-            serverUrl = serverUrl.replaceFirst("http", "https");
-        }
         if ((restManager == null) || (!serverUrl.equals(restManager.getBaseURL()))) {
             restManager = new RestManager(serverUrl);
         }

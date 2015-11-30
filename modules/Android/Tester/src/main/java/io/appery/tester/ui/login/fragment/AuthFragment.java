@@ -13,8 +13,10 @@ import io.appery.tester.db.entity.User;
 import io.appery.tester.preview.ProjectPreviewManager;
 import io.appery.tester.ui.base.fragment.BaseFragment;
 import io.appery.tester.ui.dialogs.EnterAppCodeDialog;
+import io.appery.tester.utils.CommonUtil;
 import io.appery.tester.utils.Constants;
 import io.appery.tester.utils.PrefsUtil;
+import io.appery.tester.utils.UserHelper;
 import io.appery.tester.utils.WidgetUtils;
 import retrofit.client.Response;
 
@@ -63,7 +65,8 @@ public class AuthFragment extends BaseFragment implements RequestListener<Respon
     }
 
     @Override
-    public void onRequestSuccess(Response location) {
-
+    public void onRequestSuccess(Response response) {
+        UserHelper.updateLocation(CommonUtil.getHeaderByName(response.getHeaders(), Constants.PREFERENCES.LOCATION).getValue());
+        //TODO: do SAML request
     }
 }
