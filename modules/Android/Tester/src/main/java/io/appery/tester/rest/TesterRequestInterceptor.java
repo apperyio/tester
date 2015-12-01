@@ -15,6 +15,6 @@ public class TesterRequestInterceptor implements RequestInterceptor {
         String username = PrefsUtil.getInstance().getString(Constants.PREFERENCES.USERNAME);
         String password = PrefsUtil.getInstance().getString(Constants.PREFERENCES.PASSWORD);
         String basicAuth = "Basic " + Base64.encodeToString(String.format("%s:%s", username, password).getBytes(), Base64.NO_WRAP);
-        request.addHeader("Authorization", basicAuth);
+        request.addHeader("JSESSIONID",TesterCookieStore.getSessionId());
     }
 }

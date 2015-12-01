@@ -6,7 +6,7 @@
 
 		<EditTextPreference android:key="base_url"
 			android:title="@string/url_label" android:enabled="true"
-			android:selectable="true" android:defaultValue="http://appery.io"></EditTextPreference>
+			android:selectable="true" android:defaultValue="https://appery.io"></EditTextPreference>
 
 		<io.appery.tester.ui.widget.ButtonPreference
 			android:key="username"

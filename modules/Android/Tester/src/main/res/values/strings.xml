@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="application_name">Appery.io Tester</string>
-    <string name="base_url">https://idp.appery.io/idp/</string>
+    <string name="base_url">https://appery.io</string>
 
     <!-- LABELS -->
     <string name="login_label">Login: </string>

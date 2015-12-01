@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import io.appery.tester.db.entity.User;
 import io.appery.tester.rest.SpiceHolder;
 import io.appery.tester.rest.request.LoginRequest;
+import io.appery.tester.rest.request.SamlRequest;
 import io.appery.tester.utils.Constants;
 import io.appery.tester.utils.UserHelper;
 import retrofit.client.Response;
@@ -18,7 +19,11 @@ public class RestManager {
 
     public static void doLogin(SpiceHolder holder, User user, RequestListener<Response> listener) {
         UserHelper.saveUser(user);
-        holder.getSpiceManager().execute(new LoginRequest(), Constants.API.LOGIN, TimeUnit.SECONDS.toMillis(60), listener);
+        holder.getSpiceManager().execute(new LoginRequest(), listener);
+    }
+
+    public static void doSamlRequest(SpiceHolder holder,String samlUrl, RequestListener<Response> listener) {
+        holder.getSpiceManager().execute(new SamlRequest(samlUrl), listener);
     }
 
     public static void doLogout() {

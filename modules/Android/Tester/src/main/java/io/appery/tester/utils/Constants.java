@@ -10,6 +10,8 @@ public interface Constants {
     public interface API {
         public static final String LOGIN = "/idp/doLogin";
 
+        public static final String SAML = "SAML";
+
         public static final String GET_PROJECTLIST = "/app/rest/projects";
 
         public static final String GET_PROJECT_RESOURCE = "/app/project/%s/export/sources/web_resources/";
@@ -43,9 +45,7 @@ public interface Constants {
 
         public static final String PASSWORD = "password";
 
-        public static final String FIX_VERSION = "fix_version";
-
-        String LOCATION = "location";
+        public static final String SAML_KEY = "saml_key";
     }
 
     public interface EXTRAS {

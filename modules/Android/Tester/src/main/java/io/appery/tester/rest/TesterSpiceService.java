@@ -1,6 +1,17 @@
 package io.appery.tester.rest;
 
 import com.octo.android.robospice.retrofit.RetrofitGsonSpiceService;
+import com.squareup.okhttp.OkHttpClient;
+
+import java.security.cert.CertificateException;
+import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import retrofit.RestAdapter;
 
@@ -9,7 +20,7 @@ import retrofit.RestAdapter;
  */
 public class TesterSpiceService extends RetrofitGsonSpiceService {
 
-    private static final int NETWORK_MAX_THREADS = 4;
+    private static final int NETWORK_MAX_THREADS = 1;
 
     @Override
     public void onCreate() {
@@ -37,11 +48,12 @@ public class TesterSpiceService extends RetrofitGsonSpiceService {
      */
     @Override
     protected RestAdapter.Builder createRestAdapterBuilder() {
+
         RestAdapter.Builder builder = new RestAdapter.Builder();
         builder.setRequestInterceptor(new TesterRequestInterceptor());
         builder.setConverter(new TesterGsonConverter());
         builder.setEndpoint(new TesterSpiceEndpoint());
-        builder.setClient(new TesterOkClient());
+        builder.setClient(TesterOkClient.getTesterOkClient());
         builder.setLogLevel(RestAdapter.LogLevel.FULL);
         builder.setErrorHandler(new TesterErrorHandler());
         return builder;

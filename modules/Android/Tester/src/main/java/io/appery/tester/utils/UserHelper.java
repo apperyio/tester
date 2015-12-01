@@ -16,10 +16,11 @@ public class UserHelper {
         String password = PrefsUtil.getInstance().getString(Constants.PREFERENCES.PASSWORD);
         User user = new User(username, password);
         user.setTarget(PrefsUtil.getInstance().getString(Constants.PREFERENCES.BASE_URL) + "/app/");
+        user.setSamlKey(PrefsUtil.getInstance().getString(Constants.PREFERENCES.SAML_KEY));
         return user;
     }
 
-    static public void updateLocation(String location) {
-        PrefsUtil.getInstance().putString(Constants.PREFERENCES.LOCATION, location);
+    static public void updateSAMLKey(String samlKey) {
+        PrefsUtil.getInstance().putString(Constants.PREFERENCES.SAML_KEY, samlKey);
     }
 }

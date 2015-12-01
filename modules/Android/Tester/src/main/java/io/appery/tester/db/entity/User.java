@@ -7,8 +7,8 @@ public class User {
 
     private String username;
     private String password;
+    private String samlKey;
     private String target;
-    private String location;
 
     public User(String username, String password) {
         this.username = username;
@@ -31,19 +31,19 @@ public class User {
         this.password = password;
     }
 
+    public String getSamlKey() {
+        return samlKey;
+    }
+
+    public void setSamlKey(String key) {
+        this.samlKey = key;
+    }
+
     public String getTarget() {
         return target;
     }
 
     public void setTarget(String target) {
         this.target = target;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
     }
 }

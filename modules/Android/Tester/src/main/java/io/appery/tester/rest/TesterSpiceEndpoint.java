@@ -13,7 +13,12 @@ public class TesterSpiceEndpoint implements Endpoint {
     @Override
     public String getUrl() {
         String defUrl = TesterApplication.getInstance().getString(R.string.base_url);
-        return PrefsUtil.getInstance().getString(Constants.PREFERENCES.BASE_URL,defUrl);
+        String url = PrefsUtil.getInstance().getString(Constants.PREFERENCES.BASE_URL, defUrl);
+        return buildIdp(url);
+    }
+
+    private String buildIdp(String url) {
+        return new StringBuilder(url).insert("https://".length(), "idp.").toString();
     }
 
     @Override
