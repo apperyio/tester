@@ -5,10 +5,12 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.appery.tester.R;
 import io.appery.tester.RestManager;
-import io.appery.tester.rest.SpiceHolder;
-import io.appery.tester.rest.TesterSpiceEndpoint;
+import io.appery.tester.TesterApplication;
+import io.appery.tester.ui.login.callback.AuthCallback;
 import io.appery.tester.utils.Constants;
+import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
 
@@ -17,33 +19,46 @@ import retrofit.mime.TypedByteArray;
  */
 public class LoginListener extends BaseListener<Response> {
     private static final Logger logger = LoggerFactory.getLogger(LoginListener.class);
-    private SpiceHolder spiceHolder;
+    private AuthCallback mAuthCallback;
 
-    public LoginListener(SpiceHolder spiceHolder) {
-        this.spiceHolder = spiceHolder;
+    public LoginListener(AuthCallback callback) {
+        this.mAuthCallback = callback;
     }
 
     @Override
     public void onRequestFailure(SpiceException spiceException) {
         super.onRequestFailure(spiceException);
+        Throwable exception = detectIssue(spiceException);
+        if (mAuthCallback != null) {
+            mAuthCallback.onAuthFailed(exception);
+        }
+    }
+
+    private Throwable detectIssue(SpiceException cause) {
+        Throwable result = cause;
+        if ((cause.getCause() instanceof RetrofitError)) {
+            RetrofitError error = (RetrofitError) cause.getCause();
+            if (error.getResponse().getStatus() == 500) {
+                result = new Exception(TesterApplication.getInstance().getString(R.string.error_incorrect_credentials), cause);
+            }
+        }
+        return result;
     }
 
     @Override
     public void onRequestSuccess(Response response) {
         super.onRequestSuccess(response);
         String bodyString = new String(((TypedByteArray) response.getBody()).getBytes());
-        logger.warn("retrofit {}",bodyString.replaceAll("\n",Constants.EMPTY_STRING));
-        if (spiceHolder != null) {
-            RestManager.doSamlRequest(spiceHolder, preparePath(response.getUrl()), new SamlListener());
+        logger.warn("retrofit {}", bodyString.replaceAll("\n", Constants.EMPTY_STRING));
+        //TODO: correct parse
+        String saml = bodyString.substring(bodyString.indexOf("VALUE=\"") + 7, bodyString.indexOf("\"/>"));
+        String url = bodyString.substring(bodyString.indexOf("ACTION=\"") + 8, bodyString.indexOf("\"><I"));
+        if (mAuthCallback != null) {
+            RestManager.samlRequest(mAuthCallback, url, saml, new SamlListener(mAuthCallback));
         }
-        logger.warn("retrofit {}",bodyString.toString());
     }
 
-    private String preparePath(String url) {
-        return url.replace(new TesterSpiceEndpoint().getUrl(), Constants.EMPTY_STRING);
-    }
-
-    public void setSpiceHolder(SpiceHolder spiceHolder) {
-        this.spiceHolder = spiceHolder;
+    public void setAuthCallback(AuthCallback callback) {
+        this.mAuthCallback = callback;
     }
 }

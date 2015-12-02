@@ -2,13 +2,10 @@ package io.appery.tester;
 
 import com.octo.android.robospice.request.listener.RequestListener;
 
-import java.util.concurrent.TimeUnit;
-
 import io.appery.tester.db.entity.User;
 import io.appery.tester.rest.SpiceHolder;
 import io.appery.tester.rest.request.LoginRequest;
 import io.appery.tester.rest.request.SamlRequest;
-import io.appery.tester.utils.Constants;
 import io.appery.tester.utils.UserHelper;
 import retrofit.client.Response;
 
@@ -22,11 +19,12 @@ public class RestManager {
         holder.getSpiceManager().execute(new LoginRequest(), listener);
     }
 
-    public static void doSamlRequest(SpiceHolder holder,String samlUrl, RequestListener<Response> listener) {
-        holder.getSpiceManager().execute(new SamlRequest(samlUrl), listener);
+    public static void doLogout() {
     }
 
-    public static void doLogout() {
+    public static void samlRequest(SpiceHolder holder, String url, String samlValue, RequestListener<Response> listener) {
+        UserHelper.updateSAMLKey(samlValue);
+        holder.getSpiceManager().execute(new SamlRequest(url, samlValue), listener);
     }
 
 }

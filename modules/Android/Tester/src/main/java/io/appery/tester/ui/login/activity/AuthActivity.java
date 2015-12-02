@@ -22,7 +22,7 @@ public class AuthActivity extends BaseActivity {
 
     @Override
     protected int getResId() {
-        return R.layout.ac_auth;
+        return R.layout.activity_auth;
     }
 
     @Override

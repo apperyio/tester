@@ -1,21 +1,11 @@
 package io.appery.tester;
 
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import butterknife.Bind;
-import butterknife.OnClick;
-import io.appery.tester.ui.base.activity.BaseActivity;
-import io.appery.tester.ui.dialogs.EnterAppCodeDialog;
 import io.appery.tester.net.api.BaseResponse;
 import io.appery.tester.net.api.DoSAML;
 import io.appery.tester.net.api.GetSAML;
@@ -25,6 +15,7 @@ import io.appery.tester.net.api.callback.DoSAMLCallback;
 import io.appery.tester.net.api.callback.GetSAMLCallback;
 import io.appery.tester.net.api.callback.LoginCallback;
 import io.appery.tester.preview.ProjectPreviewManager;
+import io.appery.tester.ui.base.activity.BaseActivity;
 import io.appery.tester.utils.CommonUtil;
 import io.appery.tester.utils.Constants;
 import io.appery.tester.utils.WidgetUtils;
@@ -39,7 +30,7 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
 
     @Override
     protected int getResId() {
-        return R.layout.ac_auth;
+        return R.layout.activity_auth;
     }
 
     @Override
@@ -78,6 +69,23 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
         focusView.requestFocusFromTouch();
     }
 
+
+    /**
+     * Sign in to Appery.
+     *
+     * @param target
+     */
+    public void signIn(View target) {
+        ((TesterApplication) getApplication()).setBaseURL(getPreferenceAsString(Constants.PREFERENCES.BASE_URL, ""));
+        username = WidgetUtils.getText(LoginActivity.this, R.id.login_et);
+        password = WidgetUtils.getText(LoginActivity.this, R.id.password_et);
+        getRestManager().setBaseURL(getRestManager().getIdpURL());
+        String loginTarget = getRestManager().getBaseURLConstant() + Constants.API.LOGIN_TARGET;
+        Login loginApi = new Login(getRestManager(), username, password, loginTarget, LoginActivity.this);
+        loginApi.execute();
+    }
+
+
     @Override
     public void onLoginFailed(final String errorMessage) {
         runOnUiThread(new Runnable() {
@@ -111,52 +119,10 @@ public class LoginActivity extends BaseActivity implements LoginCallback, GetSAM
 
     @Override
     public void onDoSAMLComplete(final BaseResponse response) {
-        runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    getRestManager().setBaseURL(getRestManager().getBaseURLConstant());
-                    Intent intent = new Intent(LoginActivity.this, ProjectListActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                } catch (NumberFormatException e) {
-                    Log.e("onGetUserId", "Invalid format of USER_ID", e);
-                }
-            }
-        });
-    }
-
-
-
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        switch (id) {
-            case Constants.DIALOGS.SIGN_IN:
-                ProgressDialog progressDialog = new ProgressDialog(this);
-                progressDialog.setCancelable(false);
-                progressDialog.setMessage(getString(R.string.signing_in));
-                return progressDialog;
-            default:
-                break;
-        }
-        return super.onCreateDialog(id);
-    }
-
-    /**
-     * Sign in to Appery.
-     *
-     * @param target
-     */
-    public void signIn(View target) {
-        ((TesterApplication) getApplication()).setBaseURL(getPreferenceAsString(Constants.PREFERENCES.BASE_URL, ""));
-        username = WidgetUtils.getText(LoginActivity.this, R.id.login_et);
-        password = WidgetUtils.getText(LoginActivity.this, R.id.password_et);
-        getRestManager().setBaseURL(getRestManager().getIdpURL());
-        String loginTarget = getRestManager().getBaseURLConstant() + Constants.API.LOGIN_TARGET;
-        Login loginApi = new Login(getRestManager(), username, password, loginTarget, LoginActivity.this);
-        showDialog(Constants.DIALOGS.SIGN_IN);
-        loginApi.execute();
+        getRestManager().setBaseURL(getRestManager().getBaseURLConstant());
+        Intent intent = new Intent(LoginActivity.this, ProjectListActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
 

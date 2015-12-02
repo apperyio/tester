@@ -4,6 +4,7 @@ import io.appery.tester.R;
 import io.appery.tester.TesterApplication;
 import io.appery.tester.utils.Constants;
 import io.appery.tester.utils.PrefsUtil;
+import io.appery.tester.utils.UserHelper;
 import retrofit.Endpoint;
 
 /**
@@ -14,7 +15,7 @@ public class TesterSpiceEndpoint implements Endpoint {
     public String getUrl() {
         String defUrl = TesterApplication.getInstance().getString(R.string.base_url);
         String url = PrefsUtil.getInstance().getString(Constants.PREFERENCES.BASE_URL, defUrl);
-        return buildIdp(url);
+        return UserHelper.hasSAMLKey() ? url : buildIdp(url);
     }
 
     private String buildIdp(String url) {

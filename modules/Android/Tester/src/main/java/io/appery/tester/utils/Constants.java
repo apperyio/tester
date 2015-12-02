@@ -63,6 +63,7 @@ public interface Constants {
         public static final String USERNAME_PARAM = "cn";
         public static final String PASSWORD_PARAM = "pwd";
         public static final String TARGET_PARAM = "target";
+        public static final String SAML_RESPONSE_PARAM = "SAMLResponse";
     }
 
     public static final String FILENAME_APK = "app.apk";

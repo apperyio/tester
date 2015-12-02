@@ -1,5 +1,7 @@
 package io.appery.tester.utils;
 
+import android.text.TextUtils;
+
 import io.appery.tester.db.entity.User;
 
 /**
@@ -22,5 +24,13 @@ public class UserHelper {
 
     static public void updateSAMLKey(String samlKey) {
         PrefsUtil.getInstance().putString(Constants.PREFERENCES.SAML_KEY, samlKey);
+    }
+
+    static public String getSAMLKey() {
+        return PrefsUtil.getInstance().getString(Constants.PREFERENCES.SAML_KEY);
+    }
+
+    static public boolean hasSAMLKey() {
+        return !TextUtils.isEmpty(getSAMLKey());
     }
 }

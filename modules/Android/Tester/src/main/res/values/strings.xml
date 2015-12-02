@@ -60,4 +60,7 @@
     <string name="authorization_pc">Authorization</string>
     <string name="clear_credentials_label">Clear Credentials</string>
     <string name="clear_credentials_btn">Clear</string>
+
+    <!-- Errors messages -->
+    <string name="error_incorrect_credentials">Incorrect email address or password</string>
 </resources>

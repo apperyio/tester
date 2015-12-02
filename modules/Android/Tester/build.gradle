@@ -81,4 +81,8 @@ dependencies {
         exclude group: 'commons-io', module: 'commons-io'
     }
     compile 'com.octo.android.robospice:robospice-ormlite:1.4.14'
+    // matirial design
+    compile('com.github.afollestad.material-dialogs:core:0.8.5.2@aar') {
+        transitive = true
+    }
 }

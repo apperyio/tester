@@ -14,7 +14,7 @@
         <item name="android:spinnerStyle">@style/TesterSpinner</item>
     </style>
 
-    <!-- theme non-action-bar for ac_auth activity-->
+    <!-- theme non-action-bar for activity_auth activity-->
     <style name="LoginActivityTheme" parent="Theme.AppCompat.Light.NoActionBar"/>
 
     <!-- Base application theme. -->
