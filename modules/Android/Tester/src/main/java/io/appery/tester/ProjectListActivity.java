@@ -14,6 +14,9 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
+
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
 
@@ -41,7 +44,7 @@ import io.appery.tester.utils.Constants;
 /**
  * @author Daniel Lukashevich
  */
-public class ProjectListActivity extends BaseActivity implements ProjectListCallback {
+public class ProjectListActivity extends BaseActivity implements ProjectListCallback, RequestListener<Project.ProjectsList> {
 
     // UI
     private ListView mProjectListView;
@@ -91,7 +94,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
     @Override
     protected void afterViews(Bundle savedInstanceState) {
         super.afterViews(savedInstanceState);
-        projectPreviewManager = new ProjectPreviewManager(getRestManager(), this);
+/*        projectPreviewManager = new ProjectPreviewManager(getRestManager(), this);
         if (savedInstanceState != null) {
             sortBy = savedInstanceState.getInt(Constants.EXTRAS.SORT_BY, ProjectComparator.BY_EDIT_DATE);
             projectList = (List<Project>) savedInstanceState.get(Constants.EXTRAS.PROJECTS_LIST);
@@ -109,7 +112,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
             for (Cookie cookie : savedCookieList) {
                 getRestManager().getCookieStore().addCookie(cookie);
             }
-        }
+        }*/
 
         mProjectListView = (ListView) findViewById(R.id.project_list);
         mProjectListView.setOnItemClickListener(new OnItemClickListener() {
@@ -129,9 +132,10 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         ((TesterApplication) getApplication()).setBaseURL(getServerURL());
 
-        GetProjectList getProjectList = new GetProjectList(getRestManager(), this);
+        //GetProjectList getProjectList = new GetProjectList(getRestManager(), this);
         showDialog(Constants.DIALOGS.PROGRESS);
-        getProjectList.execute();
+        //getProjectList.execute();
+        RestManager.getProjectsList(this,this);
 
         // preparing project actions list
         this.RUN_PROJECT_ACTION = getString(R.string.project_action_run);
@@ -197,7 +201,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
 
     @Override
     protected Dialog onCreateDialog(int id) {
-        switch (id) {
+       /* switch (id) {
             case Constants.DIALOGS.PROJECT_ACTION:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setItems(PROJECTS_ACTIONS, new DialogInterface.OnClickListener() {
@@ -225,20 +229,20 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
                 return builder.create();
             default:
                 break;
-        }
+        }*/
         return super.onCreateDialog(id);
     }
 
 
     @Override
     protected void onPrepareDialog(int id, Dialog dialog) {
-        switch (id) {
+        /*switch (id) {
             case Constants.DIALOGS.PROJECT_ACTION:
                 dialog.setTitle(selectedProject.getName());
                 break;
             default:
                 break;
-        }
+        }*/
         super.onPrepareDialog(id, dialog);
     }
 
@@ -331,5 +335,24 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
                 res.add(p);
         }
         return res;
+    }
+
+    @Override
+    public void onRequestFailure(SpiceException spiceException) {
+        try {
+            removeDialog(Constants.DIALOGS.PROGRESS);
+        } catch (Exception e) {
+        }
+    }
+
+    @Override
+    public void onRequestSuccess(Project.ProjectsList projects) {
+        try {
+            removeDialog(Constants.DIALOGS.PROGRESS);
+        } catch (Exception e) {
+        }
+        projectList = projects;
+        updateFolders(projects);
+        updateProjectsList(ProjectComparator.BY_EDIT_DATE);
     }
 }

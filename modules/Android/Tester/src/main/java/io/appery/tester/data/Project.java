@@ -1,15 +1,15 @@
 package io.appery.tester.data;
 
-import io.appery.tester.utils.Constants;
-
-import java.io.Serializable;
-import java.util.Date;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.text.TextUtils;
-import android.util.Log;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+
+import io.appery.tester.utils.Constants;
 
 /**
  * @author Daniel Lukashevich
@@ -29,8 +29,7 @@ public class Project implements Serializable {
     private Date lastEditDate = null;
 
 
-
-    private String owner="<noname>";
+    private String owner = "<noname>";
 
     private Date createdDate = null;
 
@@ -38,10 +37,13 @@ public class Project implements Serializable {
 
     private String resourcesLink;
 
+    public Project() {
+    }
+
     /**
      * Create Project from Json Object <BR/>
      * Example: <code>{"name":"Mercury","link":"http://localhost/17/mercury.apk"}</code>
-     * 
+     *
      * @param json
      * @return
      * @throws JSONException
@@ -86,7 +88,7 @@ public class Project implements Serializable {
                     /* do nothing. */
                 }
             }
-            if (json.has("creator")){
+            if (json.has("creator")) {
                 owner = json.getString("creator"); // TODO get rid of owner
             }
         }
@@ -138,12 +140,12 @@ public class Project implements Serializable {
     }
 
     /**
-     * @param lastEditor
-     *            the lastEditor to set
+     * @param lastEditor the lastEditor to set
      */
     public void setLastEditor(String lastEditor) {
         this.lastEditor = lastEditor;
     }
+
     public Date getCreatedDate() {
         return createdDate;
     }
@@ -151,6 +153,7 @@ public class Project implements Serializable {
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }
+
     /**
      * @return the lastEditDate
      */
@@ -159,8 +162,7 @@ public class Project implements Serializable {
     }
 
     /**
-     * @param lastEditDate
-     *            the lastEditDate to set
+     * @param lastEditDate the lastEditDate to set
      */
     public void setLastEditDate(Date lastEditDate) {
         this.lastEditDate = lastEditDate;
@@ -170,4 +172,8 @@ public class Project implements Serializable {
         return owner;
     }
 
+    @SuppressWarnings("serial")
+    public static class ProjectsList extends ArrayList<Project> {
+
+    }
 }
