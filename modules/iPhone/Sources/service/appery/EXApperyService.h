@@ -110,7 +110,7 @@
  *
  * @exception NSException - if user is not logged in
  */
-- (void)loadProjectForAppCode:(NSString *) appCode
+- (void)loadProjectForAppCode:(NSString *)appCode
                       succeed:(void (^)(NSString *projectLocation, NSString *startPageName))succeed
                        failed:(void (^)(NSError *error))failed;
 

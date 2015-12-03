@@ -84,9 +84,6 @@
 		68A76D1117461ED8000603E1 /* EXProjectMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 68A76CFE17461ED8000603E1 /* EXProjectMetadata.m */; };
 		68A76D1217461ED8000603E1 /* CDVCommandDelegateImpl+EXApperyService.m in Sources */ = {isa = PBXBuildFile; fileRef = 68A76D0117461ED8000603E1 /* CDVCommandDelegateImpl+EXApperyService.m */; };
 		68A76D1517461ED8000603E1 /* EXApperyService.m in Sources */ = {isa = PBXBuildFile; fileRef = 68A76D0717461ED8000603E1 /* EXApperyService.m */; };
-		68A76D1717461ED8000603E1 /* EXApperyServiceOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 68A76D0C17461ED8000603E1 /* EXApperyServiceOperation.m */; };
-		68A76D1817461ED8000603E1 /* EXApperyServiceOperationLoadProject.m in Sources */ = {isa = PBXBuildFile; fileRef = 68A76D0E17461ED8000603E1 /* EXApperyServiceOperationLoadProject.m */; };
-		68A76D1917461ED8000603E1 /* EXApperyServiceOperationLoadProjectsMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 68A76D1017461ED8000603E1 /* EXApperyServiceOperationLoadProjectsMetadata.m */; };
 		68E6116915BEB427004504DD /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 68E6116715BEB427004504DD /* Settings.bundle */; };
 		68E6116E15BEB5CF004504DD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 68E6116C15BEB5CF004504DD /* main.m */; };
 		6F30E69813F97E6600D1CA1B /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F30E69713F97E6600D1CA1B /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -151,6 +148,9 @@
 		D4B774171BDED22D00D08421 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D4B774161BDED22D00D08421 /* libz.tbd */; };
 		D4B774191BDED24000D08421 /* libxml2.2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D4B774181BDED24000D08421 /* libxml2.2.tbd */; };
 		D4B7741B1BDED25C00D08421 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D4B7741A1BDED25C00D08421 /* libiconv.tbd */; };
+		D4C1DC571C103E2E004591C0 /* EXSAMLResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = D4C1DC561C103E2E004591C0 /* EXSAMLResponse.m */; };
+		D4C1DC5A1C1082B7004591C0 /* EXProjectsMetadataSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = D4C1DC591C1082B7004591C0 /* EXProjectsMetadataSerializer.m */; };
+		D4C1DC5D1C109630004591C0 /* EXProjectExtractionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = D4C1DC5C1C109630004591C0 /* EXProjectExtractionOperation.m */; };
 		D4CE76511C0DE2C50091C2B1 /* NSString+URLUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = D4CE76501C0DE2C50091C2B1 /* NSString+URLUtility.m */; };
 		D4DE3BA61C0EFE9B00B8CB41 /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = D4DE3B941C0EFE9B00B8CB41 /* AFHTTPRequestOperation.m */; };
 		D4DE3BA71C0EFE9B00B8CB41 /* AFHTTPRequestOperationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D4DE3B961C0EFE9B00B8CB41 /* AFHTTPRequestOperationManager.m */; };
@@ -161,6 +161,7 @@
 		D4DE3BAC1C0EFE9B00B8CB41 /* AFURLRequestSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = D4DE3BA11C0EFE9B00B8CB41 /* AFURLRequestSerialization.m */; };
 		D4DE3BAD1C0EFE9B00B8CB41 /* AFURLResponseSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = D4DE3BA31C0EFE9B00B8CB41 /* AFURLResponseSerialization.m */; };
 		D4DE3BAE1C0EFE9B00B8CB41 /* AFURLSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D4DE3BA51C0EFE9B00B8CB41 /* AFURLSessionManager.m */; };
+		D4DE3BB41C0F360200B8CB41 /* EXSAMLResponseSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = D4DE3BB31C0F360200B8CB41 /* EXSAMLResponseSerializer.m */; };
 		D4E346511A8A1FB5004C57B8 /* icon_bootsrap.png in Resources */ = {isa = PBXBuildFile; fileRef = D4E346481A8A1FB5004C57B8 /* icon_bootsrap.png */; };
 		D4E346521A8A1FB5004C57B8 /* icon_bootsrap@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D4E346491A8A1FB5004C57B8 /* icon_bootsrap@2x.png */; };
 		D4E346531A8A1FB5004C57B8 /* icon_bootsrap@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = D4E3464A1A8A1FB5004C57B8 /* icon_bootsrap@3x.png */; };
@@ -297,12 +298,6 @@
 		68A76D0117461ED8000603E1 /* CDVCommandDelegateImpl+EXApperyService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = "CDVCommandDelegateImpl+EXApperyService.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		68A76D0617461ED8000603E1 /* EXApperyService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = EXApperyService.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		68A76D0717461ED8000603E1 /* EXApperyService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EXApperyService.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		68A76D0B17461ED8000603E1 /* EXApperyServiceOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXApperyServiceOperation.h; sourceTree = "<group>"; };
-		68A76D0C17461ED8000603E1 /* EXApperyServiceOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXApperyServiceOperation.m; sourceTree = "<group>"; };
-		68A76D0D17461ED8000603E1 /* EXApperyServiceOperationLoadProject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXApperyServiceOperationLoadProject.h; sourceTree = "<group>"; };
-		68A76D0E17461ED8000603E1 /* EXApperyServiceOperationLoadProject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXApperyServiceOperationLoadProject.m; sourceTree = "<group>"; };
-		68A76D0F17461ED8000603E1 /* EXApperyServiceOperationLoadProjectsMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXApperyServiceOperationLoadProjectsMetadata.h; sourceTree = "<group>"; };
-		68A76D1017461ED8000603E1 /* EXApperyServiceOperationLoadProjectsMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXApperyServiceOperationLoadProjectsMetadata.m; sourceTree = "<group>"; };
 		68E6116715BEB427004504DD /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		68E6116815BEB427004504DD /* Appery-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Appery-Info.plist"; sourceTree = "<group>"; };
 		68E6116C15BEB5CF004504DD /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -413,6 +408,12 @@
 		D4B774161BDED22D00D08421 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		D4B774181BDED24000D08421 /* libxml2.2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.2.tbd; path = usr/lib/libxml2.2.tbd; sourceTree = SDKROOT; };
 		D4B7741A1BDED25C00D08421 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
+		D4C1DC551C103E2E004591C0 /* EXSAMLResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXSAMLResponse.h; sourceTree = "<group>"; };
+		D4C1DC561C103E2E004591C0 /* EXSAMLResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSAMLResponse.m; sourceTree = "<group>"; };
+		D4C1DC581C1082B7004591C0 /* EXProjectsMetadataSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXProjectsMetadataSerializer.h; sourceTree = "<group>"; };
+		D4C1DC591C1082B7004591C0 /* EXProjectsMetadataSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXProjectsMetadataSerializer.m; sourceTree = "<group>"; };
+		D4C1DC5B1C109630004591C0 /* EXProjectExtractionOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXProjectExtractionOperation.h; sourceTree = "<group>"; };
+		D4C1DC5C1C109630004591C0 /* EXProjectExtractionOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXProjectExtractionOperation.m; sourceTree = "<group>"; };
 		D4CE764F1C0DE2C50091C2B1 /* NSString+URLUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+URLUtility.h"; sourceTree = "<group>"; };
 		D4CE76501C0DE2C50091C2B1 /* NSString+URLUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+URLUtility.m"; sourceTree = "<group>"; };
 		D4D5C18A1A516C0B0069A40F /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
@@ -435,6 +436,8 @@
 		D4DE3BA31C0EFE9B00B8CB41 /* AFURLResponseSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLResponseSerialization.m; sourceTree = "<group>"; };
 		D4DE3BA41C0EFE9B00B8CB41 /* AFURLSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFURLSessionManager.h; sourceTree = "<group>"; };
 		D4DE3BA51C0EFE9B00B8CB41 /* AFURLSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLSessionManager.m; sourceTree = "<group>"; };
+		D4DE3BB21C0F360200B8CB41 /* EXSAMLResponseSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXSAMLResponseSerializer.h; sourceTree = "<group>"; };
+		D4DE3BB31C0F360200B8CB41 /* EXSAMLResponseSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSAMLResponseSerializer.m; sourceTree = "<group>"; };
 		D4E346481A8A1FB5004C57B8 /* icon_bootsrap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_bootsrap.png; sourceTree = "<group>"; };
 		D4E346491A8A1FB5004C57B8 /* icon_bootsrap@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_bootsrap@2x.png"; sourceTree = "<group>"; };
 		D4E3464A1A8A1FB5004C57B8 /* icon_bootsrap@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_bootsrap@3x.png"; sourceTree = "<group>"; };
@@ -728,11 +731,18 @@
 			isa = PBXGroup;
 			children = (
 				68A76CFF17461ED8000603E1 /* Extensions */,
-				68A76D0A17461ED8000603E1 /* Private */,
-				68A76CFD17461ED8000603E1 /* EXProjectMetadata.h */,
-				68A76CFE17461ED8000603E1 /* EXProjectMetadata.m */,
 				68A76D0617461ED8000603E1 /* EXApperyService.h */,
 				68A76D0717461ED8000603E1 /* EXApperyService.m */,
+				D4C1DC581C1082B7004591C0 /* EXProjectsMetadataSerializer.h */,
+				D4C1DC591C1082B7004591C0 /* EXProjectsMetadataSerializer.m */,
+				68A76CFD17461ED8000603E1 /* EXProjectMetadata.h */,
+				68A76CFE17461ED8000603E1 /* EXProjectMetadata.m */,
+				D4DE3BB21C0F360200B8CB41 /* EXSAMLResponseSerializer.h */,
+				D4DE3BB31C0F360200B8CB41 /* EXSAMLResponseSerializer.m */,
+				D4C1DC551C103E2E004591C0 /* EXSAMLResponse.h */,
+				D4C1DC561C103E2E004591C0 /* EXSAMLResponse.m */,
+				D4C1DC5B1C109630004591C0 /* EXProjectExtractionOperation.h */,
+				D4C1DC5C1C109630004591C0 /* EXProjectExtractionOperation.m */,
 			);
 			name = Appery;
 			path = appery;
@@ -746,20 +756,6 @@
 			);
 			name = Extensions;
 			path = extensions;
-			sourceTree = "<group>";
-		};
-		68A76D0A17461ED8000603E1 /* Private */ = {
-			isa = PBXGroup;
-			children = (
-				68A76D0B17461ED8000603E1 /* EXApperyServiceOperation.h */,
-				68A76D0C17461ED8000603E1 /* EXApperyServiceOperation.m */,
-				68A76D0D17461ED8000603E1 /* EXApperyServiceOperationLoadProject.h */,
-				68A76D0E17461ED8000603E1 /* EXApperyServiceOperationLoadProject.m */,
-				68A76D0F17461ED8000603E1 /* EXApperyServiceOperationLoadProjectsMetadata.h */,
-				68A76D1017461ED8000603E1 /* EXApperyServiceOperationLoadProjectsMetadata.m */,
-			);
-			name = Private;
-			path = private;
 			sourceTree = "<group>";
 		};
 		68CB4C5B15BFE38C000D80C3 /* Libs */ = {
@@ -1369,11 +1365,14 @@
 				D4271EAE19D9ACD300B7DA2D /* unzip.c in Sources */,
 				3629DEB91B8355360066D254 /* NSThread+BlockExecution.m in Sources */,
 				D4B773FF1BDECE1400D08421 /* CDVLocation.m in Sources */,
+				D4C1DC5A1C1082B7004591C0 /* EXProjectsMetadataSerializer.m in Sources */,
 				3629DEB61B8355360066D254 /* DeviceModelInfo.m in Sources */,
 				361449E11B8EF7E800CD2CE2 /* EXToolbarItem.m in Sources */,
+				D4C1DC571C103E2E004591C0 /* EXSAMLResponse.m in Sources */,
 				D4B773FE1BDECE1400D08421 /* CDVFileTransfer.m in Sources */,
 				D4DE3BAD1C0EFE9B00B8CB41 /* AFURLResponseSerialization.m in Sources */,
 				D4B59F4719F7CB2F00649292 /* EXProjectViewController.m in Sources */,
+				D4C1DC5D1C109630004591C0 /* EXProjectExtractionOperation.m in Sources */,
 				3629DEB71B8355360066D254 /* NSObject+Utils.m in Sources */,
 				D4CE76511C0DE2C50091C2B1 /* NSString+URLUtility.m in Sources */,
 				68A76D1117461ED8000603E1 /* EXProjectMetadata.m in Sources */,
@@ -1396,18 +1395,16 @@
 				D4DE3BAA1C0EFE9B00B8CB41 /* AFSecurityPolicy.m in Sources */,
 				68A76D1517461ED8000603E1 /* EXApperyService.m in Sources */,
 				D4DE3BA61C0EFE9B00B8CB41 /* AFHTTPRequestOperation.m in Sources */,
-				68A76D1717461ED8000603E1 /* EXApperyServiceOperation.m in Sources */,
 				D4DE3BAB1C0EFE9B00B8CB41 /* AFURLConnectionOperation.m in Sources */,
 				D4B773F81BDECE1400D08421 /* CDVAccelerometer.m in Sources */,
 				D4B774071BDECE1400D08421 /* CDVBarcodeScanner.mm in Sources */,
 				D4DE3BAC1C0EFE9B00B8CB41 /* AFURLRequestSerialization.m in Sources */,
-				68A76D1817461ED8000603E1 /* EXApperyServiceOperationLoadProject.m in Sources */,
 				D4B773F21BDECE1400D08421 /* CDVJpegHeaderWriter.m in Sources */,
 				D4B774001BDECE1400D08421 /* CDVGlobalization.m in Sources */,
 				D4B773F11BDECE1400D08421 /* CDVCamera.m in Sources */,
+				D4DE3BB41C0F360200B8CB41 /* EXSAMLResponseSerializer.m in Sources */,
 				361449EA1B8F1CE300CD2CE2 /* RootViewController.m in Sources */,
 				D4B773F61BDECE1400D08421 /* CDVContacts.m in Sources */,
-				68A76D1917461ED8000603E1 /* EXApperyServiceOperationLoadProjectsMetadata.m in Sources */,
 				3629DEA41B8334140066D254 /* EXSignInCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

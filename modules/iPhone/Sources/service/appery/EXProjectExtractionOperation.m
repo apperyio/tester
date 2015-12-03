@@ -1,12 +1,12 @@
 //
-//  EXApperyServiceOperationLoadProject.m
+//  EXProjectExtractionOperation.m
 //  Appery
 //
-//  Created by Sergey Seroshtan on 20.08.12.
-//  Copyright (c) 2013 Exadel Inc. All rights reserved.
+//  Created by Sergey Tkachenko on 12/3/15.
+//  Copyright (c) 2015 Exadel Inc. All rights reserved.
 //
 
-#import "EXApperyServiceOperationLoadProject.h"
+#import "EXProjectExtractionOperation.h"
 
 #import "ZipArchive.h"
 #import "NSString+URLUtility.h"
@@ -14,82 +14,137 @@
 static NSString * const kDescriptorFileName = @"descriptor.txt";
 static NSString * const kDefaultStartPageName = @"index.html";
 
-#pragma mark - Private interface declaration
+@interface EXProjectExtractionOperation ()
+{
+    BOOL _executing;
+    BOOL _finished;
+}
 
-@interface EXApperyServiceOperationLoadProject ()
+@property (nonatomic, strong, readwrite) NSString *projectLocation;
+@property (nonatomic, strong, readwrite) NSString *projectStartPageName;
+@property (nonatomic, strong, readwrite) NSError *error;
 
-@property (nonatomic, retain, readwrite) NSString *projectLocation;
-@property (nonatomic, retain, readwrite) NSString *projectStartPageName;
-
-- (BOOL)removeFilesFromPath:(NSString *)path;
+@property (nonatomic, copy) NSString *projectName;
+@property (nonatomic, strong) NSData *data;
 
 @end
 
-@implementation EXApperyServiceOperationLoadProject
+@implementation EXProjectExtractionOperation
 
-#pragma mark - Protected interface implementation
-
-- (BOOL)processReceivedData:(NSData *)data
+- (instancetype)initWithName:(NSString *)name data:(NSData *)projectData
 {
-    if (![super processReceivedData:data]) {
-        NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
-                                  NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Failed to load the project data", nil)};
-        self.error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
+    if (self = [super init]) {
+        _projectName = [name copy];
+        _data = projectData;
+        _executing = NO;
+        _finished = NO;
+    }
+    
+    return self;
+}
+
+- (void)start
+{
+    if ([self isCancelled]) {
+        [self willChangeValueForKey:@"isFinished"];
+        _finished = YES;
+        [self didChangeValueForKey:@"isFinished"];
         
-        return NO;
+        return;
     }
+    // If the operation is not canceled, begin executing the task.
+    [self willChangeValueForKey:@"isExecuting"];
     
-    NSError *processError = nil;
-    NSString *projectLocation = [self buildLocationForProjectMetadata:self.projectMetadata error:&processError];
-    
-    if (processError) {
-        self.error = processError;
-        return NO;
+    [NSThread detachNewThreadSelector:@selector(main) toTarget:self withObject:nil];
+    _executing = YES;
+    [self didChangeValueForKey:@"isExecuting"];
+}
+
+- (void)main
+{
+    //This is the method that will do the work
+    @autoreleasepool {
+        NSError *processError = nil;
+        NSString *projectLocation = [NSString pathWithComponents:@[[self projectsLocation], self.projectName]];
+        
+        // Remove all folders from project location
+        [self removeFilesFromPath:[self projectsLocation]];
+        
+        [self unzipProject:self.data toLocation:projectLocation error:&processError];
+        
+        if (processError) {
+            self.error = processError;
+            [self stopExecuting];
+            
+            return;
+        }
+        
+        NSString *libsLocation = [NSString pathWithComponents:@[projectLocation, @"libs"]];
+        
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        if (![fileManager fileExistsAtPath:libsLocation]) {
+            libsLocation = [NSString pathWithComponents:@[projectLocation, @"files/resources/lib"]];
+        }
+        
+        if ([self copyCordovaLibsToLocation: libsLocation error: &processError] == NO) {
+            NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
+                                      NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Failed to copy cordova files", nil)};
+            self.error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
+            
+            [self stopExecuting];
+            
+            return;
+        }
+        
+        NSString *projectStartPageName = [self retreiveStartPageNameFromLocation:projectLocation error:&processError];
+        
+        if (processError) {
+            self.error = processError;
+            [self stopExecuting];
+            
+            return;
+        }
+        
+        if ([self preventCSSandJSCachingForProject:projectLocation error:&processError] == NO) {
+            self.error = processError;
+            // Not critical so just log it.
+            NSLog(@"Cannot prevent CSS and JS caching due to error: %@", processError);
+        }
+        self.projectLocation = [projectLocation stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        self.projectStartPageName = [projectStartPageName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        
+        [self stopExecuting];
+        
     }
-    
-    // Remove all folders from project location
-    [self removeFilesFromPath:[self projectsLocation]];
-    
-    [self unzipProject:data toLocation:projectLocation error:&processError];
-    
-    if (processError) {
-        self.error = processError;
-        return NO;
-    }
-    
-    NSString *libsLocation = [NSString pathWithComponents:@[projectLocation, @"libs"]];
-    
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (![fileManager fileExistsAtPath:libsLocation]) {
-        libsLocation = [NSString pathWithComponents:@[projectLocation, @"files/resources/lib"]];
-    }
-    
-    if ([self copyCordovaLibsToLocation: libsLocation error: &processError] == NO) {
-        NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
-                                  NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Failed to copy cordova files", nil)};
-        self.error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
-        return NO;
-    }
-    
-    NSString *projectStartPageName = [self retreiveStartPageNameFromLocation:projectLocation error:&processError];
-    
-    if (processError) {
-        self.error = processError;
-        return NO;
-    }
-    
-    if ([self preventCSSandJSCachingForProject:projectLocation error:&processError] == NO) {
-        self.error = processError;
-        // Not critical so just log it.
-        NSLog(@"Cannot prevent CSS and JS caching due to error: %@", processError);
-    }
-    self.projectLocation = [projectLocation stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    self.projectStartPageName = [projectStartPageName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    
+}
+
+- (BOOL)isConcurrent
+{
     return YES;
 }
 
+- (BOOL)isExecuting
+{
+    return _executing;
+}
+
+- (BOOL)isFinished
+{
+    return _finished;
+}
+
 #pragma mark - Private service methods
+
+- (void)stopExecuting
+{
+    [self willChangeValueForKey:@"isExecuting"];
+    _executing = NO;
+    [self didChangeValueForKey:@"isExecuting"];
+    
+    [self willChangeValueForKey:@"isFinished"];
+    _finished = YES;
+    [self didChangeValueForKey:@"isFinished"];
+}
 
 - (BOOL)removeFilesFromPath:(NSString *)path
 {
@@ -122,13 +177,6 @@ static NSString * const kDefaultStartPageName = @"index.html";
     NSString *projectsLocation = [NSString pathWithComponents:@[documentsFolderPath, @"projects"]];
     
     return projectsLocation;
-}
-
-- (NSString *)buildLocationForProjectMetadata:(EXProjectMetadata *)projectMetadata error:(NSError **)error
-{
-    NSAssert(projectMetadata != nil, @"projectMetadata is undefined");
-
-    return [NSString pathWithComponents:@[[self projectsLocation], projectMetadata.name]];
 }
 
 - (BOOL)unzipProject:(NSData *)zippedProject toLocation:(NSString *)location error:(NSError **)error
@@ -179,7 +227,8 @@ static NSString * const kDefaultStartPageName = @"index.html";
             }
             
             return NO;
-        } 
+        }
+        
         [archiver UnzipCloseFile];
     }
     
@@ -236,7 +285,7 @@ static NSString * const kDefaultStartPageName = @"index.html";
 {
     NSAssert(projectLocation != nil, @"projectLocation is undefined");
     NSAssert(error != nil, @"reference to error object was not defined");
-
+    
     NSString *desriptorFilePath = [projectLocation stringByAppendingPathComponent:kDescriptorFileName];
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:desriptorFilePath]) {
@@ -262,7 +311,7 @@ static NSString * const kDefaultStartPageName = @"index.html";
             NSString *htlmFileString = [[NSString alloc] initWithContentsOfFile:htmlFilePath
                                                                        encoding:NSUTF8StringEncoding
                                                                           error:error];
-
+            
             htlmFileString = [htlmFileString stringByReplacingOccurrencesOfString:@".css\""
                                                                        withString:[@".css" stringByAppendingString:versionStrign]];
             
@@ -335,15 +384,15 @@ static NSString * const kDefaultStartPageName = @"index.html";
         }
         return NO;
     }
-	
-	NSString *destinationFullPath = [destination stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@", [resourceName lowercaseString], resourceType]];
+    
+    NSString *destinationFullPath = [destination stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@", [resourceName lowercaseString], resourceType]];
     NSFileManager *fileManager = [NSFileManager defaultManager];
-	
+    
     if([fileManager fileExistsAtPath: destinationFullPath]) {
-		if ([fileManager removeItemAtPath:destinationFullPath error:error] == NO) {
+        if ([fileManager removeItemAtPath:destinationFullPath error:error] == NO) {
             return NO;
         }
-	}
+    }
     
     if (![fileManager fileExistsAtPath:destination]) {
         if ([fileManager createDirectoryAtPath:destination withIntermediateDirectories: YES attributes:nil error:error] == NO) {
@@ -351,7 +400,7 @@ static NSString * const kDefaultStartPageName = @"index.html";
         }
     }
     
-	if ([fileManager copyItemAtPath:resourceFullPath toPath:destinationFullPath error:error] == NO) {
+    if ([fileManager copyItemAtPath:resourceFullPath toPath:destinationFullPath error:error] == NO) {
         return NO;
     }
     

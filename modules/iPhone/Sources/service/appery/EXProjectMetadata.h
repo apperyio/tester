@@ -25,7 +25,7 @@
 @property (nonatomic, strong, readonly) NSString *sharedWithSupportBy;// Project shared with support by ...
 @property (nonatomic, strong, readonly) NSNumber *type;               // Project type
 
-@property (nonatomic, readonly) NSString *formattedModifiedDate;   // Formatted modified date
+@property (nonatomic, readonly) NSString *formattedModifiedDate;      // Formatted modified date
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new  NS_UNAVAILABLE;

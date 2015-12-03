@@ -8,11 +8,15 @@
 
 #import "EXApperyService.h"
 
-#import "EXApperyServiceOperationLoadProjectsMetadata.h"
-#import "EXApperyServiceOperationLoadProject.h"
-#import "EXProjectMetadata.h"
+#import "NSObject+Utils.h"
 #import "NSString+URLUtility.h"
-#import "Ono.h"
+
+#import "AFNetworking.h"
+#import "EXSAMLResponse.h"
+#import "EXSAMLResponseSerializer.h"
+#import "EXProjectMetadata.h"
+#import "EXProjectsMetadataSerializer.h"
+#import "EXProjectExtractionOperation.h"
 #import <Cordova/CDVJSON.h>
 
 #pragma mark - Service configure constants
@@ -30,21 +34,6 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
 
 @property (nonatomic, strong) NSString *userName;
 @property (nonatomic, strong) NSString *userPassword;
-
-/**
- * Contains current executing operation reference. Used be cancelCurrentOperation method.
- */
-@property (nonatomic, strong) EXApperyServiceOperation *currentOperation;
-
-/**
- * Execute with HTML document
- */
-- (NSError *)executeFormFromData:(NSData *)data completion:(void(^)(ONOXMLDocument *document))completion;
-
-/**
- * Filter HTML source, remove coments
- */
-- (NSString *)filterHtml:(NSString *)html;
 
 /**
  * @throw NSException if current service state is logged out.
@@ -138,113 +127,74 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     NSAssert(failed != nil, @"failed callback block is not specified");
     
     [self throwExceptionIfServiceIsLoggedIn];
+
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     
-    NSString *eUserName = [userName encodedUrlString];
-    NSString *ePassword = [password encodedUrlString];
-    NSString *eTarget = [[[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent: @"/app/"] encodedUrlString];
-    NSString *loginString = [[@"https://idp." stringByAppendingString: self.baseUrl] URLByAddingResourceComponent: LOGIN_PATH_URL_STRING];
-    loginString = [NSString stringWithFormat:@"%@?cn=%@&pwd=%@&target=%@", loginString , eUserName, ePassword, eTarget];
-    NSURL *loginUrl = [NSURL URLWithString:loginString];
-    NSMutableURLRequest *loginRequest = [NSMutableURLRequest requestWithURL:loginUrl
-                                                                cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                                            timeoutInterval:20.0];
-    // I
-    EXApperyServiceOperation *first = [[EXApperyServiceOperation alloc] initWithCompletionHendler:^(EXApperyServiceOperation *operation) {
-        if (operation.isSuccessfull)
-        {
-            [self executeFormFromData:operation.receivedData completion:^(ONOXMLDocument *document) {
-                [document.rootElement enumerateElementsWithXPath:@"BODY/FORM" usingBlock:^(ONOXMLElement *element, NSUInteger idx, BOOL *stop) {
-                    [loginRequest setHTTPMethod:[element.attributes objectForKey:@"METHOD"]];
-                    [loginRequest setURL:[NSURL URLWithString:[element.attributes objectForKey:@"ACTION"]]];
-                }];
-                
-                [document.rootElement enumerateElementsWithXPath:@"BODY/FORM/INPUT" usingBlock:^(ONOXMLElement *element, NSUInteger idx, BOOL *stop) {
-                    NSString *encoded = [[element.attributes valueForKey:@"VALUE"] encodedUrlString];
-                    NSString *post = [NSString stringWithFormat:@"%@=%@", [element.attributes valueForKey:@"NAME"], encoded];
-                    NSData *postData = [post dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
-                    NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[postData length]];
-                    [loginRequest setValue:postLength forHTTPHeaderField:@"Content-Length"];
-                    [loginRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-                    [loginRequest setHTTPBody:postData];
-                }];
+    // Create login request
+    NSString *target = [[[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:@"/app/"] encodedUrlString];
+    NSString *loginUrlStr = [[@"https://idp." stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:LOGIN_PATH_URL_STRING];
+    NSDictionary *parameters = @{@"cn":userName, @"pwd":password, @"target":target};
+    NSURLRequest *request = [manager.requestSerializer requestWithMethod:@"GET" URLString:loginUrlStr parameters:parameters error:nil];
+    
+    __weak __typeof(self)weakSelf = self;
+    
+    // Create login operation
+    AFHTTPRequestOperation *loginOperation = [manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation *operation, EXSAMLResponse *responce) {
+        NSURLRequest *SAMLRequest = [NSURLRequest requestWithSAMLResponce:responce];
+        AFHTTPRequestOperation *SAMLOperation = [manager HTTPRequestOperationWithRequest:SAMLRequest success:^(AFHTTPRequestOperation * _Nonnull operation, id _Nonnull responseObject) {
+            __strong __typeof(weakSelf)strongSelf = weakSelf;
+            
+            [strongSelf changeLoggedStatusTo:YES];
+            [strongSelf rememberUserName:userName password:password];
+            
+            NSString *projectsUrlStr = [[@"https://" stringByAppendingString:strongSelf.baseUrl] URLByAddingResourceComponent:PROJECTS_PATH_URL_STRING];
+            NSURLRequest *request = [[AFJSONRequestSerializer serializer] requestWithMethod:@"GET" URLString:projectsUrlStr parameters:nil error:nil];
+            
+            AFHTTPRequestOperation *projectsOperation = [manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation * _Nonnull operation, id _Nonnull responseObject) {
+                //TODO: run on main thread
+                succeed([responseObject as:[NSArray class]]);
+            } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
+                //TODO: run on main thread
+                failed(error);
             }];
             
-            operation.nextOperation.request = loginRequest;
-            self.currentOperation = operation.nextOperation;
-            [operation.nextOperation start];
-        }
-        else
-        {
-            if (operation.error == nil)
-            {
-                NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
-                                          NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Incorrect email address or password", nil)};
-                operation.error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
-            }
+            [projectsOperation setResponseSerializer:[EXProjectsMetadataSerializer serializer]];
             
-            failed(operation.error);
-            self.currentOperation = nil;
+            [manager.operationQueue addOperation:projectsOperation];
+        } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
+            //TODO: run on main thread
+            failed(error);
+        }];
+        
+        AFHTTPResponseSerializer *serializer = [AFHTTPResponseSerializer serializer];
+        [serializer setAcceptableContentTypes:[NSSet setWithObject:@"text/html"]];
+        
+        [SAMLOperation setResponseSerializer:serializer];
+        [manager.operationQueue addOperation:SAMLOperation];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        if (error == nil) {
+            NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
+                                      NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Incorrect email address or password", nil)};
+            error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
         }
+        
+        //TODO: run on main thread
+        failed(error);
     }];
     
-    // II
-    EXApperyServiceOperation *second = [[EXApperyServiceOperation alloc] initWithCompletionHendler:^(EXApperyServiceOperation *operation) {
-        if (operation.isSuccessfull)
-        {
-            [self changeLoggedStatusTo: YES];
-            [self rememberUserName: userName password: password];
-            
-            NSString *projectsUrlStr = [[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent: PROJECTS_PATH_URL_STRING];
-            NSURL *projectsUrl = [NSURL URLWithString:projectsUrlStr];
-            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:projectsUrl
-                                                                   cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                                               timeoutInterval:20.0];
-            [request setURL:projectsUrl];
-            [request setAllHTTPHeaderFields:@{@"Content-Type": @"application/json"}];
-            
-            operation.nextOperation.request = request;
-            self.currentOperation = operation.nextOperation;
-            [operation.nextOperation start];
-        }
-        else
-        {
-            failed(operation.error);
-            self.currentOperation = nil;
-        }
-    }];
-    
-    // III
-    EXApperyServiceOperationLoadProjectsMetadata *third = [[EXApperyServiceOperationLoadProjectsMetadata alloc] initWithCompletionHendler:^(EXApperyServiceOperation *operation) {
-        if (operation.isSuccessfull)
-        {
-            succeed(((EXApperyServiceOperationLoadProjectsMetadata *)operation).projectsMetadata);
-        }
-        else
-        {
-            failed(operation.error);
-        }
-        self.currentOperation = nil;
-    }];
-    
-    //Initialize start
-    first.request = loginRequest;
-    self.currentOperation = first;
-    
-    first.nextOperation = second;
-    second.nextOperation = third;
-    
-    [self.currentOperation start];
+    [loginOperation setResponseSerializer:[EXSAMLResponseSerializer serializer]];
+    [manager.operationQueue addOperation:loginOperation];
 }
 
 - (void)quickLogout
 {
     [self removeLocalAuthentication];
-    [self changeLoggedStatusTo: NO];
+    [self changeLoggedStatusTo:NO];
 }
 
 - (void)cancelCurrentOperation
 {
-    [_currentOperation cancel];
+    //FIXME: [_currentOperation cancel];
 }
 
 - (void)logoutSucceed:(void (^)(void))succeed failed:(void (^)(NSError *))failed
@@ -253,25 +203,25 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     NSAssert(failed != nil, @"failed callback block is not specified");
     
     [self throwExceptionIfServiceIsLoggedOut];
+
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     
-    EXApperyServiceOperation *logoutOperation = [[EXApperyServiceOperation alloc] initWithCompletionHendler: ^(EXApperyServiceOperation *operation) {
-            if (operation.isSuccessfull) {
-                succeed();
-            } else {
-                failed(operation.error);
-            }
-        
-            self.currentOperation = nil;
-        }];
+    NSString *logoutUrlStr = [[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:LOGOUT_PATH_URL_STRING];
+    NSURLRequest *request = [manager.requestSerializer requestWithMethod:@"GET" URLString:logoutUrlStr parameters:nil error:nil];
     
-    self.currentOperation = logoutOperation;
+    AFHTTPRequestOperation *logoutOperation = [manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+        //TODO: run on main thread
+        succeed();
+    } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
+        //TODO: run on main thread
+        failed(error);
+    }];
     
-    NSURL *logoutUrl = [NSURL URLWithString:[[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:LOGOUT_PATH_URL_STRING]];
-    NSMutableURLRequest *logoutRequest = [NSMutableURLRequest requestWithURL:logoutUrl
-                                                                 cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                                             timeoutInterval:60.0];
-    logoutOperation.request = logoutRequest;
-    [logoutOperation start];
+    AFHTTPResponseSerializer *serializer = [AFHTTPResponseSerializer serializer];
+    [serializer setAcceptableContentTypes:[NSSet setWithObject:@"text/html"]];
+    
+    [logoutOperation setResponseSerializer:serializer];
+    [manager.operationQueue addOperation:logoutOperation];
     
     [self quickLogout];
 }
@@ -283,23 +233,22 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     
     [self throwExceptionIfServiceIsLoggedOut];
     
-    self.currentOperation = [[EXApperyServiceOperationLoadProjectsMetadata alloc] initWithCompletionHendler: ^(EXApperyServiceOperation *operation) {
-        if (operation.isSuccessfull) {
-            succeed(((EXApperyServiceOperationLoadProjectsMetadata *)operation).projectsMetadata);
-        } else {
-            failed(operation.error);
-        }
-        
-        self.currentOperation = nil;
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    
+    NSString *projectsUrlStr = [[@"https://" stringByAppendingString:self.baseUrl] URLByAddingResourceComponent:PROJECTS_PATH_URL_STRING];
+    NSURLRequest *request = [[AFJSONRequestSerializer serializer] requestWithMethod:@"GET" URLString:projectsUrlStr parameters:nil error:nil];
+    
+    AFHTTPRequestOperation *projectsOperation = [manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation * _Nonnull operation, id _Nonnull responseObject) {
+        //TODO: run on main thread
+        succeed([responseObject as:[NSArray class]]);
+    } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
+        //TODO: run on main thread
+        failed(error);
     }];
     
-    NSURL *loadProjectsUrl = [NSURL URLWithString:[[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:PROJECTS_PATH_URL_STRING]];
-    NSMutableURLRequest *loadProjectsRequest = [NSMutableURLRequest requestWithURL:loadProjectsUrl
-                                                                       cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                                                   timeoutInterval:60.0];
-    self.currentOperation.request = loadProjectsRequest;
+    [projectsOperation setResponseSerializer:[EXProjectsMetadataSerializer serializer]];
     
-    [self.currentOperation start];
+    [manager.operationQueue addOperation:projectsOperation];
 }
 
 - (void)loadProjectForMetadata:(EXProjectMetadata *)projectMetadata
@@ -311,28 +260,30 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     NSAssert(failed != nil, @"failed callback block is not specified");
     
     [self throwExceptionIfServiceIsLoggedOut];
+
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     
-    EXApperyServiceOperationLoadProject *loadProjectOperation = [[EXApperyServiceOperationLoadProject alloc] initWithCompletionHendler: ^(EXApperyServiceOperation *operation) {
-        EXApperyServiceOperationLoadProject *loadProjectOperation = (EXApperyServiceOperationLoadProject *)operation;
+    NSString *loadProjectUrlStr = [[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:[NSString stringWithFormat:PROJECT_PATH_URL_STRING, projectMetadata.guid]];
+    NSURLRequest *request = [[AFHTTPRequestSerializer serializer] requestWithMethod:@"GET" URLString:loadProjectUrlStr parameters:nil error:nil];
+    
+    AFHTTPRequestOperation *projectsOperation = [manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation * _Nonnull operation, id _Nonnull responseObject) {
+        // Run extraction operation, like synchronous
+        NSOperationQueue *operationQueue = [NSOperationQueue new];
+        EXProjectExtractionOperation *extractOperation = [[EXProjectExtractionOperation alloc] initWithName:projectMetadata.name data:[responseObject as:[NSData class]]];
+        [operationQueue addOperations:@[extractOperation] waitUntilFinished:YES];
         
-        if (operation.isSuccessfull) {
-            succeed(loadProjectOperation.projectLocation, loadProjectOperation.projectStartPageName);
-        } else {
-            failed(operation.error);
-        }
-        
-        self.currentOperation = nil;
+        //TODO: run on main thread
+        succeed(extractOperation.projectLocation, extractOperation.projectStartPageName);
+    } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
+        //TODO: run on main thread
+        failed(error);
     }];
     
-    NSURL *loadProjectUrl = [NSURL URLWithString:[[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:[NSString stringWithFormat:PROJECT_PATH_URL_STRING, projectMetadata.guid]]];
-    NSMutableURLRequest *loadProjectRequest = [NSMutableURLRequest requestWithURL:loadProjectUrl
-                                                                      cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                                                  timeoutInterval:60.0];
-    loadProjectOperation.projectMetadata = projectMetadata;
-    loadProjectOperation.request = loadProjectRequest;
-    self.currentOperation = loadProjectOperation;
+    AFHTTPResponseSerializer *serializer = [AFHTTPResponseSerializer serializer];
+    [serializer setAcceptableContentTypes:[NSSet setWithObject:@"application/zip"]];
     
-    [self.currentOperation start];
+    [projectsOperation setResponseSerializer:serializer];
+    [manager.operationQueue addOperation:projectsOperation];
 }
 
 - (void)loadProjectForAppCode:(NSString *) appCode
@@ -343,84 +294,46 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");
     
-    EXApperyServiceOperationLoadProject *loadProjectOperation = [[EXApperyServiceOperationLoadProject alloc] initWithCompletionHendler: ^(EXApperyServiceOperation *operation) {
-        EXApperyServiceOperationLoadProject *loadProjectOperation = (EXApperyServiceOperationLoadProject *)operation;
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    
+    NSString *loadProjectUrlStr = [[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:[NSString stringWithFormat:SHARE_PROJECT_PATH_URL_STRING, appCode]];
+    NSURLRequest *request = [[AFHTTPRequestSerializer serializer] requestWithMethod:@"GET" URLString:loadProjectUrlStr parameters:nil error:nil];
+    
+    AFHTTPRequestOperation *projectsOperation = [manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation * _Nonnull operation, id _Nonnull responseObject) {
+        // Run extraction operation, like synchronous
+        NSOperationQueue *operationQueue = [NSOperationQueue new];
+        EXProjectExtractionOperation *extractOperation = [[EXProjectExtractionOperation alloc] initWithName:appCode data:[responseObject as:[NSData class]]];
+        [operationQueue addOperations:@[extractOperation] waitUntilFinished:YES];
         
-        if (operation.isSuccessfull) {
-            succeed(loadProjectOperation.projectLocation, loadProjectOperation.projectStartPageName);
-        } else {
-            //404 (Invalid access code) - No app is associated with this code.
-            //403 (Invalid access code) - The code you have entered has expired or no longer valid.
-            
-            if(((NSHTTPURLResponse *)operation.responce).statusCode == 404) {
-                NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
-                                          NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"No app is associated with this code", nil)};
-                operation.error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
-            }
-            else if(((NSHTTPURLResponse *)operation.responce).statusCode == 403) {
-                NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
-                                          NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"The code you have entered has expired or no longer valid", nil)};
-                operation.error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
-            }
-            
-            failed(operation.error);
+        //TODO: run on main thread
+        succeed(extractOperation.projectLocation, extractOperation.projectStartPageName);
+    } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
+        //404 (Invalid access code) - No app is associated with this code.
+        //403 (Invalid access code) - The code you have entered has expired or no longer valid.
+        
+        if(operation.response.statusCode == 404) {
+            NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
+                                      NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"No app is associated with this code", nil)};
+            error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
+        }
+        else if(operation.response.statusCode == 403) {
+            NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
+                                      NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"The code you have entered has expired or no longer valid", nil)};
+            error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
         }
         
-        self.currentOperation = nil;
+        //TODO: run on main thread
+        failed(error);
     }];
     
-    NSString *loadProjectURLStr = [[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:[NSString stringWithFormat:SHARE_PROJECT_PATH_URL_STRING, appCode]];
-    NSURL *loadProjectURL = [NSURL URLWithString:loadProjectURLStr];
-    NSMutableURLRequest *loadProjectRequest = [NSMutableURLRequest requestWithURL:loadProjectURL
-                                                                      cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                                                  timeoutInterval:60.0];
+    AFHTTPResponseSerializer *serializer = [AFHTTPResponseSerializer serializer];
+    [serializer setAcceptableContentTypes:[NSSet setWithObject:@"application/zip"]];
     
-    EXProjectMetadata *projectMetadata = [[EXProjectMetadata alloc] initWithMetadata: @{@"name": appCode}];
-    loadProjectOperation.projectMetadata = projectMetadata;
-    loadProjectOperation.request = loadProjectRequest;
-    self.currentOperation = loadProjectOperation;
-    
-    [self.currentOperation start];
+    [projectsOperation setResponseSerializer:serializer];
+    [manager.operationQueue addOperation:projectsOperation];
 }
 
 #pragma mark - Private interface implementation
-
-- (NSError *)executeFormFromData:(NSData *)data completion:(void(^)(ONOXMLDocument *document))completion
-{
-    NSError *error = nil;
-    
-    if ([data length] > 0) {
-        NSString *dirtyHtml = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        NSString *cleanHtml = [self filterHtml:dirtyHtml];
-        ONOXMLDocument *document = [ONOXMLDocument XMLDocumentWithData:[cleanHtml dataUsingEncoding:NSUTF8StringEncoding] error:&error];
-        
-        if(!error && completion) {
-            completion(document);
-        }
-        else {
-            NSLog(@"Parse error");
-        }
-    }
-    
-    return error;
-}
-
-- (NSString *)filterHtml:(NSString *)html
-{
-    NSString *text = nil;
-    NSScanner *scanner = [NSScanner scannerWithString:html];
-    
-    while ([scanner isAtEnd] == NO) {
-        [scanner scanUpToString:@"<!--" intoString:NULL];
-        [scanner scanUpToString:@"-->" intoString:&text];
-        
-        if (text != nil) {
-            html = [html stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@-->", text] withString:@""];
-        }
-    }
-    
-    return html;
-}
 
 - (void)throwExceptionIfServiceIsLoggedOut
 {
@@ -465,7 +378,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
     
     for (NSHTTPCookie *cookie in [self findAuthenticationCookies]) {
-        [cookieStorage deleteCookie: cookie];
+        [cookieStorage deleteCookie:cookie];
     }
 }
 
@@ -475,7 +388,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
     
     for (NSHTTPCookie *cookie in [cookieStorage cookies]) {
-        if ([cookie.name isEqualToString: @"JSESSIONID"] || [cookie.name isEqualToString: @"APP"]) {
+        if ([cookie.name isEqualToString:@"JSESSIONID"] || [cookie.name isEqualToString:@"APP"]) {
             [authenticationCookies addObject: cookie];
         }
     }

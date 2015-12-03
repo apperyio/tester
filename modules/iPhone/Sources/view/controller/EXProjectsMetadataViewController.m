@@ -405,7 +405,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 - (void)logoutFromService
 {
     UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
-    MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
+    MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo:rootView animated:YES];
     progressHud.labelText = NSLocalizedString(@"Logout", @"Logout progress hud title");
     
     void(^finalize)(void)  = ^{
