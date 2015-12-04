@@ -13,6 +13,7 @@
 
 #import "AFNetworking.h"
 #import "EXSAMLResponse.h"
+#import "EXSAMLRequestSerializer.h"
 #import "EXSAMLResponseSerializer.h"
 #import "EXProjectMetadata.h"
 #import "EXProjectsMetadataSerializer.h"
@@ -34,6 +35,8 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
 
 @property (nonatomic, strong) NSString *userName;
 @property (nonatomic, strong) NSString *userPassword;
+
+@property (nonatomic, strong) AFHTTPRequestOperationManager *manager;
 
 /**
  * @throw NSException if current service state is logged out.
@@ -80,10 +83,13 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
 
 #pragma mark - Lifecycle
 
-- (void)dealloc
+- (instancetype)init
 {
-    self.userName = nil;
-    self.userPassword = nil;
+    if (self = [super init]) {
+        _manager = [AFHTTPRequestOperationManager manager];
+    }
+    
+    return self;
 }
 
 #pragma mark - Getters/Setters
@@ -127,21 +133,21 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     NSAssert(failed != nil, @"failed callback block is not specified");
     
     [self throwExceptionIfServiceIsLoggedIn];
-
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     
     // Create login request
     NSString *target = [[[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:@"/app/"] encodedUrlString];
     NSString *loginUrlStr = [[@"https://idp." stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:LOGIN_PATH_URL_STRING];
     NSDictionary *parameters = @{@"cn":userName, @"pwd":password, @"target":target};
-    NSURLRequest *request = [manager.requestSerializer requestWithMethod:@"GET" URLString:loginUrlStr parameters:parameters error:nil];
+    NSURLRequest *request = [self.manager.requestSerializer requestWithMethod:@"GET" URLString:loginUrlStr parameters:parameters error:nil];
     
     __weak __typeof(self)weakSelf = self;
     
     // Create login operation
-    AFHTTPRequestOperation *loginOperation = [manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation *operation, EXSAMLResponse *responce) {
-        NSURLRequest *SAMLRequest = [NSURLRequest requestWithSAMLResponce:responce];
-        AFHTTPRequestOperation *SAMLOperation = [manager HTTPRequestOperationWithRequest:SAMLRequest success:^(AFHTTPRequestOperation * _Nonnull operation, id _Nonnull responseObject) {
+    AFHTTPRequestOperation *loginOperation = [self.manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation *operation, EXSAMLResponse *responce) {
+        __strong __typeof(weakSelf)strongSelf = weakSelf;
+        
+        NSURLRequest *SAMLRequest = [[EXSAMLRequestSerializer serializer] requestWithMethod:@"POST" URLString:responce.action parameters:responce.value error:nil];
+        AFHTTPRequestOperation *SAMLOperation = [strongSelf.manager HTTPRequestOperationWithRequest:SAMLRequest success:^(AFHTTPRequestOperation * _Nonnull operation, id _Nonnull responseObject) {
             __strong __typeof(weakSelf)strongSelf = weakSelf;
             
             [strongSelf changeLoggedStatusTo:YES];
@@ -150,19 +156,16 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
             NSString *projectsUrlStr = [[@"https://" stringByAppendingString:strongSelf.baseUrl] URLByAddingResourceComponent:PROJECTS_PATH_URL_STRING];
             NSURLRequest *request = [[AFJSONRequestSerializer serializer] requestWithMethod:@"GET" URLString:projectsUrlStr parameters:nil error:nil];
             
-            AFHTTPRequestOperation *projectsOperation = [manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation * _Nonnull operation, id _Nonnull responseObject) {
-                //TODO: run on main thread
+            AFHTTPRequestOperation *projectsOperation = [strongSelf.manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation * _Nonnull operation, id _Nonnull responseObject) {
                 succeed([responseObject as:[NSArray class]]);
             } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
-                //TODO: run on main thread
                 failed(error);
             }];
             
             [projectsOperation setResponseSerializer:[EXProjectsMetadataSerializer serializer]];
             
-            [manager.operationQueue addOperation:projectsOperation];
+            [strongSelf.manager.operationQueue addOperation:projectsOperation];
         } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
-            //TODO: run on main thread
             failed(error);
         }];
         
@@ -170,7 +173,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
         [serializer setAcceptableContentTypes:[NSSet setWithObject:@"text/html"]];
         
         [SAMLOperation setResponseSerializer:serializer];
-        [manager.operationQueue addOperation:SAMLOperation];
+        [strongSelf.manager.operationQueue addOperation:SAMLOperation];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         if (error == nil) {
             NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
@@ -178,12 +181,11 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
             error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
         }
         
-        //TODO: run on main thread
         failed(error);
     }];
     
     [loginOperation setResponseSerializer:[EXSAMLResponseSerializer serializer]];
-    [manager.operationQueue addOperation:loginOperation];
+    [self.manager.operationQueue addOperation:loginOperation];
 }
 
 - (void)quickLogout
@@ -192,9 +194,9 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     [self changeLoggedStatusTo:NO];
 }
 
-- (void)cancelCurrentOperation
+- (void)cancelAllOperation
 {
-    //FIXME: [_currentOperation cancel];
+    [self.manager.operationQueue cancelAllOperations];
 }
 
 - (void)logoutSucceed:(void (^)(void))succeed failed:(void (^)(NSError *))failed
@@ -203,17 +205,13 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     NSAssert(failed != nil, @"failed callback block is not specified");
     
     [self throwExceptionIfServiceIsLoggedOut];
-
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     
     NSString *logoutUrlStr = [[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:LOGOUT_PATH_URL_STRING];
-    NSURLRequest *request = [manager.requestSerializer requestWithMethod:@"GET" URLString:logoutUrlStr parameters:nil error:nil];
+    NSURLRequest *request = [self.manager.requestSerializer requestWithMethod:@"GET" URLString:logoutUrlStr parameters:nil error:nil];
     
-    AFHTTPRequestOperation *logoutOperation = [manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
-        //TODO: run on main thread
+    AFHTTPRequestOperation *logoutOperation = [self.manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         succeed();
     } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
-        //TODO: run on main thread
         failed(error);
     }];
     
@@ -221,7 +219,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     [serializer setAcceptableContentTypes:[NSSet setWithObject:@"text/html"]];
     
     [logoutOperation setResponseSerializer:serializer];
-    [manager.operationQueue addOperation:logoutOperation];
+    [self.manager.operationQueue addOperation:logoutOperation];
     
     [self quickLogout];
 }
@@ -233,22 +231,18 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     
     [self throwExceptionIfServiceIsLoggedOut];
     
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    
     NSString *projectsUrlStr = [[@"https://" stringByAppendingString:self.baseUrl] URLByAddingResourceComponent:PROJECTS_PATH_URL_STRING];
     NSURLRequest *request = [[AFJSONRequestSerializer serializer] requestWithMethod:@"GET" URLString:projectsUrlStr parameters:nil error:nil];
     
-    AFHTTPRequestOperation *projectsOperation = [manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation * _Nonnull operation, id _Nonnull responseObject) {
-        //TODO: run on main thread
+    AFHTTPRequestOperation *projectsOperation = [self.manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation * _Nonnull operation, id _Nonnull responseObject) {
         succeed([responseObject as:[NSArray class]]);
     } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
-        //TODO: run on main thread
         failed(error);
     }];
     
     [projectsOperation setResponseSerializer:[EXProjectsMetadataSerializer serializer]];
     
-    [manager.operationQueue addOperation:projectsOperation];
+    [self.manager.operationQueue addOperation:projectsOperation];
 }
 
 - (void)loadProjectForMetadata:(EXProjectMetadata *)projectMetadata
@@ -260,22 +254,18 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     NSAssert(failed != nil, @"failed callback block is not specified");
     
     [self throwExceptionIfServiceIsLoggedOut];
-
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     
     NSString *loadProjectUrlStr = [[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:[NSString stringWithFormat:PROJECT_PATH_URL_STRING, projectMetadata.guid]];
     NSURLRequest *request = [[AFHTTPRequestSerializer serializer] requestWithMethod:@"GET" URLString:loadProjectUrlStr parameters:nil error:nil];
     
-    AFHTTPRequestOperation *projectsOperation = [manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation * _Nonnull operation, id _Nonnull responseObject) {
+    AFHTTPRequestOperation *projectsOperation = [self.manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation * _Nonnull operation, id _Nonnull responseObject) {
         // Run extraction operation, like synchronous
         NSOperationQueue *operationQueue = [NSOperationQueue new];
         EXProjectExtractionOperation *extractOperation = [[EXProjectExtractionOperation alloc] initWithName:projectMetadata.name data:[responseObject as:[NSData class]]];
         [operationQueue addOperations:@[extractOperation] waitUntilFinished:YES];
         
-        //TODO: run on main thread
         succeed(extractOperation.projectLocation, extractOperation.projectStartPageName);
     } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
-        //TODO: run on main thread
         failed(error);
     }];
     
@@ -283,7 +273,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     [serializer setAcceptableContentTypes:[NSSet setWithObject:@"application/zip"]];
     
     [projectsOperation setResponseSerializer:serializer];
-    [manager.operationQueue addOperation:projectsOperation];
+    [self.manager.operationQueue addOperation:projectsOperation];
 }
 
 - (void)loadProjectForAppCode:(NSString *) appCode
@@ -294,18 +284,15 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");
     
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    
     NSString *loadProjectUrlStr = [[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:[NSString stringWithFormat:SHARE_PROJECT_PATH_URL_STRING, appCode]];
     NSURLRequest *request = [[AFHTTPRequestSerializer serializer] requestWithMethod:@"GET" URLString:loadProjectUrlStr parameters:nil error:nil];
     
-    AFHTTPRequestOperation *projectsOperation = [manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation * _Nonnull operation, id _Nonnull responseObject) {
+    AFHTTPRequestOperation *projectsOperation = [self.manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation * _Nonnull operation, id _Nonnull responseObject) {
         // Run extraction operation, like synchronous
         NSOperationQueue *operationQueue = [NSOperationQueue new];
         EXProjectExtractionOperation *extractOperation = [[EXProjectExtractionOperation alloc] initWithName:appCode data:[responseObject as:[NSData class]]];
         [operationQueue addOperations:@[extractOperation] waitUntilFinished:YES];
         
-        //TODO: run on main thread
         succeed(extractOperation.projectLocation, extractOperation.projectStartPageName);
     } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
         //404 (Invalid access code) - No app is associated with this code.
@@ -322,7 +309,6 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
             error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
         }
         
-        //TODO: run on main thread
         failed(error);
     }];
     
@@ -330,7 +316,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     [serializer setAcceptableContentTypes:[NSSet setWithObject:@"application/zip"]];
     
     [projectsOperation setResponseSerializer:serializer];
-    [manager.operationQueue addOperation:projectsOperation];
+    [self.manager.operationQueue addOperation:projectsOperation];
 }
 
 #pragma mark - Private interface implementation

@@ -71,9 +71,9 @@
 - (void)quickLogout;
 
 /**
- * Interrupt current appery.io service operation, for example loadProjectsMetadata:succeed:failed.
+ * Interrupt all appery.io service operation.
  */
-- (void)cancelCurrentOperation;
+- (void)cancelAllOperation;
 
 /**
  * Load projects from the service.

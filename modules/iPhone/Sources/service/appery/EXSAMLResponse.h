@@ -16,9 +16,3 @@
 @property (nonatomic, copy) NSString *value;
 
 @end
-
-@interface NSURLRequest (SAML)
-
-+ (NSURLRequest *)requestWithSAMLResponce:(EXSAMLResponse *)responce;
-
-@end

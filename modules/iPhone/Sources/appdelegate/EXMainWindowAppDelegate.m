@@ -7,13 +7,13 @@
 //
 
 #import "EXMainWindowAppDelegate.h"
+
 #import "EXApperyService.h"
 #import "EXUserSettingsStorage.h"
-#import "MBProgressHUD.h"
-#import "UIColor+hexColor.h"
-
 #import "EXSignInViewController.h"
 #import "RootViewControllerManager.h"
+#import "MBProgressHUD.h"
+#import "UIColor+hexColor.h"
 
 #pragma mark - Private interface declaration
 
@@ -97,6 +97,7 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
+    [self updateBaseUrl];
     [self navigateToStartPage];
 }
 
@@ -148,7 +149,7 @@
 
 - (void)cancelApperyServiceActivity
 {
-    [self.apperyService cancelCurrentOperation];
+    [self.apperyService cancelAllOperation];
     
     if (self.apperyService.isLoggedIn) {
         [self.apperyService quickLogout];

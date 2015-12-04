@@ -151,6 +151,7 @@
 		D4C1DC571C103E2E004591C0 /* EXSAMLResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = D4C1DC561C103E2E004591C0 /* EXSAMLResponse.m */; };
 		D4C1DC5A1C1082B7004591C0 /* EXProjectsMetadataSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = D4C1DC591C1082B7004591C0 /* EXProjectsMetadataSerializer.m */; };
 		D4C1DC5D1C109630004591C0 /* EXProjectExtractionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = D4C1DC5C1C109630004591C0 /* EXProjectExtractionOperation.m */; };
+		D4C1DC611C11C49C004591C0 /* EXSAMLRequestSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = D4C1DC601C11C49C004591C0 /* EXSAMLRequestSerializer.m */; };
 		D4CE76511C0DE2C50091C2B1 /* NSString+URLUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = D4CE76501C0DE2C50091C2B1 /* NSString+URLUtility.m */; };
 		D4DE3BA61C0EFE9B00B8CB41 /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = D4DE3B941C0EFE9B00B8CB41 /* AFHTTPRequestOperation.m */; };
 		D4DE3BA71C0EFE9B00B8CB41 /* AFHTTPRequestOperationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D4DE3B961C0EFE9B00B8CB41 /* AFHTTPRequestOperationManager.m */; };
@@ -414,6 +415,8 @@
 		D4C1DC591C1082B7004591C0 /* EXProjectsMetadataSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXProjectsMetadataSerializer.m; sourceTree = "<group>"; };
 		D4C1DC5B1C109630004591C0 /* EXProjectExtractionOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXProjectExtractionOperation.h; sourceTree = "<group>"; };
 		D4C1DC5C1C109630004591C0 /* EXProjectExtractionOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXProjectExtractionOperation.m; sourceTree = "<group>"; };
+		D4C1DC5F1C11C49C004591C0 /* EXSAMLRequestSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXSAMLRequestSerializer.h; sourceTree = "<group>"; };
+		D4C1DC601C11C49C004591C0 /* EXSAMLRequestSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSAMLRequestSerializer.m; sourceTree = "<group>"; };
 		D4CE764F1C0DE2C50091C2B1 /* NSString+URLUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+URLUtility.h"; sourceTree = "<group>"; };
 		D4CE76501C0DE2C50091C2B1 /* NSString+URLUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+URLUtility.m"; sourceTree = "<group>"; };
 		D4D5C18A1A516C0B0069A40F /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
@@ -737,6 +740,8 @@
 				D4C1DC591C1082B7004591C0 /* EXProjectsMetadataSerializer.m */,
 				68A76CFD17461ED8000603E1 /* EXProjectMetadata.h */,
 				68A76CFE17461ED8000603E1 /* EXProjectMetadata.m */,
+				D4C1DC5F1C11C49C004591C0 /* EXSAMLRequestSerializer.h */,
+				D4C1DC601C11C49C004591C0 /* EXSAMLRequestSerializer.m */,
 				D4DE3BB21C0F360200B8CB41 /* EXSAMLResponseSerializer.h */,
 				D4DE3BB31C0F360200B8CB41 /* EXSAMLResponseSerializer.m */,
 				D4C1DC551C103E2E004591C0 /* EXSAMLResponse.h */,
@@ -1368,6 +1373,7 @@
 				D4C1DC5A1C1082B7004591C0 /* EXProjectsMetadataSerializer.m in Sources */,
 				3629DEB61B8355360066D254 /* DeviceModelInfo.m in Sources */,
 				361449E11B8EF7E800CD2CE2 /* EXToolbarItem.m in Sources */,
+				D4C1DC611C11C49C004591C0 /* EXSAMLRequestSerializer.m in Sources */,
 				D4C1DC571C103E2E004591C0 /* EXSAMLResponse.m in Sources */,
 				D4B773FE1BDECE1400D08421 /* CDVFileTransfer.m in Sources */,
 				D4DE3BAD1C0EFE9B00B8CB41 /* AFURLResponseSerialization.m in Sources */,
