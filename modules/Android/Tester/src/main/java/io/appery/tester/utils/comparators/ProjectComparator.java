@@ -1,6 +1,6 @@
-package io.appery.tester.comparators;
+package io.appery.tester.utils.comparators;
 
-import io.appery.tester.data.Project;
+import io.appery.tester.db.entity.Project;
 
 import java.util.Comparator;
 

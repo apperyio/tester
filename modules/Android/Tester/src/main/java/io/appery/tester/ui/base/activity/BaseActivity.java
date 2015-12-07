@@ -9,11 +9,10 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MenuItem;
 
-import io.appery.tester.LoginActivity;
 import io.appery.tester.R;
 import io.appery.tester.TesterApplication;
 import io.appery.tester.net.RestManager;
-import io.appery.tester.net.api.Logout;
+import io.appery.tester.ui.login.activity.AuthActivity;
 import io.appery.tester.utils.Constants;
 
 /**
@@ -54,7 +53,7 @@ public abstract class BaseActivity extends SpiceActivity {
         switch (item.getItemId()) {
             case R.id.menu_logout:
                 logout();
-                startActivity(LoginActivity.class);
+                startActivity(AuthActivity.class);
                 return true;
 
             default:
@@ -72,19 +71,6 @@ public abstract class BaseActivity extends SpiceActivity {
         return null;
     }
 
-    public void setPreference(String key, String value) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        if (prefs != null) {
-            try {
-                Editor editor = prefs.edit();
-                editor.putString(key, value);
-                editor.commit();
-            } catch (Exception e) {
-                Log.e(BaseActivity.class.getName(), "Set preference error");
-            }
-        }
-    }
-
     public RestManager getRestManager() {
         return TesterApplication.getInstance().getRestManager();
     }
@@ -93,9 +79,7 @@ public abstract class BaseActivity extends SpiceActivity {
      * Logout.
      */
     protected void logout() {
-        getRestManager().setBaseURL(getRestManager().getIdpURL());
-        Logout logout = new Logout(getRestManager());
-        logout.execute();
+        io.appery.tester.RestManager.doLogout(this);
     }
 
     protected String getServerURL() {

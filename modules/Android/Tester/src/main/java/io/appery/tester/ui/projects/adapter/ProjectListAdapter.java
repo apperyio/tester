@@ -1,7 +1,7 @@
-package io.appery.tester.ui.main.adaptors;
+package io.appery.tester.ui.projects.adapter;
 
 import io.appery.tester.R;
-import io.appery.tester.data.Project;
+import io.appery.tester.db.entity.Project;
 import io.appery.tester.utils.WidgetUtils;
 
 import java.util.ArrayList;

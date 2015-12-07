@@ -5,10 +5,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -18,7 +14,6 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.cookie.BasicClientCookie;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,14 +22,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import butterknife.Bind;
-import io.appery.tester.ui.main.adaptors.FolderAdapter;
-import io.appery.tester.ui.main.adaptors.ProjectListAdapter;
-import io.appery.tester.comparators.ProjectComparator;
-import io.appery.tester.data.Project;
-import io.appery.tester.data.SerializedCookie;
+import io.appery.tester.ui.projects.adapter.ProjectListAdapter;
+import io.appery.tester.utils.comparators.ProjectComparator;
+import io.appery.tester.db.entity.Project;
 import io.appery.tester.net.api.BaseResponse;
-import io.appery.tester.net.api.GetProjectList;
 import io.appery.tester.net.api.callback.ProjectListCallback;
 import io.appery.tester.preview.ProjectPreviewManager;
 import io.appery.tester.ui.base.activity.BaseActivity;
@@ -54,8 +45,6 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
     private Project selectedProject;
     private int sortBy = ProjectComparator.BY_EDIT_DATE;
 
-    // User
-    private Long userId = 0l;
 
     private String[] PROJECTS_ACTIONS;
 
@@ -71,7 +60,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
 
     private ProjectListAdapter mProjectAdapter;
 
-    FolderAdapter mFolderAdapter;
+    //FolderAdapter mFolderAdapter;
 
     List<String> mFolders = new ArrayList<String>();
 
@@ -83,36 +72,20 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
 
     private ProjectPreviewManager projectPreviewManager;
 
-    @Bind(R.id.toolbar_home)
-    protected Toolbar toolbar;
-
     @Override
     protected int getResId() {
-        return R.layout.projects;
+        return R.layout.activity_projects;
     }
 
     @Override
     protected void afterViews(Bundle savedInstanceState) {
         super.afterViews(savedInstanceState);
-/*        projectPreviewManager = new ProjectPreviewManager(getRestManager(), this);
+        projectPreviewManager = new ProjectPreviewManager(getRestManager(), this);
         if (savedInstanceState != null) {
             sortBy = savedInstanceState.getInt(Constants.EXTRAS.SORT_BY, ProjectComparator.BY_EDIT_DATE);
             projectList = (List<Project>) savedInstanceState.get(Constants.EXTRAS.PROJECTS_LIST);
             selectedProject = (Project) savedInstanceState.get(Constants.EXTRAS.SELECTED_PROJECT);
-            for (String cookieName : savedCookiesName) {
-                if (savedInstanceState.containsKey(cookieName)) {
-                    SerializedCookie cookie = (SerializedCookie) savedInstanceState.getSerializable(cookieName);
-                    BasicClientCookie savedCookie = new BasicClientCookie(cookie.getName(), cookie.getValue());
-                    savedCookie.setDomain(cookie.getDomain());
-                    savedCookie.setPath(cookie.getPath());
-                    savedCookieList.add(savedCookie);
-                    Log.d("MY", "saved instance cookie" + cookieName + " = " + cookie);
-                }
-            }
-            for (Cookie cookie : savedCookieList) {
-                getRestManager().getCookieStore().addCookie(cookie);
-            }
-        }*/
+        }
 
         mProjectListView = (ListView) findViewById(R.id.project_list);
         mProjectListView.setOnItemClickListener(new OnItemClickListener() {
@@ -125,8 +98,6 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         });
         mProjectAdapter = new ProjectListAdapter(ProjectListActivity.this, projectList);
         mProjectListView.setAdapter(mProjectAdapter);
-
-        userId = getIntent().getLongExtra(Constants.EXTRAS.USER_ID, -1);
 
         // request for projects
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -146,23 +117,13 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         // folders
         mFolders.add(ALL_FOLDERS);
 
-        mFolderAdapter = new FolderAdapter(this, mFolders, getResources().getColor(android.R.color.holo_blue_light));
-        customizeActionBar();
+       // mFolderAdapter = new FolderAdapter(this, mFolders, getResources().getColor(android.R.color.holo_blue_light));
     }
 
-    private void customizeActionBar() {
-        setSupportActionBar(toolbar);
-    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        List<Cookie> cookies = getRestManager().getCookieStore().getCookies();
-        for (Cookie cookie : cookies) {
-            if (savedCookiesName.contains(cookie.getName())) {
-                outState.putSerializable(cookie.getName(), new SerializedCookie(cookie));
-            }
-        }
         if (selectedProject != null) {
             outState.putSerializable(Constants.EXTRAS.SELECTED_PROJECT, selectedProject);
             outState.putSerializable(Constants.EXTRAS.PROJECTS_LIST, (Serializable) projectList);
@@ -201,7 +162,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
 
     @Override
     protected Dialog onCreateDialog(int id) {
-       /* switch (id) {
+        switch (id) {
             case Constants.DIALOGS.PROJECT_ACTION:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setItems(PROJECTS_ACTIONS, new DialogInterface.OnClickListener() {
@@ -229,7 +190,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
                 return builder.create();
             default:
                 break;
-        }*/
+        }
         return super.onCreateDialog(id);
     }
 
@@ -246,39 +207,6 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         super.onPrepareDialog(id, dialog);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.mn_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case R.id.menu_refresh:
-                GetProjectList getProjectList = new GetProjectList(getRestManager(), this);
-                showDialog(Constants.DIALOGS.PROGRESS);
-                getProjectList.execute();
-                return true;
-            case R.id.menu_sort_by_name:
-                updateProjectsList(ProjectComparator.BY_NAME);
-                break;
-            case R.id.menu_sort_by_modify_date:
-                updateProjectsList(ProjectComparator.BY_EDIT_DATE);
-                break;
-            case R.id.menu_sort_by_create_date:
-                updateProjectsList(ProjectComparator.BY_CREATE_DATE);
-                break;
-            case R.id.menu_logout:
-                finish();
-                break;
-            default:
-                super.onOptionsItemSelected(item);
-                break;
-        }
-        return true;
-    }
 
     private void updateProjectsList(int orderBy) {
         Comparator<Project> comparator;
@@ -310,9 +238,9 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         mFolders.add(ALL_FOLDERS);
         mFolders.add(MY_FOLDER);
         mFolders.addAll(owners);
-        mFolderAdapter.selected = 0;
-        mFolderAdapter.setFolders(mFolders);
-        mFolderAdapter.notifyDataSetChanged();
+       // mFolderAdapter.selected = 0;
+        //mFolderAdapter.setFolders(mFolders);
+        //mFolderAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -322,18 +250,18 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
      * @return
      */
     private List<Project> getFilteredProjects() {
-        if (mFolderAdapter.getSelected() == ALL_FOLDERS_POSITION) return projectList;
+        /*if (mFolderAdapter.getSelected() == ALL_FOLDERS_POSITION) return projectList;
         String owner;
         if (mFolderAdapter.getSelected() == MY_FOLDER_POSITION)
             owner = getPreferenceAsString(Constants.PREFERENCES.USERNAME, "");
         else
-            owner = mFolders.get(mFolderAdapter.getSelected());
+            owner = mFolders.get(mFolderAdapter.getSelected());*/
 
         List<Project> res = new ArrayList<Project>();
-        for (Project p : projectList) {
+        /*for (Project p : projectList) {
             if (owner.equals(p.getOwner()))
                 res.add(p);
-        }
+        }*/
         return res;
     }
 

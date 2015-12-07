@@ -39,6 +39,12 @@ public class PrefsUtil {
         editor.apply();
     }
 
+    public void putStringCommit(String key, String value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(key, value);
+        editor.commit();
+    }
+
     public void clearAll() {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.clear();

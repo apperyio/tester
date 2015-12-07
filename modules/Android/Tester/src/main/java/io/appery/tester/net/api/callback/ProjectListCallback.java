@@ -1,6 +1,6 @@
 package io.appery.tester.net.api.callback;
 
-import io.appery.tester.data.Project;
+import io.appery.tester.db.entity.Project;
 import io.appery.tester.net.api.BaseResponse;
 
 import java.util.List;

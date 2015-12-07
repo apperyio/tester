@@ -16,6 +16,7 @@ import io.appery.tester.rest.listener.LoginListener;
 import io.appery.tester.ui.base.fragment.BaseFragment;
 import io.appery.tester.ui.dialogs.EnterAppCodeDialog;
 import io.appery.tester.ui.login.callback.AuthCallback;
+import io.appery.tester.ui.projects.activity.GeneralProjectsActivity;
 import io.appery.tester.utils.Constants;
 import io.appery.tester.utils.DialogHelper;
 import io.appery.tester.utils.PrefsUtil;
@@ -54,6 +55,7 @@ public class AuthFragment extends BaseFragment implements AuthCallback {
         WidgetUtils.setText(getActivity(), R.id.login_et, username);
         WidgetUtils.setText(getActivity(), R.id.password_et, password);
         loginListener = new LoginListener(this);
+        RestManager.doLogout(this);
     }
 
     @Override
@@ -85,7 +87,7 @@ public class AuthFragment extends BaseFragment implements AuthCallback {
     @Override
     public void onAuthSuccess() {
         progressDialog.dismiss();
-        Intent intent = new Intent(getContext(), ProjectListActivity.class);
+        Intent intent = new Intent(getContext(), GeneralProjectsActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }

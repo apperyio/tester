@@ -1,6 +1,6 @@
 package io.appery.tester.rest.request;
 
-import io.appery.tester.data.Project;
+import io.appery.tester.db.entity.Project;
 import io.appery.tester.rest.IWebApi;
 
 /**

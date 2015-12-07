@@ -1,13 +1,13 @@
 package io.appery.tester.utils;
 
-import android.os.Environment;
+import com.nostra13.universalimageloader.utils.StorageUtils;
+
+import io.appery.tester.TesterApplication;
 
 public class ProjectStorageManager {
 
     public static String getBase_DIR() {
-        return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) ? Environment
-                .getExternalStorageDirectory() + "/data/io.appery.tester" : Environment.getDataDirectory()
-                + "/data/io.appery.tester";
+        return StorageUtils.getCacheDirectory(TesterApplication.getInstance()).getAbsolutePath();
     }
 
     public static String getPROJECT_ZIP_FILE() {

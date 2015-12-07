@@ -25,14 +25,12 @@
             tools:text="Title"/>
         </android.support.v7.widget.Toolbar>
 
-    <ListView
-        android:id="@+id/project_list"
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <fragment
+        android:id="@+id/auth_fragment"
+        android:name="io.appery.tester.ui.projects.fragment.ProjectListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar_home"
-        android:divider="@color/list_items_divider"
-        android:dividerHeight="1px">
-    </ListView>
+        android:layout_below="@+id/toolbar_home"
+        tools:layout="@layout/fragment_projects" />
 
 </RelativeLayout>

@@ -23,7 +23,7 @@ public class UserHelper {
     }
 
     static public void updateSAMLKey(String samlKey) {
-        PrefsUtil.getInstance().putString(Constants.PREFERENCES.SAML_KEY, samlKey);
+        PrefsUtil.getInstance().putStringCommit(Constants.PREFERENCES.SAML_KEY, samlKey);
     }
 
     static public String getSAMLKey() {

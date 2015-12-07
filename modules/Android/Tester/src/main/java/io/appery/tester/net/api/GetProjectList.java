@@ -1,7 +1,6 @@
 package io.appery.tester.net.api;
 
-import android.util.Log;
-import io.appery.tester.data.Project;
+import io.appery.tester.db.entity.Project;
 import io.appery.tester.net.RestClient.RequestMethod;
 import io.appery.tester.net.RestManager;
 import io.appery.tester.net.api.callback.ProjectListCallback;

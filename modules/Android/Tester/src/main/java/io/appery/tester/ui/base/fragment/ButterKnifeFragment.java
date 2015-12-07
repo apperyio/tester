@@ -18,6 +18,7 @@ public abstract class ButterKnifeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(getResId(), container, false);
         ButterKnife.bind(this, view);
+        afterViews(savedInstanceState);
         return view;
     }
 

@@ -7,7 +7,6 @@ import com.octo.android.robospice.request.listener.RequestListener;
  * Created by Alexandr.Salin on 11/30/15.
  */
 public class BaseListener<RESULT> implements RequestListener<RESULT> {
-
     @Override
     public void onRequestFailure(SpiceException spiceException) {
 

@@ -1,4 +1,4 @@
-package io.appery.tester.ui.main.adaptors;
+package io.appery.tester.ui.projects.adapter;
 
 import android.R;
 

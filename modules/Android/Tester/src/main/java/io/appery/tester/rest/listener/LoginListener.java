@@ -51,10 +51,17 @@ public class LoginListener extends BaseListener<Response> {
         String bodyString = new String(((TypedByteArray) response.getBody()).getBytes());
         logger.warn("retrofit {}", bodyString.replaceAll("\n", Constants.EMPTY_STRING));
         //TODO: correct parse
-        String saml = bodyString.substring(bodyString.indexOf("VALUE=\"") + 7, bodyString.indexOf("\"/>"));
-        String url = bodyString.substring(bodyString.indexOf("ACTION=\"") + 8, bodyString.indexOf("\"><I"));
-        if (mAuthCallback != null) {
-            RestManager.samlRequest(mAuthCallback, url, saml, new SamlListener(mAuthCallback));
+        try {
+            String saml = bodyString.substring(bodyString.indexOf("VALUE=\"") + 7, bodyString.indexOf("\"/>"));
+            String url = bodyString.substring(bodyString.indexOf("ACTION=\"") + 8, bodyString.indexOf("\"><I"));
+            logger.warn("after retrofit login success we obtain url : {}, and saml : {}",url,saml);
+            if (mAuthCallback != null) {
+                RestManager.samlRequest(mAuthCallback, url, saml, new SamlListener(mAuthCallback));
+            }
+        } catch (Exception e) {
+            if (mAuthCallback != null) {
+                mAuthCallback.onAuthFailed(e);
+            }
         }
     }
 
