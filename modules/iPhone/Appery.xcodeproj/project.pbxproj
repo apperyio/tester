@@ -105,6 +105,8 @@
 		D4271EAF19D9ACD300B7DA2D /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = D4271EA819D9ACD300B7DA2D /* zip.c */; };
 		D4271EB019D9ACD300B7DA2D /* ZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = D4271EAB19D9ACD300B7DA2D /* ZipArchive.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		D427B0F01AF227940086DC08 /* ONOXMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = D427B0EF1AF227940086DC08 /* ONOXMLDocument.m */; };
+		D45451271C16333D0049075B /* SSKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = D45451241C16333D0049075B /* SSKeychain.m */; };
+		D45451281C16333D0049075B /* SSKeychainQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = D45451261C16333D0049075B /* SSKeychainQuery.m */; };
 		D46388D71BDED7B6005DEB80 /* CDVBarcodeScanner.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D46388D61BDED7B6005DEB80 /* CDVBarcodeScanner.bundle */; };
 		D46388E61BDED8F3005DEB80 /* libCordova.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D46388E31BDED8CF005DEB80 /* libCordova.a */; };
 		D48DBD621B57B1B6002E8B7F /* NSStringMask.m in Sources */ = {isa = PBXBuildFile; fileRef = D48DBD5F1B57B1B6002E8B7F /* NSStringMask.m */; };
@@ -331,6 +333,10 @@
 		D427B0ED1AF227940086DC08 /* Ono.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Ono.h; sourceTree = "<group>"; };
 		D427B0EE1AF227940086DC08 /* ONOXMLDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ONOXMLDocument.h; sourceTree = "<group>"; };
 		D427B0EF1AF227940086DC08 /* ONOXMLDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ONOXMLDocument.m; sourceTree = "<group>"; };
+		D45451231C16333D0049075B /* SSKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKeychain.h; sourceTree = "<group>"; };
+		D45451241C16333D0049075B /* SSKeychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSKeychain.m; sourceTree = "<group>"; };
+		D45451251C16333D0049075B /* SSKeychainQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKeychainQuery.h; sourceTree = "<group>"; };
+		D45451261C16333D0049075B /* SSKeychainQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSKeychainQuery.m; sourceTree = "<group>"; };
 		D46388D61BDED7B6005DEB80 /* CDVBarcodeScanner.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = CDVBarcodeScanner.bundle; sourceTree = "<group>"; };
 		D46388D91BDED8C8005DEB80 /* CordovaLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CordovaLib.xcodeproj; path = CordovaLib/CordovaLib.xcodeproj; sourceTree = "<group>"; };
 		D48DBD5E1B57B1B6002E8B7F /* NSStringMask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringMask.h; sourceTree = "<group>"; };
@@ -772,6 +778,7 @@
 				D427B0EC1AF227940086DC08 /* Ono */,
 				D4F8769E1AB994B700CE2C6F /* Plugins */,
 				6886006415CAA00800629AB9 /* MBProgressHUD */,
+				D45451221C16333D0049075B /* SSKeychain */,
 				68CB4CC215BFE38C000D80C3 /* ZipArchive */,
 			);
 			name = Libs;
@@ -923,6 +930,17 @@
 				D427B0EF1AF227940086DC08 /* ONOXMLDocument.m */,
 			);
 			path = Ono;
+			sourceTree = "<group>";
+		};
+		D45451221C16333D0049075B /* SSKeychain */ = {
+			isa = PBXGroup;
+			children = (
+				D45451231C16333D0049075B /* SSKeychain.h */,
+				D45451241C16333D0049075B /* SSKeychain.m */,
+				D45451251C16333D0049075B /* SSKeychainQuery.h */,
+				D45451261C16333D0049075B /* SSKeychainQuery.m */,
+			);
+			path = SSKeychain;
 			sourceTree = "<group>";
 		};
 		D46388DF1BDED8CF005DEB80 /* Products */ = {
@@ -1366,6 +1384,7 @@
 				D4B774051BDECE1400D08421 /* CDVReachability.m in Sources */,
 				3629DEBB1B8355360066D254 /* UIDevice+System.m in Sources */,
 				D4B59F4419F7CB2F00649292 /* EXProjectsMetadataViewController.m in Sources */,
+				D45451271C16333D0049075B /* SSKeychain.m in Sources */,
 				361449F11B8F33B100CD2CE2 /* UINavigationController+StackUtils.m in Sources */,
 				D4271EAE19D9ACD300B7DA2D /* unzip.c in Sources */,
 				3629DEB91B8355360066D254 /* NSThread+BlockExecution.m in Sources */,
@@ -1387,6 +1406,7 @@
 				D4B774061BDECE1400D08421 /* CDVVibration.m in Sources */,
 				D4DE3BAE1C0EFE9B00B8CB41 /* AFURLSessionManager.m in Sources */,
 				D4B773FA1BDECE1400D08421 /* CDVNotification.m in Sources */,
+				D45451281C16333D0049075B /* SSKeychainQuery.m in Sources */,
 				D4B773FD1BDECE1400D08421 /* CDVLocalFilesystem.m in Sources */,
 				D4B773F01BDECE1400D08421 /* CDVBattery.m in Sources */,
 				D4DE3BA71C0EFE9B00B8CB41 /* AFHTTPRequestOperationManager.m in Sources */,
