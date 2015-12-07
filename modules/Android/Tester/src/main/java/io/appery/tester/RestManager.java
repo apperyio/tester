@@ -1,14 +1,13 @@
 package io.appery.tester;
 
+import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import io.appery.tester.db.entity.Project;
 import io.appery.tester.db.entity.User;
 import io.appery.tester.rest.SpiceHolder;
-import io.appery.tester.rest.listener.BaseListener;
 import io.appery.tester.rest.request.GetProjectsRequest;
 import io.appery.tester.rest.request.LoginRequest;
-import io.appery.tester.rest.request.LogoutRequest;
 import io.appery.tester.rest.request.SamlRequest;
 import io.appery.tester.utils.UserHelper;
 import retrofit.client.Response;
@@ -32,8 +31,9 @@ public class RestManager {
         holder.getSpiceManager().execute(new SamlRequest(url, samlValue), listener);
     }
 
-    public static void getProjectsList(SpiceHolder holder, RequestListener<Project.ProjectsList> listener) {
-        holder.getSpiceManager().execute(new GetProjectsRequest(), listener);
+    public static void getProjectsListImmidiatly(SpiceHolder holder, RequestListener<Project.ProjectsList> listener) {
+        holder.getSpiceManager().execute(new GetProjectsRequest(), Project.class.getSimpleName(), DurationInMillis.ALWAYS_EXPIRED, listener);
     }
+
 
 }

@@ -1,16 +1,33 @@
 package io.appery.tester.db.entity;
 
+import android.content.ContentResolver;
+import android.net.Uri;
+
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import com.tojc.ormlite.android.annotation.AdditionalAnnotation;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
-@DatabaseTable
-public class Project implements Serializable {
+import io.appery.tester.db.Contract;
 
+@DatabaseTable(tableName = Project.TABLENAME)
+@AdditionalAnnotation.DefaultContentUri(authority = Contract.AUTHORITY, path = Project.CONTENT_URI_PATH)
+@AdditionalAnnotation.DefaultContentMimeTypeVnd(name = Project.MIMETYPE_NAME, type = Project.MIMETYPE_TYPE)
+public class Project implements Entity {
+    public static final String TABLENAME = "MediaSummary";
+    public static final String CONTENT_URI_PATH = TABLENAME;
+    public static final String MIMETYPE_TYPE = TABLENAME;
+    public static final String MIMETYPE_NAME = Contract.AUTHORITY + ".provider";
+    public static final int CONTENT_URI_PATTERN_MANY = 5041;
+    public static final int CONTENT_URI_PATTERN_ONE = 5042;
+    public static final Uri contentUri = new Uri.Builder()
+            .scheme(ContentResolver.SCHEME_CONTENT)
+            .authority(Contract.AUTHORITY)
+            .appendPath(CONTENT_URI_PATH).build();
     private static final long serialVersionUID = 6953819465393717984L;
 
     public static final String GUID_FIELD = "guid";
@@ -22,7 +39,10 @@ public class Project implements Serializable {
     public static final String LINK_FIELD = "link_date";
     public static final String RESOURCES_LINK_FIELD = "resources_link_date";
     public static final String TYPE_FIELD = "type";
+    public static final String DISABLED_FIELD = "disabled";
 
+    @DatabaseField(columnName = Project._ID, generatedId = true)
+    @AdditionalAnnotation.DefaultSortOrder
     private int _id;
 
     @SerializedName(GUID_FIELD)
@@ -59,8 +79,10 @@ public class Project implements Serializable {
 
     @SerializedName(TYPE_FIELD)
     @DatabaseField(columnName = TYPE_FIELD)
-    private Type type;
+    private int type;
 
+    @SerializedName(DISABLED_FIELD)
+    @DatabaseField(columnName = DISABLED_FIELD)
     private boolean disabled;
 
     public Project() {
@@ -130,12 +152,16 @@ public class Project implements Serializable {
         this.resourcesLink = resourcesLink;
     }
 
-    public Type getType() {
-        return type;
+    public ProjectType getType() {
+        return ProjectType.get(type);
     }
 
-    public void setType(Type type) {
-        this.type = type;
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
     }
 
     @Override
@@ -147,20 +173,6 @@ public class Project implements Serializable {
                 ", resourcesLink='" + resourcesLink + '\'' +
                 ", owner='" + owner + '\'' +
                 '}';
-    }
-
-    public enum Type{
-        APPERY(1);
-
-        private final int id;
-
-        Type(int id) {
-            this.id = id;
-        }
-
-        public int getId() {
-            return id;
-        }
     }
 
     @SuppressWarnings("serial")
