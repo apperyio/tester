@@ -16,6 +16,6 @@
 
 + (UIWindow *)mainWindow;
 
-- (void)navigateToStartPage;
+- (void)navigateToSignInViewController;
 
 @end

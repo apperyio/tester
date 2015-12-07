@@ -12,18 +12,19 @@
 
 #import "MBProgressHUD.h"
 
-#import "EXCredentialsManager.h"
 #import "EXUserSettingsStorage.h"
 #import "EXProjectMetadataCell.h"
 #import "EXProjectViewController.h"
-
+#import "EXAppCodeController.h"
 #import "EXToolbarItem.h"
 #import "EXToolbarItemActionDelegate.h"
-
 #import "EXMainWindowAppDelegate.h"
+
 #import "RootViewControllerManager.h"
+
 #import "NSObject+Utils.h"
-#import "EXAppCodeController.h"
+#import "SSKeychain.h"
+
 
 #pragma mark - UI string constants
 
@@ -80,7 +81,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 /**
  * Perform logout process.
  */
-- (void) logoutFromService;
+- (void)logoutFromService;
 
 - (void)loadProjectsMetadataCompletion:(EXProjectsMetadataViewControllerCompletionBlock)completion;
 
@@ -131,13 +132,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     
     [self configureToolbar];
     if (self.projectsMetadata.count == 0) {
-        [self loadProjectsMetadataCompletion:^(BOOL succeeded) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.rootTableView.userInteractionEnabled = YES;
-                [self.refreshControl endRefreshing];
-                [self sortByCurrentMethodAndUpdateUI];
-            });
-        }];
+        [self reloadProjects];
     }
     else {
         [self sortByCurrentMethodAndUpdateUI];
@@ -188,24 +183,28 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 - (void)reloadProjects
 {
-    void(^reloadProjectsInfo)(void) = ^{
-        [self loadProjectsMetadataCompletion:^(BOOL succeeded) {
+    if (self.apperyService.isLoggedOut) {
+        self.rootTableView.userInteractionEnabled = NO;
+        
+        UIView *rootView = [[[EXMainWindowAppDelegate mainWindow] rootViewController] view];
+        MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
+        progressHud.labelText = NSLocalizedString(@"Login", @"Login progress hud title");
+        
+        EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
+        EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
+        NSString *password = [SSKeychain passwordForService:APPERI_SERVICE account:lastUserSettings.userName];
+        
+        [self.apperyService loginWithUsername:lastUserSettings.userName password:password succeed:^(NSArray *projectsMetadata) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [progressHud hide:YES];
+            });
+            
+            [self initializeProjectsMetadata:projectsMetadata];
+            
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.rootTableView.userInteractionEnabled = YES;
                 [self.refreshControl endRefreshing];
             });
-        }];
-    };
-    
-    if(self.apperyService.isLoggedOut) {
-        self.rootTableView.userInteractionEnabled = NO;
-        
-        EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
-        EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
-        NSString *password = [EXCredentialsManager retreivePasswordForUser: lastUserSettings.userName];
-        
-        [self.apperyService loginWithUsername:lastUserSettings.userName password:password succeed:^(NSArray *projectsMetadata) {
-            reloadProjectsInfo();
         } failed:^(NSError *error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.rootTableView.userInteractionEnabled = YES;
@@ -216,13 +215,19 @@ static const NSString * kArrowDownSymbol = @"\u2193";
                     [del masterControllerDidLogout];
                 }
                 else {
-                    [self.navigationController popToRootViewControllerAnimated:YES];
+                    RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
+                    [manager popRootViewControllerAnimated:YES completionBlock:nil];
                 }
             });
         }];
     }
     else {
-        reloadProjectsInfo();
+        [self loadProjectsMetadataCompletion:^(BOOL succeeded) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.rootTableView.userInteractionEnabled = YES;
+                [self.refreshControl endRefreshing];
+            });
+        }];
     }
 }
 
@@ -393,7 +398,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
                                        delegate:nil
                               cancelButtonTitle:NSLocalizedString(@"Ok", nil)
                               otherButtonTitles:nil] show];
-            
         });
         
         if (completion) {
@@ -408,6 +412,9 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo:rootView animated:YES];
     progressHud.labelText = NSLocalizedString(@"Logout", @"Logout progress hud title");
     
+    // Delete password
+    [SSKeychain deletePasswordForService:APPERI_SERVICE account:self.apperyService.loggedUserName];
+    
     void(^finalize)(void)  = ^{
         dispatch_async(dispatch_get_main_queue(), ^{
             [progressHud hide: YES];
@@ -416,7 +423,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
                 [del masterControllerDidLogout];
             }
             else {
-                [[EXMainWindowAppDelegate appDelegate] navigateToStartPage];
+                [[EXMainWindowAppDelegate appDelegate] navigateToSignInViewController];
             }
         });
     };

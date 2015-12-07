@@ -22,4 +22,5 @@
 #  endif
 # endif
 
+#define APPERI_SERVICE @"apperyService"
 #define APPERI_SERVICE_ERROR_DOMAIN @"apperyServiceErrorDomain"

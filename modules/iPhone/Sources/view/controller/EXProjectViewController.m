@@ -9,14 +9,16 @@
 #import "EXProjectViewController.h"
 
 #import "MBProgressHUD.h"
+
 #import "EXUserSettingsStorage.h"
 #import "EXCredentialsManager.h"
-
 #import "EXProjectsMetadataViewController.h"
-#import "NSObject+Utils.h"
-
 #import "EXMainWindowAppDelegate.h"
+
 #import "RootViewControllerManager.h"
+
+#import "SSKeychain.h"
+#import "NSObject+Utils.h"
 
 #pragma mark - UI constants
 
@@ -287,7 +289,7 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     if (self.apperyService.isLoggedOut) {
         EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
         EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
-        NSString *password = [EXCredentialsManager retreivePasswordForUser: lastUserSettings.userName];
+        NSString *password = [SSKeychain passwordForService:APPERI_SERVICE account:lastUserSettings.userName];
         
         [self.apperyService loginWithUsername:lastUserSettings.userName password:password succeed:^(NSArray *projectsMetadata) {
             reloadProject();
@@ -310,7 +312,7 @@ static NSString *const kDefaultWebResourceFolder = @"www";
 
 - (void)masterControllerDidLogout
 {
-    [[EXMainWindowAppDelegate appDelegate] navigateToStartPage];
+    [[EXMainWindowAppDelegate appDelegate] navigateToSignInViewController];
 }
 
 - (void)masterControllerDidLoadMetadata:(EXProjectMetadata *)metadata

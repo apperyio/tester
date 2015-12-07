@@ -11,7 +11,10 @@
 #import "EXApperyService.h"
 #import "EXUserSettingsStorage.h"
 #import "EXSignInViewController.h"
+#import "EXProjectViewController.h"
+#import "EXProjectsMetadataViewController.h"
 #import "RootViewControllerManager.h"
+#import "SSKeychain.h"
 #import "MBProgressHUD.h"
 #import "UIColor+hexColor.h"
 
@@ -26,7 +29,6 @@
 - (BOOL)updateBaseUrl;
 - (void)hideAllHuds;
 - (void)cancelApperyServiceActivity;
-- (void)navigateToStartPage;
 
 @end
 
@@ -44,7 +46,7 @@
     return [[self appDelegate] window];
 }
 
-- (void)navigateToStartPage
+- (void)navigateToSignInViewController
 {
     RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
     
@@ -58,6 +60,31 @@
     
     EXSignInViewController *signIn = [[EXSignInViewController alloc] initWithNibName:nil bundle:nil service:self.apperyService];
     [[RootViewControllerManager sharedInstance] pushRootViewController:signIn animated:NO completionBlock:nil];
+}
+
+- (void)navigateToProjectsViewController
+{
+    RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
+    EXProjectsMetadataViewController *pmvc = [[EXProjectsMetadataViewController alloc] initWithNibName:nil bundle:nil service:self.apperyService projectsMetadata:nil];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectMetadata:nil];
+        pvc.wwwFolderName = @"www";
+        pvc.startPage = @"index.html";
+        pmvc.delegate = pvc;
+        
+        [manager setSidebarViewController:pmvc];
+        [manager setSidebarEnabled:YES];
+        __weak RootViewControllerManager *weakManager = manager;
+        [manager pushRootViewController:pvc animated:YES completionBlock:^{
+            RootViewControllerManager *strongManager = weakManager;
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [strongManager showSidebarController:nil animated:YES completionBlock:nil];
+            });
+        }];
+    }
+    
+    [manager pushRootViewController:pmvc animated:NO completionBlock:nil];
 }
 
 #pragma mark - UIApplicationDelegate protocol - Monitoring Application State Changes
@@ -77,7 +104,19 @@
     [self addSkipBackupAttributeToItemAtPath:projectsLocation];
     [self createAndConfigureApperyService];
     
-    [self navigateToStartPage];
+    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
+    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
+    if (lastUserSettings != nil) {
+        NSString *password = [SSKeychain passwordForService:APPERI_SERVICE account:lastUserSettings.userName];
+        if (password != nil) {
+            [self navigateToProjectsViewController];
+        } else {
+            [self navigateToSignInViewController];
+        }
+    } else {
+        [self navigateToSignInViewController];
+    }
+    
     [self.window makeKeyAndVisible];
     
     [[UINavigationBar appearance] setBarTintColor:[UIColor colorFromHEXString:@"#F6F6F6"]];
@@ -97,15 +136,17 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    [self updateBaseUrl];
-    [self navigateToStartPage];
+    // When user turn off auto login or change base url we must go to SignIn page
+    if ([self updateBaseUrl] || ![self autoLogin]) {
+        [self navigateToSignInViewController];
+    }
 }
 
 #pragma mark - Private interface implementation
 
 - (BOOL)addSkipBackupAttributeToItemAtPath:(NSString *)filePathString
 {
-    NSURL* URL = [NSURL fileURLWithPath:filePathString];
+    NSURL *URL = [NSURL fileURLWithPath:filePathString];
     NSAssert([[NSFileManager defaultManager] fileExistsAtPath:[URL path]], @"The project folder does not exist");
     
     NSError *error = nil;
@@ -115,7 +156,7 @@
         NSLog(@"Error excluding %@ from backup %@", [URL lastPathComponent], error);
     }
     
-    //for test
+    // For test
     id flag = nil;
     [URL getResourceValue:&flag
                    forKey:NSURLIsExcludedFromBackupKey error:&error];
@@ -129,22 +170,33 @@
     NSAssert(self.apperyService == nil, @"self.apperyService is already initialized");
     
     self.apperyService = [[EXApperyService alloc] init];
-    self.apperyService.baseUrl = [[NSUserDefaults standardUserDefaults] valueForKey:@"baseURL"];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *baseUrl = [defaults stringForKey:@"baseURL"];
+    self.apperyService.baseUrl = baseUrl;
+    NSLog(@"Appery service base URL: %@", baseUrl);
+}
+
+- (BOOL)autoLogin
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *autoLogin = [defaults stringForKey:@"autoLogin"];
+    NSLog(@"Auto login is turn %@", autoLogin ? @"on" : @"off");
     
-    NSLog(@"Appery service base URL: %@", self.apperyService.baseUrl);
+    return YES;
 }
 
 - (BOOL)updateBaseUrl
 {
     NSString *oldBaseUrl = self.apperyService.baseUrl;
-    self.apperyService.baseUrl = [[NSUserDefaults standardUserDefaults] valueForKey:@"baseURL"];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    self.apperyService.baseUrl = [defaults valueForKey:@"baseURL"];
     
     return ![self.apperyService.baseUrl isEqualToString:oldBaseUrl];
 }
 
 - (void)hideAllHuds
 {
-    [MBProgressHUD hideAllHUDsForView: self.window.rootViewController.view animated:NO];
+    [MBProgressHUD hideAllHUDsForView:self.window.rootViewController.view animated:NO];
 }
 
 - (void)cancelApperyServiceActivity

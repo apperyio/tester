@@ -69,9 +69,6 @@
 		683954F817452D2C001EC185 /* reload.png in Resources */ = {isa = PBXBuildFile; fileRef = 683954F417452D2C001EC185 /* reload.png */; };
 		683954F917452D2C001EC185 /* reload@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 683954F517452D2C001EC185 /* reload@2x.png */; };
 		687FBA4C15E63DDF008B956A /* EXMainWindowAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 687FBA1315E63DDF008B956A /* EXMainWindowAppDelegate.m */; };
-		687FBA5615E63DDF008B956A /* EXCredentialsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 687FBA2D15E63DDF008B956A /* EXCredentialsManager.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		687FBA5715E63DDF008B956A /* EXUserSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 687FBA3015E63DDF008B956A /* EXUserSettings.m */; };
-		687FBA5815E63DDF008B956A /* EXUserSettingsStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 687FBA3215E63DDF008B956A /* EXUserSettingsStorage.m */; };
 		687FBA5915E63DDF008B956A /* EXProjectMetadataCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 687FBA3815E63DDF008B956A /* EXProjectMetadataCell.m */; };
 		687FBA5A15E63DDF008B956A /* EXProjectMetadataCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 687FBA3915E63DDF008B956A /* EXProjectMetadataCell.xib */; };
 		6885325317F9884F0095810A /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 6885325217F9884F0095810A /* config.xml */; };
@@ -107,6 +104,8 @@
 		D427B0F01AF227940086DC08 /* ONOXMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = D427B0EF1AF227940086DC08 /* ONOXMLDocument.m */; };
 		D45451271C16333D0049075B /* SSKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = D45451241C16333D0049075B /* SSKeychain.m */; };
 		D45451281C16333D0049075B /* SSKeychainQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = D45451261C16333D0049075B /* SSKeychainQuery.m */; };
+		D454512E1C163F590049075B /* EXUserSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = D454512B1C163F590049075B /* EXUserSettings.m */; };
+		D454512F1C163F590049075B /* EXUserSettingsStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = D454512D1C163F590049075B /* EXUserSettingsStorage.m */; };
 		D46388D71BDED7B6005DEB80 /* CDVBarcodeScanner.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D46388D61BDED7B6005DEB80 /* CDVBarcodeScanner.bundle */; };
 		D46388E61BDED8F3005DEB80 /* libCordova.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D46388E31BDED8CF005DEB80 /* libCordova.a */; };
 		D48DBD621B57B1B6002E8B7F /* NSStringMask.m in Sources */ = {isa = PBXBuildFile; fileRef = D48DBD5F1B57B1B6002E8B7F /* NSStringMask.m */; };
@@ -278,12 +277,6 @@
 		683954F517452D2C001EC185 /* reload@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "reload@2x.png"; sourceTree = "<group>"; };
 		687FBA1215E63DDF008B956A /* EXMainWindowAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXMainWindowAppDelegate.h; sourceTree = "<group>"; };
 		687FBA1315E63DDF008B956A /* EXMainWindowAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXMainWindowAppDelegate.m; sourceTree = "<group>"; };
-		687FBA2C15E63DDF008B956A /* EXCredentialsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = EXCredentialsManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		687FBA2D15E63DDF008B956A /* EXCredentialsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = EXCredentialsManager.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		687FBA2F15E63DDF008B956A /* EXUserSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXUserSettings.h; sourceTree = "<group>"; };
-		687FBA3015E63DDF008B956A /* EXUserSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXUserSettings.m; sourceTree = "<group>"; };
-		687FBA3115E63DDF008B956A /* EXUserSettingsStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXUserSettingsStorage.h; sourceTree = "<group>"; };
-		687FBA3215E63DDF008B956A /* EXUserSettingsStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXUserSettingsStorage.m; sourceTree = "<group>"; };
 		687FBA3715E63DDF008B956A /* EXProjectMetadataCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXProjectMetadataCell.h; sourceTree = "<group>"; };
 		687FBA3815E63DDF008B956A /* EXProjectMetadataCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXProjectMetadataCell.m; sourceTree = "<group>"; };
 		687FBA3915E63DDF008B956A /* EXProjectMetadataCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EXProjectMetadataCell.xib; sourceTree = "<group>"; };
@@ -337,6 +330,10 @@
 		D45451241C16333D0049075B /* SSKeychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSKeychain.m; sourceTree = "<group>"; };
 		D45451251C16333D0049075B /* SSKeychainQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKeychainQuery.h; sourceTree = "<group>"; };
 		D45451261C16333D0049075B /* SSKeychainQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSKeychainQuery.m; sourceTree = "<group>"; };
+		D454512A1C163F590049075B /* EXUserSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXUserSettings.h; sourceTree = "<group>"; };
+		D454512B1C163F590049075B /* EXUserSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXUserSettings.m; sourceTree = "<group>"; };
+		D454512C1C163F590049075B /* EXUserSettingsStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXUserSettingsStorage.h; sourceTree = "<group>"; };
+		D454512D1C163F590049075B /* EXUserSettingsStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXUserSettingsStorage.m; sourceTree = "<group>"; };
 		D46388D61BDED7B6005DEB80 /* CDVBarcodeScanner.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = CDVBarcodeScanner.bundle; sourceTree = "<group>"; };
 		D46388D91BDED8C8005DEB80 /* CordovaLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CordovaLib.xcodeproj; path = CordovaLib/CordovaLib.xcodeproj; sourceTree = "<group>"; };
 		D48DBD5E1B57B1B6002E8B7F /* NSStringMask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringMask.h; sourceTree = "<group>"; };
@@ -599,7 +596,7 @@
 			children = (
 				687FBA1115E63DDF008B956A /* Appdelegate */,
 				687FBA1415E63DDF008B956A /* Service */,
-				687FBA2A15E63DDF008B956A /* Storage */,
+				D45451291C163F590049075B /* Settings */,
 				687FBA3315E63DDF008B956A /* View */,
 				3629DEA71B8355360066D254 /* Utils */,
 			);
@@ -623,38 +620,6 @@
 			);
 			name = Service;
 			path = service;
-			sourceTree = "<group>";
-		};
-		687FBA2A15E63DDF008B956A /* Storage */ = {
-			isa = PBXGroup;
-			children = (
-				687FBA2B15E63DDF008B956A /* Credentials */,
-				687FBA2E15E63DDF008B956A /* Settings */,
-			);
-			name = Storage;
-			path = storage;
-			sourceTree = "<group>";
-		};
-		687FBA2B15E63DDF008B956A /* Credentials */ = {
-			isa = PBXGroup;
-			children = (
-				687FBA2C15E63DDF008B956A /* EXCredentialsManager.h */,
-				687FBA2D15E63DDF008B956A /* EXCredentialsManager.m */,
-			);
-			name = Credentials;
-			path = credentials;
-			sourceTree = "<group>";
-		};
-		687FBA2E15E63DDF008B956A /* Settings */ = {
-			isa = PBXGroup;
-			children = (
-				687FBA2F15E63DDF008B956A /* EXUserSettings.h */,
-				687FBA3015E63DDF008B956A /* EXUserSettings.m */,
-				687FBA3115E63DDF008B956A /* EXUserSettingsStorage.h */,
-				687FBA3215E63DDF008B956A /* EXUserSettingsStorage.m */,
-			);
-			name = Settings;
-			path = settings;
 			sourceTree = "<group>";
 		};
 		687FBA3315E63DDF008B956A /* View */ = {
@@ -941,6 +906,18 @@
 				D45451261C16333D0049075B /* SSKeychainQuery.m */,
 			);
 			path = SSKeychain;
+			sourceTree = "<group>";
+		};
+		D45451291C163F590049075B /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				D454512A1C163F590049075B /* EXUserSettings.h */,
+				D454512B1C163F590049075B /* EXUserSettings.m */,
+				D454512C1C163F590049075B /* EXUserSettingsStorage.h */,
+				D454512D1C163F590049075B /* EXUserSettingsStorage.m */,
+			);
+			name = Settings;
+			path = settings;
 			sourceTree = "<group>";
 		};
 		D46388DF1BDED8CF005DEB80 /* Products */ = {
@@ -1366,9 +1343,6 @@
 				3629DEA01B832B050066D254 /* EXSignInViewController.m in Sources */,
 				D4B774041BDECE1400D08421 /* CDVConnection.m in Sources */,
 				D48DBD621B57B1B6002E8B7F /* NSStringMask.m in Sources */,
-				687FBA5615E63DDF008B956A /* EXCredentialsManager.m in Sources */,
-				687FBA5715E63DDF008B956A /* EXUserSettings.m in Sources */,
-				687FBA5815E63DDF008B956A /* EXUserSettingsStorage.m in Sources */,
 				D4DE3BA81C0EFE9B00B8CB41 /* AFHTTPSessionManager.m in Sources */,
 				D4DE3BA91C0EFE9B00B8CB41 /* AFNetworkReachabilityManager.m in Sources */,
 				D4271EAF19D9ACD300B7DA2D /* zip.c in Sources */,
@@ -1393,6 +1367,7 @@
 				3629DEB61B8355360066D254 /* DeviceModelInfo.m in Sources */,
 				361449E11B8EF7E800CD2CE2 /* EXToolbarItem.m in Sources */,
 				D4C1DC611C11C49C004591C0 /* EXSAMLRequestSerializer.m in Sources */,
+				D454512E1C163F590049075B /* EXUserSettings.m in Sources */,
 				D4C1DC571C103E2E004591C0 /* EXSAMLResponse.m in Sources */,
 				D4B773FE1BDECE1400D08421 /* CDVFileTransfer.m in Sources */,
 				D4DE3BAD1C0EFE9B00B8CB41 /* AFURLResponseSerialization.m in Sources */,
@@ -1427,6 +1402,7 @@
 				D4DE3BAC1C0EFE9B00B8CB41 /* AFURLRequestSerialization.m in Sources */,
 				D4B773F21BDECE1400D08421 /* CDVJpegHeaderWriter.m in Sources */,
 				D4B774001BDECE1400D08421 /* CDVGlobalization.m in Sources */,
+				D454512F1C163F590049075B /* EXUserSettingsStorage.m in Sources */,
 				D4B773F11BDECE1400D08421 /* CDVCamera.m in Sources */,
 				D4DE3BB41C0F360200B8CB41 /* EXSAMLResponseSerializer.m in Sources */,
 				361449EA1B8F1CE300CD2CE2 /* RootViewController.m in Sources */,
@@ -1537,6 +1513,7 @@
 		6F3037C7138A638E008FE68E /* AdHoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				ENABLE_BITCODE = NO;
@@ -1606,6 +1583,7 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				ENABLE_BITCODE = NO;
@@ -1633,6 +1611,7 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				ENABLE_BITCODE = NO;
@@ -1660,6 +1639,7 @@
 		D66B3A74154802C200C1134E /* AppStore */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				ENABLE_BITCODE = NO;

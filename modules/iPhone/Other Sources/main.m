@@ -1,6 +1,6 @@
 //
 //  main.m
-//  MultPhoneGap
+//  Appery
 //
 //  Created by Pavel Gorb on 4/26/11.
 //  Copyright 2011 Exadel Inc. All rights reserved.
