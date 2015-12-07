@@ -11,7 +11,6 @@
 #import "MBProgressHUD.h"
 
 #import "EXUserSettingsStorage.h"
-#import "EXCredentialsManager.h"
 #import "EXProjectsMetadataViewController.h"
 #import "EXMainWindowAppDelegate.h"
 
