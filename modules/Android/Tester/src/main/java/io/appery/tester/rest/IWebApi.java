@@ -1,6 +1,6 @@
 package io.appery.tester.rest;
 
-import io.appery.tester.db.entity.Project;
+import io.appery.tester.db.entity.ProjectsCollection;
 import io.appery.tester.utils.Constants;
 import retrofit.client.Response;
 import retrofit.http.Field;
@@ -22,7 +22,7 @@ public interface IWebApi {
     Response doSamlRequest(@Path(encode = false, value = "path") String path, @Field(Constants.PARAMS.SAML_RESPONSE_PARAM) String samlValue);
 
     @GET(Constants.API.GET_PROJECTLIST)
-    Project.ProjectsList doGetProjects();
+    ProjectsCollection doGetProjects();
 
     @GET(Constants.API.LOGOUT)
     Response doLogout();

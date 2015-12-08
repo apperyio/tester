@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.appery.tester.db.entity.Project;
+import io.appery.tester.db.entity.ProjectsCollection;
 import io.appery.tester.db.entity.User;
 
 /**
@@ -26,6 +27,7 @@ public final class Contract {
          * inner application entities
          */
         uriRegisterForPersisterNotification.put(Project.class, Project.contentUri);
+        uriRegisterForPersisterNotification.put(ProjectsCollection.class, ProjectsCollection.contentUri);
     }
 
     public static Map<Class<?>, Uri> getUris() {

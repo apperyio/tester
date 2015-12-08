@@ -1,18 +1,18 @@
 package io.appery.tester.rest.request;
 
-import io.appery.tester.db.entity.Project;
+import io.appery.tester.db.entity.ProjectsCollection;
 import io.appery.tester.rest.IWebApi;
 
 /**
  * Created by Alexandr.Salin on 12/3/15.
  */
-public class GetProjectsRequest extends BaseRequest<Project.ProjectsList, IWebApi> {
+public class GetProjectsRequest extends BaseRequest<ProjectsCollection, IWebApi> {
     public GetProjectsRequest() {
-        super(Project.ProjectsList.class, IWebApi.class);
+        super(ProjectsCollection.class, IWebApi.class);
     }
 
     @Override
-    Project.ProjectsList loadData() {
+    ProjectsCollection loadData() {
         return getService().doGetProjects();
     }
 }

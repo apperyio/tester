@@ -22,20 +22,21 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import io.appery.tester.ui.projects.adapter.ProjectListAdapter;
-import io.appery.tester.utils.comparators.ProjectComparator;
 import io.appery.tester.db.entity.Project;
+import io.appery.tester.db.entity.ProjectsCollection;
 import io.appery.tester.net.api.BaseResponse;
 import io.appery.tester.net.api.callback.ProjectListCallback;
 import io.appery.tester.preview.ProjectPreviewManager;
 import io.appery.tester.ui.base.activity.BaseActivity;
+import io.appery.tester.ui.projects.adapter.ProjectListAdapter;
 import io.appery.tester.utils.CommonUtil;
 import io.appery.tester.utils.Constants;
+import io.appery.tester.utils.comparators.ProjectComparator;
 
 /**
  * @author Daniel Lukashevich
  */
-public class ProjectListActivity extends BaseActivity implements ProjectListCallback, RequestListener<Project.ProjectsList> {
+public class ProjectListActivity extends BaseActivity implements ProjectListCallback, RequestListener<ProjectsCollection> {
 
     // UI
     private ListView mProjectListView;
@@ -106,7 +107,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         //GetProjectList getProjectList = new GetProjectList(getRestManager(), this);
         showDialog(Constants.DIALOGS.PROGRESS);
         //getProjectList.execute();
-        RestManager.getProjectsList(this,this);
+        //RestManager.getProjectsList(this,this);
 
         // preparing project actions list
         this.RUN_PROJECT_ACTION = getString(R.string.project_action_run);
@@ -117,7 +118,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         // folders
         mFolders.add(ALL_FOLDERS);
 
-       // mFolderAdapter = new FolderAdapter(this, mFolders, getResources().getColor(android.R.color.holo_blue_light));
+        // mFolderAdapter = new FolderAdapter(this, mFolders, getResources().getColor(android.R.color.holo_blue_light));
     }
 
 
@@ -125,7 +126,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (selectedProject != null) {
-            outState.putSerializable(Constants.EXTRAS.SELECTED_PROJECT, selectedProject);
+            //outState.putSerializable(Constants.EXTRAS.SELECTED_PROJECT, selectedProject);
             outState.putSerializable(Constants.EXTRAS.PROJECTS_LIST, (Serializable) projectList);
             outState.putSerializable(Constants.EXTRAS.SORT_BY, sortBy);
         }
@@ -238,7 +239,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
         mFolders.add(ALL_FOLDERS);
         mFolders.add(MY_FOLDER);
         mFolders.addAll(owners);
-       // mFolderAdapter.selected = 0;
+        // mFolderAdapter.selected = 0;
         //mFolderAdapter.setFolders(mFolders);
         //mFolderAdapter.notifyDataSetChanged();
     }
@@ -274,7 +275,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
     }
 
     @Override
-    public void onRequestSuccess(Project.ProjectsList projects) {
+    public void onRequestSuccess(ProjectsCollection projects) {
         try {
             removeDialog(Constants.DIALOGS.PROGRESS);
         } catch (Exception e) {

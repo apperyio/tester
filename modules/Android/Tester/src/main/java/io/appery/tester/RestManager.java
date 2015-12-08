@@ -4,6 +4,7 @@ import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import io.appery.tester.db.entity.Project;
+import io.appery.tester.db.entity.ProjectsCollection;
 import io.appery.tester.db.entity.User;
 import io.appery.tester.rest.SpiceHolder;
 import io.appery.tester.rest.request.GetProjectsRequest;
@@ -31,7 +32,7 @@ public class RestManager {
         holder.getSpiceManager().execute(new SamlRequest(url, samlValue), listener);
     }
 
-    public static void getProjectsListImmidiatly(SpiceHolder holder, RequestListener<Project.ProjectsList> listener) {
+    public static void getProjectsListImmidiatly(SpiceHolder holder, RequestListener<ProjectsCollection> listener) {
         holder.getSpiceManager().execute(new GetProjectsRequest(), Project.class.getSimpleName(), DurationInMillis.ALWAYS_EXPIRED, listener);
     }
 

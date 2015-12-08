@@ -8,8 +8,6 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.tojc.ormlite.android.annotation.AdditionalAnnotation;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 
 import io.appery.tester.db.Contract;
@@ -173,10 +171,5 @@ public class Project implements Entity {
                 ", resourcesLink='" + resourcesLink + '\'' +
                 ", owner='" + owner + '\'' +
                 '}';
-    }
-
-    @SuppressWarnings("serial")
-    public static class ProjectsList extends ArrayList<Project> {
-
     }
 }

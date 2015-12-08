@@ -7,22 +7,13 @@ import com.octo.android.robospice.persistence.exception.CacheCreationException;
 import com.octo.android.robospice.persistence.ormlite.InDatabaseObjectPersisterFactory;
 import com.octo.android.robospice.persistence.ormlite.RoboSpiceDatabaseHelper;
 import com.octo.android.robospice.retrofit.RetrofitGsonSpiceService;
-import com.squareup.okhttp.OkHttpClient;
 
-import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import io.appery.tester.db.Contract;
 import io.appery.tester.db.entity.Project;
+import io.appery.tester.db.entity.ProjectsCollection;
 import retrofit.RestAdapter;
 
 /**
@@ -72,10 +63,9 @@ public class TesterSpiceService extends RetrofitGsonSpiceService {
     @Override
     public CacheManager createCacheManager(Application application) throws CacheCreationException {
         CacheManager cacheManager = new CacheManager();
-        RoboSpiceDatabaseHelper databaseHelper = new RoboSpiceDatabaseHelper(application,Contract.DATABASE_NAME, Contract.DATABASE_VERSION);
-        List<Class<?>> list = new ArrayList<>();
-        list.add(Project.class);
-        InDatabaseObjectPersisterFactory inDatabaseObjectPersisterFactory = new InDatabaseObjectPersisterFactory(application, databaseHelper,list);
+        RoboSpiceDatabaseHelper databaseHelper = new RoboSpiceDatabaseHelper(application, Contract.DATABASE_NAME, Contract.DATABASE_VERSION);
+
+        InDatabaseObjectPersisterFactory inDatabaseObjectPersisterFactory = new InDatabaseObjectPersisterFactory(application, databaseHelper, Contract.getUris());
         cacheManager.addPersister(inDatabaseObjectPersisterFactory);
         return cacheManager;
     }
