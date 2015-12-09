@@ -81,7 +81,7 @@ public class ProjectListActivity extends BaseActivity implements ProjectListCall
     @Override
     protected void afterViews(Bundle savedInstanceState) {
         super.afterViews(savedInstanceState);
-        projectPreviewManager = new ProjectPreviewManager(getRestManager(), this);
+        projectPreviewManager = new ProjectPreviewManager(this);
         if (savedInstanceState != null) {
             sortBy = savedInstanceState.getInt(Constants.EXTRAS.SORT_BY, ProjectComparator.BY_EDIT_DATE);
             projectList = (List<Project>) savedInstanceState.get(Constants.EXTRAS.PROJECTS_LIST);

@@ -2,6 +2,7 @@ package io.appery.tester.ui.projects.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.widget.ListView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -9,10 +10,13 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import butterknife.Bind;
+import butterknife.OnItemClick;
+import butterknife.OnItemSelected;
 import io.appery.tester.R;
 import io.appery.tester.RestManager;
 import io.appery.tester.db.entity.Project;
 import io.appery.tester.db.entity.ProjectsCollection;
+import io.appery.tester.preview.ProjectPreviewManager;
 import io.appery.tester.ui.base.fragment.BaseFragment;
 import io.appery.tester.ui.projects.adapter.ProjectListAdapter;
 import io.appery.tester.ui.projects.callback.MasterCallback;
@@ -42,15 +46,22 @@ public class ProjectListFragment extends BaseFragment implements RequestListener
         list.setAdapter(new ProjectListAdapter(getContext(), CommonUtil.<Project>getNewArrayList()));
     }
 
+    @OnItemClick(R.id.project_list)
+    void onItemSelected(int position) {
+        Project selectedProject = (Project) list.getItemAtPosition(position);
+        DialogHelper.buildProjectActionDialog(getContext(),selectedProject);
+    }
+
     @Override
     public void refresh() {
-        dialog = DialogHelper.buildAuthProgressDialog(getContext());
+        dialog = DialogHelper.buildDownloadProjectsProgressDialog(getContext());
         RestManager.getProjectsListImmidiatly(this, this);
     }
 
     @Override
     public void onRequestFailure(SpiceException spiceException) {
         dialog.dismiss();
+        Snackbar.make(list, spiceException.getMessage(), Snackbar.LENGTH_LONG).show();
     }
 
     @Override

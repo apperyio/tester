@@ -1,52 +1,51 @@
 package io.appery.tester.preview;
 
-import io.appery.tester.ApperyActivity;
-import io.appery.tester.ui.base.activity.BaseActivity;
-import io.appery.tester.R;
-import io.appery.tester.net.RestManager;
-import io.appery.tester.tasks.DownloadFileTask;
-import io.appery.tester.tasks.callback.DownloadFileCallback;
-import io.appery.tester.utils.Constants;
-import io.appery.tester.utils.FileUtils;
-import io.appery.tester.utils.IntentUtils;
-import io.appery.tester.utils.NoProjectSourceException;
-import io.appery.tester.utils.ProjectStorageManager;
-import io.appery.tester.utils.CommonUtil;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+
+import org.apache.http.client.ClientProtocolException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.http.client.ClientProtocolException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import android.net.Uri;
+import io.appery.tester.ApperyActivity;
+import io.appery.tester.R;
+import io.appery.tester.tasks.DownloadFileTask;
+import io.appery.tester.tasks.callback.DownloadFileCallback;
+import io.appery.tester.ui.base.activity.BaseActivity;
+import io.appery.tester.utils.CommonUtil;
+import io.appery.tester.utils.Constants;
+import io.appery.tester.utils.FileUtils;
+import io.appery.tester.utils.IntentUtils;
+import io.appery.tester.utils.NoProjectSourceException;
+import io.appery.tester.utils.ProjectStorageManager;
 
 /**
  * Created by Maxim Balyaba on 09.07.2015.
  */
 public class ProjectPreviewManager implements DownloadFileCallback {
     private static final Logger logger = LoggerFactory.getLogger(ProjectPreviewManager.class);
-    private RestManager restManager;
 
-    private BaseActivity activityContext;
+    private Context activityContext;
 
     private String DEBUG_ON_SERVICE_PARAM = "debug=true";
 
     private String DEBUG_OFF_SERVICE_PARAM = "debug=false";
-    
-    
+
+
     /**
-     * Contains Cordova resources archive as key and directory as a value. 
+     * Contains Cordova resources archive as key and directory as a value.
      */
     private Map<String, String> CORDOVA_RESOURCES;
 
-    public ProjectPreviewManager(RestManager restManager, BaseActivity context) {
-        this.restManager = restManager;
+    public ProjectPreviewManager(Context context) {
         this.activityContext = context;
-        
+
         CORDOVA_RESOURCES = new HashMap<String, String>();
         CORDOVA_RESOURCES.put("cordova_resources.zip", "/files/resources/lib/");
         CORDOVA_RESOURCES.put("cordova_resources_3.0.zip", "/libs/");
@@ -64,7 +63,6 @@ public class ProjectPreviewManager implements DownloadFileCallback {
     }
 
     public void downloadAndStartProjectPreviewByCode(String accessCode) {
-        restManager.setBaseURL(restManager.getBaseURLConstant());
         DownloadFileTask getApkTask = new DownloadFileTask(activityContext, Constants.FILENAME_ZIP, this, new DownloadFileTask.DownloadFileErrorCallback() {
             @Override
             public void onFileDownloadError(Throwable exception) {
@@ -115,7 +113,8 @@ public class ProjectPreviewManager implements DownloadFileCallback {
                 FileUtils.clearDirectory(dirPath);
                 FileUtils.unzip(ProjectStorageManager.getPROJECT_ZIP_FILE(), dirPath);
                 replaceCordovaResources(dirPath);
-                activityContext.startActivity(ApperyActivity.class);
+                Intent intent = new Intent(activityContext, ApperyActivity.class);
+                activityContext.startActivity(intent);
             } catch (IOException e) {
                 logger.error("Not able , try again later", e);
                 CommonUtil.showToast(activityContext.getString(R.string.preview_error_toast));
@@ -127,7 +126,7 @@ public class ProjectPreviewManager implements DownloadFileCallback {
         for (String archive : this.CORDOVA_RESOURCES.keySet()) {
             String path = dirPath + this.CORDOVA_RESOURCES.get(archive);
             String cordovaArchiveFullPath = path + archive;
-            
+
             FileUtils.checkDir(path);
             FileUtils.copyAsset(activityContext, archive, cordovaArchiveFullPath);
             try {

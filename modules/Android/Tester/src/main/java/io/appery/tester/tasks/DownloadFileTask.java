@@ -7,6 +7,7 @@ import io.appery.tester.utils.IOUtils;
 
 import java.io.File;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -34,14 +35,14 @@ public class DownloadFileTask extends AsyncTask<String, Void, File> {
 
     private boolean isError = false;
 
-    public DownloadFileTask(BaseActivity context, String fileName, DownloadFileCallback callback) {
-        this.mContext = context;
+    public DownloadFileTask(Context context, String fileName, DownloadFileCallback callback) {
+        this.mContext = (BaseActivity) context;
         this.mFileName = fileName;
         this.mCallback = callback;
     }
 
-    public DownloadFileTask(BaseActivity context, String fileName, DownloadFileCallback callback,DownloadFileErrorCallback errorCallback) {
-        this.mContext = context;
+    public DownloadFileTask(Context context, String fileName, DownloadFileCallback callback,DownloadFileErrorCallback errorCallback) {
+        this.mContext = (BaseActivity) context;
         this.mFileName = fileName;
         this.mCallback = callback;
         this.errorCallback = errorCallback;

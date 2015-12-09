@@ -20,8 +20,8 @@ public class Project implements Entity {
     public static final String CONTENT_URI_PATH = TABLENAME;
     public static final String MIMETYPE_TYPE = TABLENAME;
     public static final String MIMETYPE_NAME = Contract.AUTHORITY + ".provider";
-    public static final int CONTENT_URI_PATTERN_MANY = 5041;
-    public static final int CONTENT_URI_PATTERN_ONE = 5042;
+    public static final int CONTENT_URI_PATTERN_MANY = 1001;
+    public static final int CONTENT_URI_PATTERN_ONE = 1002;
     public static final Uri contentUri = new Uri.Builder()
             .scheme(ContentResolver.SCHEME_CONTENT)
             .authority(Contract.AUTHORITY)
@@ -38,6 +38,7 @@ public class Project implements Entity {
     public static final String RESOURCES_LINK_FIELD = "resources_link_date";
     public static final String TYPE_FIELD = "type";
     public static final String DISABLED_FIELD = "disabled";
+    public static final String PARENT_LIST_FIELD = "parent_list";
 
     @DatabaseField(columnName = Project._ID, generatedId = true)
     @AdditionalAnnotation.DefaultSortOrder
@@ -82,6 +83,9 @@ public class Project implements Entity {
     @SerializedName(DISABLED_FIELD)
     @DatabaseField(columnName = DISABLED_FIELD)
     private boolean disabled;
+
+    @DatabaseField(foreign = true, columnName = PARENT_LIST_FIELD)
+    private ProjectsCollection parentList;
 
     public Project() {
     }
