@@ -19,6 +19,9 @@ public class TesterSpiceEndpoint implements Endpoint {
     }
 
     private String buildIdp(String url) {
+        if (!url.contains("https://")){
+            throw new IllegalArgumentException("Use only https protocol!");
+        }
         return new StringBuilder(url).insert("https://".length(), "idp.").toString();
     }
 

@@ -38,8 +38,10 @@ public class LoginListener extends BaseListener<Response> {
         Throwable result = cause;
         if ((cause.getCause() instanceof RetrofitError)) {
             RetrofitError error = (RetrofitError) cause.getCause();
-            if (error.getResponse().getStatus() == 500) {
+            if (error.getResponse() != null && error.getResponse().getStatus() == 500) {
                 result = new Exception(TesterApplication.getInstance().getString(R.string.error_incorrect_credentials), cause);
+            }else{
+                result = error;
             }
         }
         return result;
@@ -54,7 +56,7 @@ public class LoginListener extends BaseListener<Response> {
         try {
             String saml = bodyString.substring(bodyString.indexOf("VALUE=\"") + 7, bodyString.indexOf("\"/>"));
             String url = bodyString.substring(bodyString.indexOf("ACTION=\"") + 8, bodyString.indexOf("\"><I"));
-            logger.warn("after retrofit login success we obtain url : {}, and saml : {}",url,saml);
+            logger.warn("after retrofit login success we obtain url : {}, and saml : {}", url, saml);
             if (mAuthCallback != null) {
                 RestManager.samlRequest(mAuthCallback, url, saml, new SamlListener(mAuthCallback));
             }
