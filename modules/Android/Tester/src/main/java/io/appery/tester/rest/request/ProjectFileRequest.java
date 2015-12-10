@@ -20,13 +20,12 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.appery.tester.ApperyActivity;
+import io.appery.tester.ui.appery.ApperyActivity;
 import io.appery.tester.R;
 import io.appery.tester.TesterApplication;
 import io.appery.tester.utils.CommonUtil;
-import io.appery.tester.utils.Constants;
+import io.appery.tester.Constants;
 import io.appery.tester.utils.FileUtils;
-import io.appery.tester.utils.IntentUtils;
 import io.appery.tester.utils.ProjectStorageManager;
 import retrofit.RetrofitError;
 import roboguice.util.temp.Ln;
@@ -102,12 +101,7 @@ public class ProjectFileRequest extends BinaryRequest implements RequestListener
     @Override
     public void onRequestSuccess(InputStream inputStream) {
         String fName = getCacheFile().getName();
-        if (Constants.FILENAME_APK.equals(fName)) {
-            boolean install = new IntentUtils(context).installApk(getCacheFile());
-            if (!install) {
-                CommonUtil.showToast(context.getString(R.string.application_download_error_toast));
-            }
-        } else if (Constants.FILENAME_ZIP.equals(fName)) {
+        if (Constants.FILENAME_ZIP.equals(fName)) {
             // Unzip
             String dirPath = ProjectStorageManager.getWORK_DIRECTORY();
             try {

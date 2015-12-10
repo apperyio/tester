@@ -8,16 +8,14 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-import io.appery.tester.ProjectListActivity;
 import io.appery.tester.R;
 import io.appery.tester.RestManager;
 import io.appery.tester.db.entity.User;
 import io.appery.tester.rest.listener.LoginListener;
 import io.appery.tester.ui.base.fragment.BaseFragment;
-import io.appery.tester.ui.dialogs.EnterAppCodeDialog;
 import io.appery.tester.ui.login.callback.AuthCallback;
 import io.appery.tester.ui.projects.activity.GeneralProjectsActivity;
-import io.appery.tester.utils.Constants;
+import io.appery.tester.Constants;
 import io.appery.tester.utils.DialogHelper;
 import io.appery.tester.utils.PrefsUtil;
 import io.appery.tester.utils.WidgetUtils;
@@ -43,7 +41,7 @@ public class AuthFragment extends BaseFragment implements AuthCallback {
 
     @OnClick(R.id.enter_code_btn)
     protected void enterCodeClick() {
-       DialogHelper.buildProjectByCodeDialog(getContext());
+        DialogHelper.buildProjectByCodeDialog(getContext());
     }
 
     @Override

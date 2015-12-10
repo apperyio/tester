@@ -1,7 +1,7 @@
 package io.appery.tester.rest;
 
 import io.appery.tester.db.entity.ProjectsCollection;
-import io.appery.tester.utils.Constants;
+import io.appery.tester.Constants;
 import retrofit.client.Response;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;

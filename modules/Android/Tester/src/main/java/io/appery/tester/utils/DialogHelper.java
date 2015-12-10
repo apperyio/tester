@@ -10,8 +10,6 @@ import io.appery.tester.R;
 import io.appery.tester.RestManager;
 import io.appery.tester.TesterApplication;
 import io.appery.tester.db.entity.Project;
-import io.appery.tester.preview.ProjectPreviewManager;
-import io.appery.tester.rest.SpiceHolder;
 import io.appery.tester.rest.TesterSpiceEndpoint;
 
 /**
@@ -46,7 +44,6 @@ public class DialogHelper {
                     @Override
                     public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
                         materialDialog.dismiss();
-                        TesterApplication.getInstance().setBaseURL(new TesterSpiceEndpoint().getUrl());
                         RestManager.getProjectFile(context, project.getResourcesLink());
                     }
                 })
@@ -62,7 +59,7 @@ public class DialogHelper {
     static public MaterialDialog buildProjectByCodeDialog(final Context context) {
         return new MaterialDialog.Builder(context)
                 .title(R.string.enter_app_code_dialog_title)
-                .customView(R.layout.dialog_enter_code,true)
+                .customView(R.layout.dialog_enter_code, true)
                 .positiveText(R.string.enter_app_code_pos_button)
                 .negativeText(R.string.enter_app_code_cancel_button)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {

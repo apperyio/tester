@@ -11,12 +11,10 @@ import com.octo.android.robospice.request.listener.RequestListener;
 
 import butterknife.Bind;
 import butterknife.OnItemClick;
-import butterknife.OnItemSelected;
 import io.appery.tester.R;
 import io.appery.tester.RestManager;
 import io.appery.tester.db.entity.Project;
 import io.appery.tester.db.entity.ProjectsCollection;
-import io.appery.tester.preview.ProjectPreviewManager;
 import io.appery.tester.ui.base.fragment.BaseFragment;
 import io.appery.tester.ui.projects.adapter.ProjectListAdapter;
 import io.appery.tester.ui.projects.callback.MasterCallback;
@@ -49,7 +47,7 @@ public class ProjectListFragment extends BaseFragment implements RequestListener
     @OnItemClick(R.id.project_list)
     void onItemSelected(int position) {
         Project selectedProject = (Project) list.getItemAtPosition(position);
-        DialogHelper.buildProjectActionDialog(getContext(),selectedProject);
+        DialogHelper.buildProjectActionDialog(getContext(), selectedProject);
     }
 
     @Override

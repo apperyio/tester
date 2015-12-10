@@ -4,6 +4,7 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
 
 import java.io.File;
 
+import io.appery.tester.Constants;
 import io.appery.tester.TesterApplication;
 
 public class ProjectStorageManager {

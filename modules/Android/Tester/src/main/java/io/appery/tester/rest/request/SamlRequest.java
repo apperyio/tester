@@ -2,7 +2,7 @@ package io.appery.tester.rest.request;
 
 import io.appery.tester.rest.IWebApi;
 import io.appery.tester.rest.TesterSpiceEndpoint;
-import io.appery.tester.utils.Constants;
+import io.appery.tester.Constants;
 import retrofit.client.Response;
 
 /**

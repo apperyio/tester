@@ -11,7 +11,7 @@ import com.tojc.ormlite.android.annotation.AdditionalAnnotation;
 import java.util.Date;
 
 import io.appery.tester.db.Contract;
-import io.appery.tester.utils.Constants;
+import io.appery.tester.Constants;
 
 @DatabaseTable(tableName = Project.TABLENAME)
 @AdditionalAnnotation.DefaultContentUri(authority = Contract.AUTHORITY, path = Project.CONTENT_URI_PATH)

@@ -2,8 +2,6 @@ package io.appery.tester;
 
 import android.app.Application;
 
-import io.appery.tester.net.RestManager;
-
 /**
  * Application for this project.
  *
@@ -11,7 +9,6 @@ import io.appery.tester.net.RestManager;
  */
 public class TesterApplication extends Application {
     private static TesterApplication instance;
-    private RestManager restManager = null;
 
     @Override
     public void onCreate() {
@@ -22,18 +19,4 @@ public class TesterApplication extends Application {
     public static TesterApplication getInstance() {
         return instance;
     }
-
-    public void setBaseURL(String serverUrl) {
-        if ((restManager == null) || (!serverUrl.equals(restManager.getBaseURL()))) {
-            restManager = new RestManager(serverUrl);
-        }
-    }
-
-    public RestManager getRestManager() {
-        if (restManager == null) {
-            throw new RuntimeException("Base URL is not set");
-        }
-        return restManager;
-    }
-
 }

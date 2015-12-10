@@ -2,7 +2,7 @@ package io.appery.tester.rest;
 
 import io.appery.tester.R;
 import io.appery.tester.TesterApplication;
-import io.appery.tester.utils.Constants;
+import io.appery.tester.Constants;
 import io.appery.tester.utils.PrefsUtil;
 import io.appery.tester.utils.UserHelper;
 import retrofit.Endpoint;

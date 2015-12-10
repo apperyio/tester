@@ -7,10 +7,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import butterknife.Bind;
-import io.appery.tester.PreferencesActivity;
+import io.appery.tester.ui.preferences.PreferencesActivity;
 import io.appery.tester.R;
 import io.appery.tester.ui.base.activity.BaseActivity;
-import io.appery.tester.utils.Constants;
+import io.appery.tester.Constants;
 
 /**
  * Created by Alexandr.Salin on 11/28/15.

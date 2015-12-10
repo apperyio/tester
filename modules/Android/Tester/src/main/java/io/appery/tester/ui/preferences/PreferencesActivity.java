@@ -1,8 +1,10 @@
-package io.appery.tester;
+package io.appery.tester.ui.preferences;
 
 import android.view.Window;
+
+import io.appery.tester.R;
 import io.appery.tester.ui.widget.ButtonPreference;
-import io.appery.tester.utils.Constants;
+import io.appery.tester.Constants;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;

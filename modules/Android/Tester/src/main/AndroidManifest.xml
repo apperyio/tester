@@ -77,13 +77,13 @@
             android:label="@string/application_name"
             android:theme="@style/ProjectListTheme" />
         <activity
-            android:name="io.appery.tester.ApperyActivity"
+            android:name=".ui.appery.ApperyActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/application_name"
             android:launchMode="singleTop"
             android:theme="@style/CordovaTheme" />
         <activity
-            android:name=".PreferencesActivity"
+            android:name=".ui.preferences.PreferencesActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/application_name"
             android:launchMode="singleTop" />

@@ -17,7 +17,6 @@ import io.appery.tester.rest.request.LoginRequest;
 import io.appery.tester.rest.request.LogoutRequest;
 import io.appery.tester.rest.request.ProjectFileRequest;
 import io.appery.tester.rest.request.SamlRequest;
-import io.appery.tester.utils.Constants;
 import io.appery.tester.utils.DialogHelper;
 import io.appery.tester.utils.UserHelper;
 import retrofit.client.Response;

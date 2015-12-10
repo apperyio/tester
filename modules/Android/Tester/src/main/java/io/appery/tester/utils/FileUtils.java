@@ -1,5 +1,6 @@
 package io.appery.tester.utils;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -53,10 +54,26 @@ public class FileUtils {
                 }
 
                 zis.closeEntry();
-                IOUtils.closeStream(fout);
+                closeStream(fout);
             }
         }
-        IOUtils.closeStream(zis);
+        closeStream(zis);
+    }
+
+    /**
+     * Utilite method to close stream
+     *
+     * @param stream
+     *            <code>stream</code> to close
+     */
+    public static final void closeStream(Closeable stream) {
+        if (stream != null)
+            try {
+                stream.close();
+                stream = null;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
     }
 
     /**
@@ -73,32 +90,8 @@ public class FileUtils {
     }
 
     /**
-     * Is exists <code>dirPath</code> in filesystem
-     *
-     * @param dirPath
-     */
-    public static boolean isDirExists(String dirPath) {
-        File dir = new File(dirPath);
-        return dir.exists();
-    }
-
-    /**
-     * Unzip file from <code>zipFilePath</code> to the current directory
-     * 
-     * @param zipFilePath
-     * @throws IOException
-     */
-    public static final void extractHere(String zipFilePath) throws IOException {
-        File zipFile = new File(zipFilePath);
-        String destPath = zipFile.getParent();
-
-        unzip(zipFilePath, destPath);
-    }
-
-    /**
      * Clear directory.
-     * 
-     * @param dir
+     *
      * @throws IOException
      */
     public static final void clearDirectory(String dirPath) throws IOException {

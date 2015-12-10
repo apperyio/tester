@@ -2,6 +2,7 @@ package io.appery.tester.utils;
 
 import android.text.TextUtils;
 
+import io.appery.tester.Constants;
 import io.appery.tester.db.entity.User;
 
 /**
