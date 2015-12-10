@@ -13,8 +13,10 @@ import io.appery.tester.db.entity.ProjectsCollection;
 import io.appery.tester.db.entity.User;
 import io.appery.tester.rest.SpiceHolder;
 import io.appery.tester.rest.TesterSpiceEndpoint;
+import io.appery.tester.rest.listener.BaseListener;
 import io.appery.tester.rest.request.GetProjectsRequest;
 import io.appery.tester.rest.request.LoginRequest;
+import io.appery.tester.rest.request.LogoutRequest;
 import io.appery.tester.rest.request.ProjectFileRequest;
 import io.appery.tester.rest.request.SamlRequest;
 import io.appery.tester.utils.DialogHelper;
@@ -35,7 +37,7 @@ public class RestManager {
         if (!UserHelper.hasSAMLKey()) {
             return;
         }
-        //holder.getSpiceManager().execute(new LogoutRequest(), new BaseListener<Response>());
+        holder.getSpiceManager().execute(new LogoutRequest(), new BaseListener<Response>());
     }
 
     public static void samlRequest(SpiceHolder holder, String samlValue, RequestListener<Response> listener) {
