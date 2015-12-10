@@ -2,6 +2,8 @@ package io.appery.tester.utils;
 
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
+import java.io.File;
+
 import io.appery.tester.TesterApplication;
 
 public class ProjectStorageManager {
@@ -11,10 +13,15 @@ public class ProjectStorageManager {
     }
 
     public static String getPROJECT_ZIP_FILE() {
-        return getBase_DIR() + "/files/" + Constants.FILENAME_ZIP;
+        String result = getBase_DIR() + "/arch/";
+        File dir = new File(result);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        return result + Constants.FILENAME_ZIP;
     }
 
     public static String getWORK_DIRECTORY() {
-        return getBase_DIR() + "/app_default";
+        return getBase_DIR() + "/unpack_folder";
     }
 }

@@ -2,8 +2,11 @@ package io.appery.tester.rest;
 
 import android.app.Application;
 
+import com.nostra13.universalimageloader.utils.StorageUtils;
 import com.octo.android.robospice.persistence.CacheManager;
+import com.octo.android.robospice.persistence.binary.InFileInputStreamObjectPersister;
 import com.octo.android.robospice.persistence.exception.CacheCreationException;
+import com.octo.android.robospice.persistence.file.InFileObjectPersister;
 import com.octo.android.robospice.persistence.ormlite.InDatabaseObjectPersisterFactory;
 import com.octo.android.robospice.persistence.ormlite.RoboSpiceDatabaseHelper;
 import com.octo.android.robospice.retrofit.RetrofitGsonSpiceService;
@@ -64,9 +67,10 @@ public class TesterSpiceService extends RetrofitGsonSpiceService {
     public CacheManager createCacheManager(Application application) throws CacheCreationException {
         CacheManager cacheManager = new CacheManager();
         RoboSpiceDatabaseHelper databaseHelper = new RoboSpiceDatabaseHelper(application, Contract.DATABASE_NAME, Contract.DATABASE_VERSION);
-
+        InFileInputStreamObjectPersister inFilePersister = new InFileInputStreamObjectPersister(application, StorageUtils.getCacheDirectory(application));
         InDatabaseObjectPersisterFactory inDatabaseObjectPersisterFactory = new InDatabaseObjectPersisterFactory(application, databaseHelper, Contract.getUris());
         cacheManager.addPersister(inDatabaseObjectPersisterFactory);
+        cacheManager.addPersister(inFilePersister);
         return cacheManager;
     }
 }

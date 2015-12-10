@@ -11,6 +11,7 @@ import com.tojc.ormlite.android.annotation.AdditionalAnnotation;
 import java.util.Date;
 
 import io.appery.tester.db.Contract;
+import io.appery.tester.utils.Constants;
 
 @DatabaseTable(tableName = Project.TABLENAME)
 @AdditionalAnnotation.DefaultContentUri(authority = Contract.AUTHORITY, path = Project.CONTENT_URI_PATH)
@@ -35,7 +36,6 @@ public class Project implements Entity {
     public static final String OWNER_FIELD = "creator";
     public static final String CREATED_DATE_FIELD = "creationDate";
     public static final String LINK_FIELD = "link_date";
-    public static final String RESOURCES_LINK_FIELD = "resources_link_date";
     public static final String TYPE_FIELD = "type";
     public static final String DISABLED_FIELD = "disabled";
     public static final String PARENT_LIST_FIELD = "parent_list";
@@ -71,10 +71,6 @@ public class Project implements Entity {
     @SerializedName(LINK_FIELD)
     @DatabaseField(columnName = LINK_FIELD)
     private String link;
-
-    @SerializedName(RESOURCES_LINK_FIELD)
-    @DatabaseField(columnName = RESOURCES_LINK_FIELD)
-    private String resourcesLink;
 
     @SerializedName(TYPE_FIELD)
     @DatabaseField(columnName = TYPE_FIELD)
@@ -147,11 +143,7 @@ public class Project implements Entity {
     }
 
     public String getResourcesLink() {
-        return resourcesLink;
-    }
-
-    public void setResourcesLink(String resourcesLink) {
-        this.resourcesLink = resourcesLink;
+        return String.format(Constants.API.GET_PROJECT_RESOURCE, guid);
     }
 
     public ProjectType getType() {
@@ -172,7 +164,6 @@ public class Project implements Entity {
                 "guid='" + guid + '\'' +
                 ", name='" + name + '\'' +
                 ", link='" + link + '\'' +
-                ", resourcesLink='" + resourcesLink + '\'' +
                 ", owner='" + owner + '\'' +
                 '}';
     }

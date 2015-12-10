@@ -1,5 +1,8 @@
 package io.appery.tester;
 
+import android.content.Context;
+import android.net.Uri;
+
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -7,11 +10,15 @@ import io.appery.tester.db.entity.Project;
 import io.appery.tester.db.entity.ProjectsCollection;
 import io.appery.tester.db.entity.User;
 import io.appery.tester.rest.SpiceHolder;
+import io.appery.tester.rest.TesterSpiceEndpoint;
 import io.appery.tester.rest.listener.BaseListener;
 import io.appery.tester.rest.request.GetProjectsRequest;
 import io.appery.tester.rest.request.LoginRequest;
 import io.appery.tester.rest.request.LogoutRequest;
+import io.appery.tester.rest.request.ProjectFileRequest;
 import io.appery.tester.rest.request.SamlRequest;
+import io.appery.tester.utils.Constants;
+import io.appery.tester.utils.DialogHelper;
 import io.appery.tester.utils.UserHelper;
 import retrofit.client.Response;
 
@@ -38,5 +45,17 @@ public class RestManager {
         holder.getSpiceManager().execute(new GetProjectsRequest(), Project.class.getSimpleName(), DurationInMillis.ALWAYS_EXPIRED, listener);
     }
 
+    public static void getProjectFile(Context context, String url) {
+        SpiceHolder holder = (SpiceHolder) context;
+        String cUrl = new TesterSpiceEndpoint().getUrl() + url;
+        ProjectFileRequest request = new ProjectFileRequest(context, DialogHelper.buildDownloadProjectDialog(context), cUrl);
+        holder.getSpiceManager().execute(request, "PROJECT_FILE_ZIP", DurationInMillis.ALWAYS_EXPIRED, request);
+    }
 
+    public static void getProjectFileByCode(Context context, String code) {
+        SpiceHolder holder = (SpiceHolder) context;
+        String cUrl = new TesterSpiceEndpoint().getUrl() + String.format(Constants.API.GET_PROJECT_RESOURCE_BY_CODE, Uri.encode(code));
+        ProjectFileRequest request = new ProjectFileRequest(context, DialogHelper.buildDownloadProjectDialog(context), cUrl);
+        holder.getSpiceManager().execute(request, "PROJECT_FILE_ZIP", DurationInMillis.ALWAYS_EXPIRED, request);
+    }
 }

@@ -43,8 +43,7 @@ public class AuthFragment extends BaseFragment implements AuthCallback {
 
     @OnClick(R.id.enter_code_btn)
     protected void enterCodeClick() {
-        EnterAppCodeDialog enterAppCodeDialog = new EnterAppCodeDialog(getContext(), null);
-        enterAppCodeDialog.show();
+       DialogHelper.buildProjectByCodeDialog(getContext());
     }
 
     @Override

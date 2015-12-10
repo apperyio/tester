@@ -82,7 +82,7 @@ public class ProjectPreviewManager implements DownloadFileCallback {
                 processErrorException(exception);
             }
         });
-        getApkTask.execute(String.format(Constants.API.GET_PROJECT_RESOURCE_BY_CODE, Uri.encode(accessCode)));
+        getApkTask.execute();
     }
 
     private void processErrorException(Throwable exception) {
@@ -112,7 +112,7 @@ public class ProjectPreviewManager implements DownloadFileCallback {
                 FileUtils.checkDir(dirPath);
                 FileUtils.clearDirectory(dirPath);
                 FileUtils.unzip(ProjectStorageManager.getPROJECT_ZIP_FILE(), dirPath);
-                replaceCordovaResources(dirPath);
+                //replaceCordovaResources(dirPath);
                 Intent intent = new Intent(activityContext, ApperyActivity.class);
                 activityContext.startActivity(intent);
             } catch (IOException e) {
@@ -122,21 +122,6 @@ public class ProjectPreviewManager implements DownloadFileCallback {
         }
     }
 
-    private void replaceCordovaResources(String dirPath) {
-        for (String archive : this.CORDOVA_RESOURCES.keySet()) {
-            String path = dirPath + this.CORDOVA_RESOURCES.get(archive);
-            String cordovaArchiveFullPath = path + archive;
 
-            FileUtils.checkDir(path);
-            FileUtils.copyAsset(activityContext, archive, cordovaArchiveFullPath);
-            try {
-                FileUtils.unzip(cordovaArchiveFullPath, path);
-                FileUtils.removeFile(cordovaArchiveFullPath);
-            } catch (IOException e) {
-                logger.error("Not able , try again later", e);
-                CommonUtil.showToast(activityContext.getString(R.string.preview_error_toast));
-            }
-        }
-    }
 
 }
