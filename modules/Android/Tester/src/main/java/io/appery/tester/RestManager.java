@@ -6,6 +6,8 @@ import android.net.Uri;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.request.listener.RequestListener;
 
+import java.io.InputStream;
+
 import io.appery.tester.db.entity.Project;
 import io.appery.tester.db.entity.ProjectsCollection;
 import io.appery.tester.db.entity.User;
@@ -48,6 +50,7 @@ public class RestManager {
         SpiceHolder holder = (SpiceHolder) context;
         String cUrl = new TesterSpiceEndpoint().getUrl() + url;
         ProjectFileRequest request = new ProjectFileRequest(context, DialogHelper.buildDownloadProjectDialog(context), cUrl);
+        holder.getSpiceManager().removeDataFromCache(InputStream.class);
         holder.getSpiceManager().execute(request, "PROJECT_FILE_ZIP", DurationInMillis.ALWAYS_EXPIRED, request);
     }
 
@@ -55,6 +58,7 @@ public class RestManager {
         SpiceHolder holder = (SpiceHolder) context;
         String cUrl = new TesterSpiceEndpoint().getUrl() + String.format(Constants.API.GET_PROJECT_RESOURCE_BY_CODE, Uri.encode(code));
         ProjectFileRequest request = new ProjectFileRequest(context, DialogHelper.buildDownloadProjectDialog(context), cUrl);
+        holder.getSpiceManager().removeDataFromCache(InputStream.class);
         holder.getSpiceManager().execute(request, "PROJECT_FILE_ZIP", DurationInMillis.ALWAYS_EXPIRED, request);
     }
 }

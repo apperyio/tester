@@ -9,15 +9,16 @@ import com.j256.ormlite.table.DatabaseTable;
 import com.tojc.ormlite.android.annotation.AdditionalAnnotation;
 
 import java.util.Date;
+import java.util.Locale;
 
-import io.appery.tester.db.Contract;
 import io.appery.tester.Constants;
+import io.appery.tester.db.Contract;
 
 @DatabaseTable(tableName = Project.TABLENAME)
 @AdditionalAnnotation.DefaultContentUri(authority = Contract.AUTHORITY, path = Project.CONTENT_URI_PATH)
 @AdditionalAnnotation.DefaultContentMimeTypeVnd(name = Project.MIMETYPE_NAME, type = Project.MIMETYPE_TYPE)
 public class Project implements Entity {
-    public static final String TABLENAME = "MediaSummary";
+    public static final String TABLENAME = "Project";
     public static final String CONTENT_URI_PATH = TABLENAME;
     public static final String MIMETYPE_TYPE = TABLENAME;
     public static final String MIMETYPE_NAME = Contract.AUTHORITY + ".provider";
@@ -39,6 +40,11 @@ public class Project implements Entity {
     public static final String TYPE_FIELD = "type";
     public static final String DISABLED_FIELD = "disabled";
     public static final String PARENT_LIST_FIELD = "parent_list";
+
+    public static final String[] PROJECT_LIST_FRAGMENT_PROJECTION = new String[]{Project._ID,
+            GUID_FIELD, NAME_FIELD, OWNER_FIELD, LAST_EDIT_DATE_FIELD, DISABLED_FIELD, TYPE_FIELD
+    };
+    public static final String PROJECT_LIST_FRAGMENT_WHERE = DISABLED_FIELD + " = 0 ";
 
     @DatabaseField(columnName = Project._ID, generatedId = true)
     @AdditionalAnnotation.DefaultSortOrder
@@ -84,6 +90,11 @@ public class Project implements Entity {
     private ProjectsCollection parentList;
 
     public Project() {
+    }
+
+    public Project(String name, String guid) {
+        this.name = name;
+        this.guid = guid;
     }
 
     public String getGuid() {
@@ -166,5 +177,25 @@ public class Project implements Entity {
                 ", link='" + link + '\'' +
                 ", owner='" + owner + '\'' +
                 '}';
+    }
+
+    public static String getSortOrder(SortType type) {
+        String column = NAME_FIELD;
+        String sortOrder = Constants.Direction.ASC;
+        switch (type) {
+            case BY_NAME:
+                break;
+            case BY_CREATION_DATE: {
+                column = CREATED_DATE_FIELD;
+                sortOrder = Constants.Direction.DESC;
+                break;
+            }
+            case BY_MODIFY_DATE: {
+                column = LAST_EDIT_DATE_FIELD;
+                sortOrder = Constants.Direction.DESC;
+                break;
+            }
+        }
+        return String.format(Locale.US, "%s %s", column, sortOrder);
     }
 }

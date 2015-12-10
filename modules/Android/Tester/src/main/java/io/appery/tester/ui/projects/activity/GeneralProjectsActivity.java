@@ -7,7 +7,7 @@ import android.view.MenuItem;
 
 import butterknife.Bind;
 import io.appery.tester.R;
-import io.appery.tester.utils.comparators.ProjectComparator;
+import io.appery.tester.db.entity.SortType;
 import io.appery.tester.ui.base.activity.BaseActivity;
 import io.appery.tester.ui.projects.callback.MasterCallback;
 import io.appery.tester.ui.projects.callback.SlaveCallback;
@@ -48,13 +48,13 @@ public class GeneralProjectsActivity extends BaseActivity implements MasterCallb
                 slave.refresh();
                 return true;
             case R.id.menu_sort_by_name:
-                slave.updateProjectsList(ProjectComparator.BY_NAME);
+                slave.updateSortList(SortType.BY_NAME);
                 break;
             case R.id.menu_sort_by_modify_date:
-                slave.updateProjectsList(ProjectComparator.BY_EDIT_DATE);
+                slave.updateSortList(SortType.BY_MODIFY_DATE);
                 break;
             case R.id.menu_sort_by_create_date:
-                slave.updateProjectsList(ProjectComparator.BY_CREATE_DATE);
+                slave.updateSortList(SortType.BY_CREATION_DATE);
                 break;
             case R.id.menu_logout:
                 finish();

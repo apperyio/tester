@@ -1,5 +1,7 @@
 package io.appery.tester.rest.request;
 
+import io.appery.tester.db.PersistenceFacade;
+import io.appery.tester.db.entity.Project;
 import io.appery.tester.db.entity.ProjectsCollection;
 import io.appery.tester.rest.IWebApi;
 
@@ -13,6 +15,21 @@ public class GetProjectsRequest extends BaseRequest<ProjectsCollection, IWebApi>
 
     @Override
     ProjectsCollection loadData() {
-        return getService().doGetProjects();
+        cleanProjects();
+        ProjectsCollection result = new ProjectsCollection();
+        for (Project project : getService().doGetProjects()) {
+            if (!project.isDisabled()) {
+                result.add(project);
+            }
+        }
+        return result;
+    }
+
+    private void cleanProjects() {
+        try {
+            PersistenceFacade.getInstance().cleanTable(Project.class);
+            PersistenceFacade.getInstance().cleanTable(ProjectsCollection.class);
+        } catch (Exception ignore) {
+        }
     }
 }

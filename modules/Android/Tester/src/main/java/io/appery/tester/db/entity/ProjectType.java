@@ -5,7 +5,7 @@ package io.appery.tester.db.entity;
  * public static Long METRO_APP = 6L;
  * public static Long ANGULAR_APP = 7L;
  * public static Long ANGULAR_IONIC_APP = 8L;
- *
+ * <p/>
  * Created by Alexandr.Salin on 12/7/15.
  */
 public enum ProjectType {
@@ -24,7 +24,7 @@ public enum ProjectType {
         return id;
     }
 
-    static ProjectType get(int value) {
+    public static ProjectType get(int value) {
         ProjectType result = MOBILE;
         switch (value) {
             case 8: {

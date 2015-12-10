@@ -7,6 +7,15 @@ public interface Constants {
 
     public static final String EMPTY_STRING = "";
 
+    interface Loader {
+        int PROJECT_LOADER = 0x0001;
+    }
+
+    interface Direction {
+        public static final String ASC = "ASC";
+        public static final String DESC = "DESC";
+    }
+
     public interface API {
         public static final String LOGIN = "/idp/doLogin";
 
