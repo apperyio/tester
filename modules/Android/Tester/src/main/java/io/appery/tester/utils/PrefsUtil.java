@@ -1,15 +1,17 @@
 package io.appery.tester.utils;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import io.appery.tester.BuildConfig;
 import io.appery.tester.TesterApplication;
 
 /**
@@ -21,15 +23,15 @@ public class PrefsUtil {
     public static final String PREFERENCES_NAME = "PicPlaySP";
 
     private static PrefsUtil sInstance = new PrefsUtil();
-    ;
+
     private SharedPreferences mSharedPreferences;
 
     private PrefsUtil() {
-       // mSharedPreferences = TesterApplication.getInstance().getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(TesterApplication.getInstance());;
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(TesterApplication.getInstance());
     }
 
     public static PrefsUtil getInstance() {
+        //sInstance.writePrefsToLog();
         return sInstance;
     }
 
@@ -120,6 +122,32 @@ public class PrefsUtil {
 
     public Set<String> getStringSet(String key) {
         return mSharedPreferences.getStringSet(key, new HashSet<String>());
+    }
+
+    private void writePrefsToLog() {
+        if (!BuildConfig.DEBUG) {
+            return;
+        }
+        Map<String, String> prefsPairs = getAllPrefs();
+        for (Map.Entry<String, String> entry : prefsPairs.entrySet()) {
+            logger.warn("PREFERENCES" + "key: " + entry.getKey() + ", value" + entry.getValue() + "\n");
+        }
+    }
+
+    public Map<String, String> getAllPrefs() {
+        Map<String, String> result = new HashMap<>();
+        try {
+            Map<String, ?> keys = mSharedPreferences.getAll();
+            if (keys.size() == 0) {
+                return result;
+            }
+            for (Map.Entry<String, ?> entry : keys.entrySet()) {
+                result.put(entry.getKey(), entry.getValue().toString());
+            }
+        } catch (Exception ignore) {
+            logger.warn("PREFERENCES", ignore);
+        }
+        return result;
     }
 
 }

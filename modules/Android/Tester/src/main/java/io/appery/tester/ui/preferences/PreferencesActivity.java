@@ -31,7 +31,6 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 
         if (preference instanceof EditTextPreference) {
             preference.setOnPreferenceChangeListener(this);
-
             EditTextPreference p = (EditTextPreference) preference;
             preference.setSummary(p.getText());
         } else if (preference instanceof ButtonPreference) {

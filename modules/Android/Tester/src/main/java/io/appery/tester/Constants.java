@@ -18,6 +18,7 @@ public interface Constants {
 
     public interface API {
         public static final String LOGIN = "/idp/doLogin";
+        public static final String SAML_ENDPOINT = "/app/";
 
         public static final String GET_PROJECTLIST = "/app/rest/projects";
 

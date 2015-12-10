@@ -1,25 +1,26 @@
 package io.appery.tester.rest.request;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.appery.tester.rest.IWebApi;
-import io.appery.tester.rest.TesterSpiceEndpoint;
-import io.appery.tester.Constants;
 import retrofit.client.Response;
 
 /**
  * Created by Alexandr.Salin on 11/30/15.
  */
 public class SamlRequest extends BaseRequest<Response, IWebApi> {
-    private String path;
+    private static final Logger logger = LoggerFactory.getLogger(SamlRequest.class);
     private String saml;
 
-    public SamlRequest(String path, String samlValue) {
+    public SamlRequest(String samlValue) {
         super(Response.class, IWebApi.class);
-        this.path = path;
         this.saml = samlValue;
     }
 
     @Override
     Response loadData() {
-        return getService().doSamlRequest(path.replace(new TesterSpiceEndpoint().getUrl(), Constants.EMPTY_STRING), saml);
+        logger.warn("retr saml = {}", saml);
+        return getService().doSamlRequest(saml);
     }
 }

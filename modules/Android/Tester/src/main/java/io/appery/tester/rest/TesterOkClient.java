@@ -16,12 +16,14 @@ import retrofit.client.Response;
  */
 public class TesterOkClient extends OkClient {
     private static final Logger logger = LoggerFactory.getLogger(TesterOkClient.class);
+    static CookieManager cookieManager = new CookieManager();
 
     public TesterOkClient() {
     }
 
     static public TesterOkClient getTesterOkClient() {
-        CookieHandler.setDefault(new CookieManager());
+        logger.warn("COOKIES");
+        CookieHandler.setDefault(cookieManager);
         return new TesterOkClient();
     }
 

@@ -1,13 +1,5 @@
 package io.appery.tester.db.entity;
 
-import android.content.ContentResolver;
-import android.net.Uri;
-
-import com.j256.ormlite.table.DatabaseTable;
-import com.tojc.ormlite.android.annotation.AdditionalAnnotation;
-
-import io.appery.tester.db.Contract;
-
 /**
  * Created by Alexandr.Salin on 11/29/15.
  */
@@ -19,9 +11,6 @@ public class User {
     private String password;
 
     private String samlKey;
-
-    private String target;
-
 
     public User(String username, String password) {
         this.username = username;
@@ -52,11 +41,4 @@ public class User {
         this.samlKey = key;
     }
 
-    public String getTarget() {
-        return target;
-    }
-
-    public void setTarget(String target) {
-        this.target = target;
-    }
 }

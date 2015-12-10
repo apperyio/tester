@@ -18,6 +18,6 @@ public class LoginRequest extends BaseRequest<Response, IWebApi> {
     Response loadData() {
         User user = UserHelper.getUser();
         UserHelper.updateSAMLKey(null);
-        return getService().doLogin(user.getUsername(), user.getPassword(), user.getTarget());
+        return getService().doLogin(user.getUsername(), user.getPassword(), UserHelper.getTarget());
     }
 }

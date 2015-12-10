@@ -55,10 +55,9 @@ public class LoginListener extends BaseListener<Response> {
         //TODO: correct parse
         try {
             String saml = bodyString.substring(bodyString.indexOf("VALUE=\"") + 7, bodyString.indexOf("\"/>"));
-            String url = bodyString.substring(bodyString.indexOf("ACTION=\"") + 8, bodyString.indexOf("\"><I"));
-            logger.warn("after retrofit login success we obtain url : {}, and saml : {}", url, saml);
+            logger.warn("after retrofit login success we obtain and saml : {}", saml);
             if (mAuthCallback != null) {
-                RestManager.samlRequest(mAuthCallback, url, saml, new SamlListener(mAuthCallback));
+                RestManager.samlRequest(mAuthCallback, saml, new SamlListener(mAuthCallback));
             }
         } catch (Exception e) {
             if (mAuthCallback != null) {

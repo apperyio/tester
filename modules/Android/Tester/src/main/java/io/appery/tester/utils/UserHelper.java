@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import io.appery.tester.Constants;
 import io.appery.tester.db.entity.User;
+import io.appery.tester.rest.TesterSpiceEndpoint;
 
 /**
  * Created by Alexandr.Salin on 11/29/15.
@@ -18,9 +19,12 @@ public class UserHelper {
         String username = PrefsUtil.getInstance().getString(Constants.PREFERENCES.USERNAME);
         String password = PrefsUtil.getInstance().getString(Constants.PREFERENCES.PASSWORD);
         User user = new User(username, password);
-        user.setTarget(PrefsUtil.getInstance().getString(Constants.PREFERENCES.BASE_URL) + "/app/");
         user.setSamlKey(PrefsUtil.getInstance().getString(Constants.PREFERENCES.SAML_KEY));
         return user;
+    }
+
+    static public String getTarget() {
+        return TesterSpiceEndpoint.getBaseUrl() + Constants.API.SAML_ENDPOINT;
     }
 
     static public void updateSAMLKey(String samlKey) {

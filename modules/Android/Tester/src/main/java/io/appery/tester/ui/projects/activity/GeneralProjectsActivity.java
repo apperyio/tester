@@ -6,11 +6,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 import io.appery.tester.R;
 import io.appery.tester.db.entity.SortType;
 import io.appery.tester.ui.base.activity.BaseActivity;
 import io.appery.tester.ui.projects.callback.MasterCallback;
 import io.appery.tester.ui.projects.callback.SlaveCallback;
+import io.appery.tester.utils.DialogHelper;
 
 /**
  * Created by Alexandr.Salin on 12/6/15.
@@ -30,6 +32,11 @@ public class GeneralProjectsActivity extends BaseActivity implements MasterCallb
     protected void afterViews(Bundle savedInstanceState) {
         super.afterViews(savedInstanceState);
         setSupportActionBar(toolbar);
+    }
+
+    @OnClick(R.id.toolbar_enter_code)
+    public void onEnterCodeClick(){
+        DialogHelper.buildProjectByCodeDialog(this);
     }
 
     @Override
