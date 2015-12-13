@@ -16,34 +16,27 @@
        specific language governing permissions and limitations
        under the License.
 */
-package org.apache.cordova.engine;
+package org.apache.cordova;
+
+import java.util.Hashtable;
+
+import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.LOG;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.annotation.TargetApi;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.net.http.SslError;
-import android.os.Build;
+import android.view.View;
 import android.webkit.ClientCertRequest;
 import android.webkit.HttpAuthHandler;
 import android.webkit.SslErrorHandler;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
-import org.apache.cordova.AuthenticationToken;
-import org.apache.cordova.CordovaClientCertRequest;
-import org.apache.cordova.CordovaHttpAuthHandler;
-import org.apache.cordova.CordovaResourceApi;
-import org.apache.cordova.LOG;
-import org.apache.cordova.PluginManager;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Hashtable;
-
 
 /**
  * This class is the WebViewClient that implements callbacks for our web view.
@@ -51,19 +44,50 @@ import java.util.Hashtable;
  * document instead of the chrome surrounding it, such as onPageStarted(), 
  * shouldOverrideUrlLoading(), etc. Related to but different than
  * CordovaChromeClient.
+ *
+ * @see <a href="http://developer.android.com/reference/android/webkit/WebViewClient.html">WebViewClient</a>
+ * @see <a href="http://developer.android.com/guide/webapps/webview.html">WebView guide</a>
+ * @see CordovaChromeClient
+ * @see CordovaWebView
  */
-public class SystemWebViewClient extends WebViewClient {
+public class CordovaWebViewClient extends WebViewClient {
 
-    private static final String TAG = "SystemWebViewClient";
-    protected final SystemWebViewEngine parentEngine;
+	private static final String TAG = "CordovaWebViewClient";
+    CordovaInterface cordova;
+    CordovaWebView appView;
+    CordovaUriHelper helper;
     private boolean doClearHistory = false;
     boolean isCurrentlyLoading;
 
     /** The authorization tokens. */
     private Hashtable<String, AuthenticationToken> authenticationTokens = new Hashtable<String, AuthenticationToken>();
 
-    public SystemWebViewClient(SystemWebViewEngine parentEngine) {
-        this.parentEngine = parentEngine;
+    @Deprecated
+    public CordovaWebViewClient(CordovaInterface cordova) {
+        this.cordova = cordova;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param cordova
+     * @param view
+     */
+    public CordovaWebViewClient(CordovaInterface cordova, CordovaWebView view) {
+        this.cordova = cordova;
+        this.appView = view;
+        helper = new CordovaUriHelper(cordova, view);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param view
+     */
+    @Deprecated
+    public void setWebView(CordovaWebView view) {
+        this.appView = view;
+        helper = new CordovaUriHelper(cordova, view);
     }
 
     /**
@@ -76,12 +100,17 @@ public class SystemWebViewClient extends WebViewClient {
      */
 	@Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        return parentEngine.client.onNavigationAttempt(url);
+        return helper.shouldOverrideUrlLoading(view, url);
     }
-
+    
     /**
      * On received http auth request.
      * The method reacts on all registered authentication tokens. There is one and only one authentication token for any host + realm combination
+     *
+     * @param view
+     * @param handler
+     * @param host
+     * @param realm
      */
     @Override
     public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler, String host, String realm) {
@@ -94,9 +123,9 @@ public class SystemWebViewClient extends WebViewClient {
         }
 
         // Check if there is some plugin which can resolve this auth challenge
-        PluginManager pluginManager = this.parentEngine.pluginManager;
-        if (pluginManager != null && pluginManager.onReceivedHttpAuthRequest(null, new CordovaHttpAuthHandler(handler), host, realm)) {
-            parentEngine.client.clearLoadTimeoutTimer();
+        PluginManager pluginManager = this.appView.pluginManager;
+        if (pluginManager != null && pluginManager.onReceivedHttpAuthRequest(this.appView, new CordovaHttpAuthHandler(handler), host, realm)) {
+            this.appView.loadUrlTimeout++;
             return;
         }
 
@@ -117,9 +146,9 @@ public class SystemWebViewClient extends WebViewClient {
     {
 
         // Check if there is some plugin which can resolve this certificate request
-        PluginManager pluginManager = this.parentEngine.pluginManager;
-        if (pluginManager != null && pluginManager.onReceivedClientCertRequest(null, new CordovaClientCertRequest(request))) {
-            parentEngine.client.clearLoadTimeoutTimer();
+        PluginManager pluginManager = this.appView.pluginManager;
+        if (pluginManager != null && pluginManager.onReceivedClientCertRequest(this.appView, new CordovaClientCertRequest(request))) {
+            this.appView.loadUrlTimeout++;
             return;
         }
 
@@ -140,9 +169,17 @@ public class SystemWebViewClient extends WebViewClient {
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
         super.onPageStarted(view, url, favicon);
         isCurrentlyLoading = true;
-        // Flush stale messages & reset plugins.
-        parentEngine.bridge.reset();
-        parentEngine.client.onPageStarted(url);
+        LOG.d(TAG, "onPageStarted(" + url + ")");
+        // Flush stale messages.
+        this.appView.bridge.reset(url);
+
+        // Broadcast message that page has loaded
+        this.appView.postMessage("onPageStarted", url);
+
+        // Notify all plugins of the navigation, so they can clean up if necessary.
+        if (this.appView.pluginManager != null) {
+            this.appView.pluginManager.onReset();
+        }
     }
 
     /**
@@ -161,6 +198,7 @@ public class SystemWebViewClient extends WebViewClient {
             return;
         }
         isCurrentlyLoading = false;
+        LOG.d(TAG, "onPageFinished(" + url + ")");
 
         /**
          * Because of a timing issue we need to clear this history in onPageFinished as well as
@@ -172,8 +210,35 @@ public class SystemWebViewClient extends WebViewClient {
             view.clearHistory();
             this.doClearHistory = false;
         }
-        parentEngine.client.onPageFinishedLoading(url);
 
+        // Clear timeout flag
+        this.appView.loadUrlTimeout++;
+
+        // Broadcast message that page has loaded
+        this.appView.postMessage("onPageFinished", url);
+
+        // Make app visible after 2 sec in case there was a JS error and Cordova JS never initialized correctly
+        if (this.appView.getVisibility() == View.INVISIBLE) {
+            Thread t = new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        Thread.sleep(2000);
+                        cordova.getActivity().runOnUiThread(new Runnable() {
+                            public void run() {
+                                appView.postMessage("spinner", "stop");
+                            }
+                        });
+                    } catch (InterruptedException e) {
+                    }
+                }
+            });
+            t.start();
+        }
+
+        // Shutdown if blank loaded
+        if (url.equals("about:blank")) {
+            appView.postMessage("exit", null);
+        }
     }
 
     /**
@@ -193,12 +258,13 @@ public class SystemWebViewClient extends WebViewClient {
         }
         LOG.d(TAG, "CordovaWebViewClient.onReceivedError: Error code=%s Description=%s URL=%s", errorCode, description, failingUrl);
 
+        // Clear timeout flag
+        this.appView.loadUrlTimeout++;
+
         // If this is a "Protocol Not Supported" error, then revert to the previous
         // page. If there was no previous page, then punt. The application's config
         // is likely incorrect (start page set to sms: or something like that)
         if (errorCode == WebViewClient.ERROR_UNSUPPORTED_SCHEME) {
-            parentEngine.client.clearLoadTimeoutTimer();
-
             if (view.canGoBack()) {
                 view.goBack();
                 return;
@@ -206,7 +272,17 @@ public class SystemWebViewClient extends WebViewClient {
                 super.onReceivedError(view, errorCode, description, failingUrl);
             }
         }
-        parentEngine.client.onReceivedError(errorCode, description, failingUrl);
+
+        // Handle other errors by passing them to the webview in JS
+        JSONObject data = new JSONObject();
+        try {
+            data.put("errorCode", errorCode);
+            data.put("description", description);
+            data.put("url", failingUrl);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        this.appView.postMessage("onReceivedError", data);
     }
 
     /**
@@ -223,8 +299,8 @@ public class SystemWebViewClient extends WebViewClient {
     @Override
     public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
 
-        final String packageName = parentEngine.cordova.getActivity().getPackageName();
-        final PackageManager pm = parentEngine.cordova.getActivity().getPackageManager();
+        final String packageName = this.cordova.getActivity().getPackageName();
+        final PackageManager pm = this.cordova.getActivity().getPackageManager();
 
         ApplicationInfo appInfo;
         try {
@@ -316,59 +392,4 @@ public class SystemWebViewClient extends WebViewClient {
         this.authenticationTokens.clear();
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    @Override
-    public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-        try {
-            // Check the against the whitelist and lock out access to the WebView directory
-            // Changing this will cause problems for your application
-            if (!parentEngine.pluginManager.shouldAllowRequest(url)) {
-                LOG.w(TAG, "URL blocked by whitelist: " + url);
-                // Results in a 404.
-                return new WebResourceResponse("text/plain", "UTF-8", null);
-            }
-
-            CordovaResourceApi resourceApi = parentEngine.resourceApi;
-            Uri origUri = Uri.parse(url);
-            // Allow plugins to intercept WebView requests.
-            Uri remappedUri = resourceApi.remapUri(origUri);
-
-            if (!origUri.equals(remappedUri) || needsSpecialsInAssetUrlFix(origUri) || needsKitKatContentUrlFix(origUri)) {
-                CordovaResourceApi.OpenForReadResult result = resourceApi.openForRead(remappedUri, true);
-                return new WebResourceResponse(result.mimeType, "UTF-8", result.inputStream);
-            }
-            // If we don't need to special-case the request, let the browser load it.
-            return null;
-        } catch (IOException e) {
-            if (!(e instanceof FileNotFoundException)) {
-                LOG.e(TAG, "Error occurred while loading a file (returning a 404).", e);
-            }
-            // Results in a 404.
-            return new WebResourceResponse("text/plain", "UTF-8", null);
-        }
-    }
-
-    private static boolean needsKitKatContentUrlFix(Uri uri) {
-        return android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT && "content".equals(uri.getScheme());
-    }
-
-    private static boolean needsSpecialsInAssetUrlFix(Uri uri) {
-        if (CordovaResourceApi.getUriType(uri) != CordovaResourceApi.URI_TYPE_ASSET) {
-            return false;
-        }
-        if (uri.getQuery() != null || uri.getFragment() != null) {
-            return true;
-        }
-
-        if (!uri.toString().contains("%")) {
-            return false;
-        }
-
-        switch(android.os.Build.VERSION.SDK_INT){
-            case android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH:
-            case android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1:
-                return true;
-        }
-        return false;
-    }
 }

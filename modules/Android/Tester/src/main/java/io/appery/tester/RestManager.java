@@ -12,6 +12,7 @@ import io.appery.tester.db.entity.Project;
 import io.appery.tester.db.entity.ProjectsCollection;
 import io.appery.tester.db.entity.User;
 import io.appery.tester.rest.SpiceHolder;
+import io.appery.tester.rest.TesterOkClient;
 import io.appery.tester.rest.TesterSpiceEndpoint;
 import io.appery.tester.rest.listener.BaseListener;
 import io.appery.tester.rest.request.GetProjectsRequest;
@@ -37,6 +38,7 @@ public class RestManager {
         if (!UserHelper.hasSAMLKey()) {
             return;
         }
+        TesterOkClient.refreshCookies();
         holder.getSpiceManager().execute(new LogoutRequest(), new BaseListener<Response>());
     }
 

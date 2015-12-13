@@ -36,4 +36,12 @@ public class TesterOkClient extends OkClient {
         return response;
     }
 
+    /**
+     * use only for logout
+     */
+    public static void refreshCookies() {
+        cookieManager = new CookieManager();
+        CookieHandler.setDefault(cookieManager);
+    }
+
 }

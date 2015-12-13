@@ -16,36 +16,19 @@
        specific language governing permissions and limitations
        under the License.
 */
+
 package org.apache.cordova;
 
-import android.webkit.HttpAuthHandler;
-
 /**
- * Specifies interface for HTTP auth handler object which is used to handle auth requests and
- * specifying user credentials.
+ * This used to be the class that should be extended by application
+ * developers, but everything has been moved to CordovaActivity. So
+ * you should extend CordovaActivity instead of DroidGap. This class
+ * will be removed at a future time.
+ *
+ * @see CordovaActivity
+ * @deprecated
  */
-public class CordovaHttpAuthHandler implements ICordovaHttpAuthHandler {
+@Deprecated
+public class DroidGap extends CordovaActivity {
 
-    private final HttpAuthHandler handler;
-
-    public CordovaHttpAuthHandler(HttpAuthHandler handler) {
-        this.handler = handler;
-    }
-    
-    /**
-     * Instructs the WebView to cancel the authentication request.
-     */
-    public void cancel () {
-        this.handler.cancel();
-    }
-    
-    /**
-     * Instructs the WebView to proceed with the authentication with the given credentials.
-     * 
-     * @param username
-     * @param password
-     */
-    public void proceed (String username, String password) {
-        this.handler.proceed(username, password);
-    }
 }

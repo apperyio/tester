@@ -19,15 +19,49 @@
 
 package org.apache.cordova;
 
-public interface ICordovaCookieManager {
+import android.view.View;
 
-    public void setCookiesEnabled(boolean accept);
+/*
+ * This can be used by any view, including native views
+ * 
+ */
 
-    public void setCookie(final String url, final String value);
 
-    public String getCookie(final String url);
+public class ScrollEvent {
+    
+    public int l, t, nl, nt;
+    private View targetView;
+    
+    /*
+     * ScrollEvent constructor
+     * No idea why it uses l and t instead of x and y
+     * 
+     * @param x
+     * @param y
+     * @param nx
+     * @param ny
+     * @param view
+     */
+    
+    ScrollEvent(int nx, int ny, int x, int y, View view)
+    {
+        l = x; y = t; nl = nx; nt = ny;
+        targetView = view;
+    }
+    
+    public int dl()
+    {
+        return nl - l;
+    }
+    
+    public int dt()
+    {
+        return nt - t;
+    }
+    
+    public View getTargetView()
+    {
+        return targetView;
+    }
 
-    public void clearCookies();
-
-    public void flush();
-};
+}

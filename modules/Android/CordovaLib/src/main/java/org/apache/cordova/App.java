@@ -39,9 +39,9 @@ import java.util.HashMap;
 /**
  * This class exposes methods in Cordova that can be called from JavaScript.
  */
-class CoreAndroid extends CordovaPlugin {
+public class App extends CordovaPlugin {
 
-    public static final String PLUGIN_NAME = "CoreAndroid";
+    public static final String PLUGIN_NAME = "App";
     protected static final String TAG = "CordovaApp";
     private BroadcastReceiver telephonyReceiver;
     private CallbackContext messageChannel;
@@ -86,7 +86,7 @@ class CoreAndroid extends CordovaPlugin {
                 // indicative of what this actually does (shows the webview).
                 cordova.getActivity().runOnUiThread(new Runnable() {
                     public void run() {
-                        webView.getPluginManager().postMessage("spinner", "stop");
+                        webView.postMessage("spinner", "stop");
                     }
                 });
             }
@@ -263,7 +263,7 @@ class CoreAndroid extends CordovaPlugin {
      * Exit the Android application.
      */
     public void exitApp() {
-        this.webView.getPluginManager().postMessage("exit", null);
+        this.webView.postMessage("exit", null);
     }
 
 
@@ -287,15 +287,15 @@ class CoreAndroid extends CordovaPlugin {
                         String extraData = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
                         if (extraData.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
                             LOG.i(TAG, "Telephone RINGING");
-                            webView.getPluginManager().postMessage("telephone", "ringing");
+                            webView.postMessage("telephone", "ringing");
                         }
                         else if (extraData.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
                             LOG.i(TAG, "Telephone OFFHOOK");
-                            webView.getPluginManager().postMessage("telephone", "offhook");
+                            webView.postMessage("telephone", "offhook");
                         }
                         else if (extraData.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
                             LOG.i(TAG, "Telephone IDLE");
-                            webView.getPluginManager().postMessage("telephone", "idle");
+                            webView.postMessage("telephone", "idle");
                         }
                     }
                 }

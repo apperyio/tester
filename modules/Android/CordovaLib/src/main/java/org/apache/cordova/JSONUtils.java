@@ -18,34 +18,26 @@
 */
 package org.apache.cordova;
 
-import android.webkit.HttpAuthHandler;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Specifies interface for HTTP auth handler object which is used to handle auth requests and
- * specifying user credentials.
- */
-public class CordovaHttpAuthHandler implements ICordovaHttpAuthHandler {
+import org.json.JSONArray;
+import org.json.JSONException;
 
-    private final HttpAuthHandler handler;
+@Deprecated // Deprecated in 3.1. To be removed in 4.0.
+public class JSONUtils {
+	public static List<String> toStringList(JSONArray array) throws JSONException {
+        if(array == null) {
+            return null;
+        }
+        else {
+            List<String> list = new ArrayList<String>();
 
-    public CordovaHttpAuthHandler(HttpAuthHandler handler) {
-        this.handler = handler;
-    }
-    
-    /**
-     * Instructs the WebView to cancel the authentication request.
-     */
-    public void cancel () {
-        this.handler.cancel();
-    }
-    
-    /**
-     * Instructs the WebView to proceed with the authentication with the given credentials.
-     * 
-     * @param username
-     * @param password
-     */
-    public void proceed (String username, String password) {
-        this.handler.proceed(username, password);
+            for (int i = 0; i < array.length(); i++) {
+                list.add(array.get(i).toString());
+            }
+
+            return list;
+        }
     }
 }

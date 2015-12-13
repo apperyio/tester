@@ -16,4 +16,8 @@ allprojects {
         maven { url "https://jitpack.io" }
         maven { url "http://nexus.vn.exadel.com/content/repositories/thirdparty" }
     }
+
+}
+subprojects {
+    task listAllDependencies(type: DependencyReportTask) {}
 }

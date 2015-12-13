@@ -40,6 +40,7 @@ public class TesterSpiceEndpoint implements Endpoint {
         String url = PrefsUtil.getInstance().getString(Constants.PREFERENCES.BASE_URL);
         if (TextUtils.isEmpty(url)) {
             PrefsUtil.getInstance().putString(Constants.PREFERENCES.BASE_URL, defUrl);
+            url = defUrl;
         }
         return url;
     }
