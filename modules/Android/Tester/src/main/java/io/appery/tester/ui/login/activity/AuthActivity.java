@@ -7,10 +7,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import butterknife.Bind;
-import io.appery.tester.ui.preferences.PreferencesActivity;
+import io.appery.tester.Constants;
 import io.appery.tester.R;
 import io.appery.tester.ui.base.activity.BaseActivity;
-import io.appery.tester.Constants;
+import io.appery.tester.ui.preferences.PreferencesActivity;
 
 /**
  * Created by Alexandr.Salin on 11/28/15.
@@ -50,5 +50,11 @@ public class AuthActivity extends BaseActivity {
             }
         }
         return false;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        logout();
     }
 }

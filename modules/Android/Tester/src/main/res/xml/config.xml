@@ -11,6 +11,7 @@
     <preference name="loadInWebView" value="false"/>
     <preference name="InAppBrowserStorageEnabled" value="false"/>
 	<preference name="splashscreen" value="splash" />
+    <allow-navigation href="*" />
     
     <feature name="App">
         <param name="android-package" value="org.apache.cordova.App" />

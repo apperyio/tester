@@ -52,7 +52,6 @@ public class AuthFragment extends BaseFragment implements AuthCallback {
         WidgetUtils.setText(getActivity(), R.id.login_et, username);
         WidgetUtils.setText(getActivity(), R.id.password_et, password);
         loginListener = new LoginListener(this);
-        RestManager.doLogout(this);
     }
 
     @Override

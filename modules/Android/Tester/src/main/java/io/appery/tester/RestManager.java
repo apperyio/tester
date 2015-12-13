@@ -14,7 +14,7 @@ import io.appery.tester.db.entity.User;
 import io.appery.tester.rest.SpiceHolder;
 import io.appery.tester.rest.TesterOkClient;
 import io.appery.tester.rest.TesterSpiceEndpoint;
-import io.appery.tester.rest.listener.BaseListener;
+import io.appery.tester.rest.listener.LogoutListener;
 import io.appery.tester.rest.request.GetProjectsRequest;
 import io.appery.tester.rest.request.LoginRequest;
 import io.appery.tester.rest.request.LogoutRequest;
@@ -34,12 +34,14 @@ public class RestManager {
         holder.getSpiceManager().execute(new LoginRequest(), listener);
     }
 
-    public static void doLogout(SpiceHolder holder) {
+    public static void doLogout(SpiceHolder holder, Context context) {
         if (!UserHelper.hasSAMLKey()) {
             return;
         }
         TesterOkClient.refreshCookies();
-        holder.getSpiceManager().execute(new LogoutRequest(), new BaseListener<Response>());
+        LogoutListener listener = new LogoutListener(context);
+        holder.getSpiceManager().execute(new LogoutRequest(), listener);
+        listener.onStart();
     }
 
     public static void samlRequest(SpiceHolder holder, String samlValue, RequestListener<Response> listener) {

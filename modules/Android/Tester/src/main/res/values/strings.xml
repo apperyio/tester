@@ -23,6 +23,7 @@
     <!-- DIALOGS -->
     <string name="please_wait">Please wait...</string>
     <string name="signing_in">Signing in...</string>
+    <string name="signing_out">Signing out...</string>
     <string name="refresh_projects_list">Refresh projects...</string>
     <string name="download_project_files">Download project files</string>
     <string name="are_you_sure">Are you sure?</string>

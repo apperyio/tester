@@ -37,7 +37,7 @@ public abstract class BaseActivity extends SpiceActivity {
      * Logout.
      */
     protected void logout() {
-        RestManager.doLogout(this);
+        RestManager.doLogout(this, this);
     }
 
 }
