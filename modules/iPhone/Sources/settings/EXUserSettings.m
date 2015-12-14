@@ -14,13 +14,11 @@
  * Keys for archiving properties.
  */
 static NSString *const kUserName = @"userName";
-static NSString *const kShouldRememberMe = @"shouldRememberMe";
 static NSString *const kSortMethod = @"sortMethod";
 
 @implementation EXUserSettings
 
 @synthesize userName = _userName;
-@synthesize shouldRememberMe = _shouldRememberMe;
 @synthesize sortMethodType = _sortMethodType;
 
 #pragma mark - NSCoding protocol implementation
@@ -33,7 +31,6 @@ static NSString *const kSortMethod = @"sortMethod";
     }
     
     _userName = [decoder decodeObjectForKey:kUserName];
-    _shouldRememberMe = [decoder decodeBoolForKey:kShouldRememberMe];
     _sortMethodType = [decoder decodeIntegerForKey:kSortMethod];
     
     return self;
@@ -42,7 +39,6 @@ static NSString *const kSortMethod = @"sortMethod";
 - (void)encodeWithCoder:(NSCoder *)encoder
 {
     [encoder encodeObject:self.userName forKey:kUserName];
-    [encoder encodeBool:self.shouldRememberMe forKey:kShouldRememberMe];
     [encoder encodeInteger:self.sortMethodType forKey:kSortMethod];
 }
 

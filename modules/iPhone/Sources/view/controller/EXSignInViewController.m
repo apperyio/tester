@@ -22,8 +22,6 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 
 @interface EXSignInViewController () <UITableViewDataSource, UITableViewDelegate, EXSignInCellActionDelegate, UITextFieldDelegate>
 
-@property (nonatomic, strong, readwrite) EXApperyService *apperyService;
-
 @property (nonatomic, weak) IBOutlet UIScrollView *svScroll;
 @property (nonatomic, weak) IBOutlet UIView *vContent;
 
@@ -32,9 +30,10 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 @property (nonatomic, weak) IBOutlet UIButton *bAppCode;
 @property (nonatomic, weak) IBOutlet UILabel *lCopyright;
 
-@property (nonatomic, strong) NSString *uname;
-@property (nonatomic, strong) NSString *pwd;
+@property (nonatomic, copy) NSString *uname;
+@property (nonatomic, copy) NSString *pwd;
 
+@property (nonatomic, strong, readwrite) EXApperyService *apperyService;
 @property (nonatomic, strong) EXAppCodeController *appCodeController;
 
 - (IBAction)appCodeAction:(id)sender;
@@ -156,15 +155,13 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
     progressHud.labelText = NSLocalizedString(@"Login", @"Login progress hud title");
     
-    [self.apperyService quickLogout];
-    
     __weak EXApperyService *weakService = self.apperyService;
     [self.apperyService loginWithUsername:self.uname password:self.pwd succeed: ^(NSArray *projectsMetadata) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [progressHud hide:YES];
             
             EXApperyService *strongService = weakService;
-            DLog(@"User %@ login to %@", self.uname, strongService.baseUrl);
+            NSLog(@"User %@ login to %@", self.uname, strongService.baseUrl);
             
             [self saveUserSettings];
             
@@ -175,38 +172,42 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
             [self composeUIForMetadata:projectsMetadata appCode:nil location:@"www" startPage:@"index.html"];
         });
     }
-                                    failed:^(NSError *error) {
-                                        EXApperyService *strongService = weakService;
-                                        DLog(@"User %@ can't login to %@",self.uname, strongService.baseUrl);
-                                        
-                                        dispatch_async(dispatch_get_main_queue(), ^{
-                                            [progressHud hide:YES];
-                                            self.uname = nil;
-                                            self.pwd = nil;
-                                            [self.tvSignIn reloadData];
-                                            
-                                            [[[UIAlertView alloc] initWithTitle:error.localizedDescription
-                                                                        message:error.localizedRecoverySuggestion
-                                                                       delegate:nil
-                                                              cancelButtonTitle:NSLocalizedString(@"Ok", nil)
-                                                              otherButtonTitles:nil] show];
-                                        });
-                                   }];
+    failed:^(NSError *error) {
+        EXApperyService *strongService = weakService;
+        NSLog(@"User %@ can't login to %@",self.uname, strongService.baseUrl);
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [progressHud hide:YES];
+            self.uname = nil;
+            self.pwd = nil;
+            [self.tvSignIn reloadData];
+            
+            // Show error message
+            [[[UIAlertView alloc] initWithTitle:error.localizedDescription
+                                        message:error.localizedRecoverySuggestion
+                                       delegate:nil
+                              cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                              otherButtonTitles:nil] show];
+        });
+    }];
 }
 
 - (void)saveUserSettings
 {
     EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
     
+    BOOL rememberMe = [[NSUserDefaults standardUserDefaults] boolForKey:@"autoLogin"];
+    
     // Save user settings
     EXUserSettings *userSettings = [[EXUserSettings alloc] init];
     userSettings.userName = self.uname;
-    userSettings.shouldRememberMe = YES;
     userSettings.sortMethodType = [[usStorage retreiveLastStoredSettings] sortMethodType];
     [usStorage storeSettings:userSettings];
     
     // Save password
-    [SSKeychain setPassword:self.pwd forService:APPERI_SERVICE account:self.uname];
+    if (rememberMe) {
+        [SSKeychain setPassword:self.pwd forService:APPERI_SERVICE account:self.uname];
+    }
 }
 
 - (void)composeUIForMetadata:(NSArray *)metadata appCode:(NSString *)appCode location:(NSString *)location startPage:(NSString *)startPage

@@ -223,8 +223,8 @@
         return;
     }
     
-    UINavigationController* rootNavController = self.rootNavigationController;
-    UINavigationController* sidebarNavController = self.sidebarNavigationController;
+    UINavigationController *rootNavController = self.rootNavigationController;
+    UINavigationController *sidebarNavController = self.sidebarNavigationController;
     
     void (^presentationBlock)(void) = ^(void) {
         if (sidebarContentController != nil && sidebarNavController.topViewController != sidebarContentController) {

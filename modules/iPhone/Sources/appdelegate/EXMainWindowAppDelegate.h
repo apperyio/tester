@@ -17,5 +17,6 @@
 + (UIWindow *)mainWindow;
 
 - (void)navigateToSignInViewController;
+- (void)navigateToProjectsViewController;
 
 @end

@@ -1,6 +1,7 @@
 //
 // Prefix header for all source files
 //
+
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
     #ifndef __IPHONE_6_0
         #warning "This project uses features only available in iPhone SDK 6.0 and later."
@@ -11,16 +12,6 @@
     #import <Foundation/Foundation.h>
     #import <UIKit/UIKit.h>
 #endif
-
-# ifndef NDEBUG
-#  ifndef DLog
-#   define DLog(fmt, ...) NSLog((@"%.255s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
-#  endif
-# else
-#  ifndef DLog
-#   define DLog(...) /* */
-#  endif
-# endif
 
 #define APPERI_SERVICE @"apperyService"
 #define APPERI_SERVICE_ERROR_DOMAIN @"apperyServiceErrorDomain"

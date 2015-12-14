@@ -30,12 +30,6 @@ typedef NS_ENUM(NSInteger, EXSortingMethodType) {
 @property (nonatomic, strong) NSString *userName;
 
 /**
- * Defines if application should to remember current user
- *   to make possible to restore his settings after application launching or not.
- */
-@property (nonatomic, assign) BOOL shouldRememberMe;
-
-/**
  * Defines sort method type for projects list.
  */
 @property (nonatomic, assign) EXSortingMethodType sortMethodType;

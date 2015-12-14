@@ -33,37 +33,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
 
 @interface EXApperyService ()
 
-@property (nonatomic, strong) NSString *userName;
-@property (nonatomic, strong) NSString *userPassword;
-
 @property (nonatomic, strong) AFHTTPRequestOperationManager *manager;
-
-/**
- * @throw NSException if current service state is logged out.
- */
-- (void)throwExceptionIfServiceIsLoggedOut;
-
-/**
- * @throw NSException if current service state is logged in.
- */
-- (void)throwExceptionIfServiceIsLoggedIn;
-
-/**
- * Removes local autentication data.
- */
-- (void)removeLocalAuthentication;
-
-/**
- * Changes logged status to specified value.
- * 
- * @param status - provide new logged status value.
- */
-- (void)changeLoggedStatusTo:(BOOL)status;
-
-/**
- * Remembers specified user's name and user's password to private section;
- */
-- (void)rememberUserName:(NSString *)userName password:(NSString *)password;
 
 @end
 
@@ -74,12 +44,10 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
 #pragma mark - Public properties synthesize
 
 @synthesize baseUrl = _baseUrl;
-@synthesize isLoggedIn = _isLoggedIn;
 
 #pragma mark - Private properties synthesize
 
-@synthesize userName = _userName;
-@synthesize userPassword = _userPassword;
+@synthesize manager = _manager;
 
 #pragma mark - Lifecycle
 
@@ -108,21 +76,6 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     }
 }
 
-- (BOOL)isLoggedIn
-{
-    return _isLoggedIn;
-}
-
-- (BOOL)isLoggedOut
-{
-    return !self.isLoggedIn;
-}
-
-- (NSString *)loggedUserName
-{
-    return self.userName;
-}
-
 #pragma mark - Public interface implementation
 
 - (void)loginWithUsername:(NSString *)userName password:(NSString *)password
@@ -131,8 +84,6 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
 {
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");
-    
-    [self throwExceptionIfServiceIsLoggedIn];
     
     // Create login request
     NSString *target = [[[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:@"/app/"] encodedUrlString];
@@ -149,9 +100,6 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
         NSURLRequest *SAMLRequest = [[EXSAMLRequestSerializer serializer] requestWithMethod:@"POST" URLString:responce.action parameters:responce.value error:nil];
         AFHTTPRequestOperation *SAMLOperation = [strongSelf.manager HTTPRequestOperationWithRequest:SAMLRequest success:^(AFHTTPRequestOperation * _Nonnull operation, id _Nonnull responseObject) {
             __strong __typeof(weakSelf)strongSelf = weakSelf;
-            
-            [strongSelf changeLoggedStatusTo:YES];
-            [strongSelf rememberUserName:userName password:password];
             
             NSString *projectsUrlStr = [[@"https://" stringByAppendingString:strongSelf.baseUrl] URLByAddingResourceComponent:PROJECTS_PATH_URL_STRING];
             NSURLRequest *request = [[AFJSONRequestSerializer serializer] requestWithMethod:@"GET" URLString:projectsUrlStr parameters:nil error:nil];
@@ -184,14 +132,11 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
         failed(error);
     }];
     
+    // Clear cookies
+    [self removeAutenticationCookies];
+    
     [loginOperation setResponseSerializer:[EXSAMLResponseSerializer serializer]];
     [self.manager.operationQueue addOperation:loginOperation];
-}
-
-- (void)quickLogout
-{
-    [self removeLocalAuthentication];
-    [self changeLoggedStatusTo:NO];
 }
 
 - (void)cancelAllOperation
@@ -203,8 +148,6 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
 {
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");
-    
-    [self throwExceptionIfServiceIsLoggedOut];
     
     NSString *logoutUrlStr = [[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:LOGOUT_PATH_URL_STRING];
     NSURLRequest *request = [self.manager.requestSerializer requestWithMethod:@"GET" URLString:logoutUrlStr parameters:nil error:nil];
@@ -221,15 +164,13 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     [logoutOperation setResponseSerializer:serializer];
     [self.manager.operationQueue addOperation:logoutOperation];
     
-    [self quickLogout];
+    [self removeAutenticationCookies];
 }
 
 - (void)loadProjectsMetadata:(void (^)(NSArray *))succeed failed:(void (^)(NSError *))failed
 {
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");
-    
-    [self throwExceptionIfServiceIsLoggedOut];
     
     NSString *projectsUrlStr = [[@"https://" stringByAppendingString:self.baseUrl] URLByAddingResourceComponent:PROJECTS_PATH_URL_STRING];
     NSURLRequest *request = [[AFJSONRequestSerializer serializer] requestWithMethod:@"GET" URLString:projectsUrlStr parameters:nil error:nil];
@@ -252,8 +193,6 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     NSAssert(projectMetadata != nil, @"projectMetadata is undefined");
     NSAssert(succeed != nil, @"succeed callback block is not specified");
     NSAssert(failed != nil, @"failed callback block is not specified");
-    
-    [self throwExceptionIfServiceIsLoggedOut];
     
     NSString *loadProjectUrlStr = [[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:[NSString stringWithFormat:PROJECT_PATH_URL_STRING, projectMetadata.guid]];
     NSURLRequest *request = [[AFHTTPRequestSerializer serializer] requestWithMethod:@"GET" URLString:loadProjectUrlStr parameters:nil error:nil];
@@ -320,44 +259,6 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
 }
 
 #pragma mark - Private interface implementation
-
-- (void)throwExceptionIfServiceIsLoggedOut
-{
-    if (self.isLoggedOut) {
-        @throw [NSException exceptionWithName:@"IllegalStateException"
-                                       reason:@"Service is already logged out" userInfo:nil];
-    }
-}
-
-- (void)throwExceptionIfServiceIsLoggedIn
-{
-    if (self.isLoggedIn) {
-        @throw [NSException exceptionWithName:@"IllegalStateException"
-                                       reason:@"Service is already logged in" userInfo:nil];
-    }
-}
-
-- (void)changeLoggedStatusTo:(BOOL)status
-{
-    _isLoggedIn = status;
-}
-
-- (void)rememberUserName:(NSString *)userName password:(NSString *)password
-{
-    NSAssert(userName != nil, @"userName is not specified");
-    NSAssert(password != nil, @"password is not specified");
-    
-    self.userName = userName;
-    self.userPassword = password;
-}
-
-- (void)removeLocalAuthentication
-{
-    self.userName = nil;
-    self.userPassword = nil;
-    
-    [self removeAutenticationCookies];
-}
 
 - (void)removeAutenticationCookies
 {

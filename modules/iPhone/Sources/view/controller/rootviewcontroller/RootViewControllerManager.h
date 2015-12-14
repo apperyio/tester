@@ -31,7 +31,8 @@
 
 /// Navigation controller for the root screen area content.
 @property (nonatomic, strong, readonly) RootNavigationController *rootNavigationController;
-/// mask view for main controller when sidebar is shown
+
+/// Mask view for main controller when sidebar is shown
 @property (nonatomic, strong) UIView *maskSidebarView;
 
 @property (nonatomic, strong) UIView *shadowView;
@@ -70,6 +71,11 @@
  */
 - (void)toggleSidebarControllerAnimated:(BOOL)animated completionBlock:(void (^)(void))completionBlock;
 
+/**
+ *
+ *
+ * @param controller
+ */
 - (void)setSidebarViewController:(UIViewController *)controller;
 
 #pragma mark - Main navigation stack management

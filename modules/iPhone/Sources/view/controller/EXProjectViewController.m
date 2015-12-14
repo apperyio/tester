@@ -16,7 +16,6 @@
 
 #import "RootViewControllerManager.h"
 
-#import "SSKeychain.h"
 #import "NSObject+Utils.h"
 
 #pragma mark - UI constants
@@ -96,12 +95,14 @@ static NSString *const kDefaultWebResourceFolder = @"www";
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
     [self.navigationController setNavigationBarHidden:NO animated:NO];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    
     [self.navigationController setNavigationBarHidden:YES animated:NO];
 }
 
@@ -134,11 +135,6 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     self.navigationItem.rightBarButtonItem = reloadProjectButton;
 }
 
-- (void)back
-{
-    [self.navigationController popToRootViewControllerAnimated:YES];
-}
-
 - (void)showProjectsViewController
 {
     RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
@@ -167,7 +163,9 @@ static NSString *const kDefaultWebResourceFolder = @"www";
         [self loadProjectForMetadata:self.projectMetadata];
         return;
     }
-
+    
+    // TODO: fix
+    // Show error message
     [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Info", nil)
                                 message:NSLocalizedString(@"Please select an app from the app list", nil)
                                delegate:nil
@@ -186,8 +184,10 @@ static NSString *const kDefaultWebResourceFolder = @"www";
         return;
     }
     
-    if ([[RootViewControllerManager sharedInstance] isSidebarShown]) {
-        [[RootViewControllerManager sharedInstance] hideSidebarControllerAnimated:YES completionBlock:nil];
+    RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
+    
+    if ([manager isSidebarShown]) {
+        [manager hideSidebarControllerAnimated:YES completionBlock:nil];
     }
     
     UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
@@ -195,9 +195,11 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     progressHud.labelText = NSLocalizedString(@"Loading app", @"Loading app progress hud title");
     
     __weak EXApperyService *weakService = self.apperyService;
+    __weak RootViewControllerManager *weakManager = manager;
     [self.apperyService loadProjectForAppCode:appCode
                                       succeed:^(NSString *projectLocation, NSString *startPageName) {
-                                          DLog(@"The project for code: '%@' has been loaded.", appCode);
+                                          NSLog(@"The project for code: '%@' has been loaded.", appCode);
+                                          
                                           dispatch_async(dispatch_get_main_queue(), ^{
                                               EXApperyService *strongService = weakService;
                                               [progressHud hide:NO];
@@ -205,10 +207,11 @@ static NSString *const kDefaultWebResourceFolder = @"www";
                                               pvc.wwwFolderName = projectLocation;
                                               pvc.startPage = startPageName;
                                               
-                                              RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
-                                              EXProjectsMetadataViewController *pmvc = [[manager topSidebarController] as:[EXProjectsMetadataViewController class]];
+                                              RootViewControllerManager *strongManager = weakManager;
+                                              EXProjectsMetadataViewController *pmvc = [[strongManager topSidebarController] as:[EXProjectsMetadataViewController class]];
                                               pmvc.delegate = pvc;
                                               
+                                              //ToDo: fix
                                               NSMutableArray *viewControllers = [NSMutableArray arrayWithArray:[self.navigationController viewControllers]];
                                               [viewControllers removeLastObject];
                                               [viewControllers addObject:pvc];
@@ -216,7 +219,8 @@ static NSString *const kDefaultWebResourceFolder = @"www";
                                               [self.navigationController setViewControllers:viewControllers animated:NO];
                                           });
                                         } failed:^(NSError *error) {
-                                            DLog(@"The project for code: '%@' has NOT been loaded. Error: %@.", appCode, [error localizedDescription]);
+                                            NSLog(@"The project for code: '%@' has NOT been loaded. Error: %@.", appCode, [error localizedDescription]);
+                                            
                                             dispatch_async(dispatch_get_main_queue(), ^{
                                                 [progressHud hide:NO];
                                                 [[[UIAlertView alloc] initWithTitle:error.localizedDescription
@@ -240,8 +244,9 @@ static NSString *const kDefaultWebResourceFolder = @"www";
         return;
     }
     
-    if ([[RootViewControllerManager sharedInstance] isSidebarShown]) {
-        [[RootViewControllerManager sharedInstance] hideSidebarControllerAnimated:YES completionBlock:nil];
+    RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
+    if ([manager isSidebarShown]) {
+        [manager hideSidebarControllerAnimated:YES completionBlock:nil];
     }
     
     UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
@@ -249,61 +254,48 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     progressHud.labelText = NSLocalizedString(@"Loading app", @"Loading app progress hud title");
     
     __weak EXApperyService *weakService = self.apperyService;
-    void(^reloadProject)(void) = ^{
-        [self.apperyService loadProjectForMetadata:projectMetadata
-            succeed:^(NSString *projectLocation, NSString *startPageName) {
-                DLog(@"The project with name '%@' has been loaded.", projectMetadata.name);
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [progressHud hide: NO];
-                    EXApperyService *strongService = weakService;
-                    EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:strongService projectMetadata:projectMetadata];
-                    pvc.wwwFolderName = projectLocation;
-                    pvc.startPage = startPageName;
-                    
-                    RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
-                    EXProjectsMetadataViewController *pmvc = [[manager topSidebarController] as:[EXProjectsMetadataViewController class]];
-                    pmvc.delegate = pvc;
-                    
-                    NSMutableArray *viewControllers = [NSMutableArray arrayWithArray:[self.navigationController viewControllers]];
-                    [viewControllers removeLastObject];
-                    [viewControllers addObject:pvc];
-                    
-                    [self.navigationController setViewControllers:viewControllers animated:NO];
-                });
-            } failed:^(NSError *error) {
-                DLog(@"The project with name: '%@' has NOT been loaded. Error: %@.", projectMetadata.name, error.localizedDescription);
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [progressHud hide: NO];
-                    
-                    [[[UIAlertView alloc] initWithTitle:error.localizedDescription
-                                                message:error.localizedRecoverySuggestion
-                                               delegate:nil
-                                      cancelButtonTitle:NSLocalizedString(@"Ok", nil)
-                                      otherButtonTitles:nil] show];
-                });
-            }
-         ];
+    __weak RootViewControllerManager *weakManager = manager;
+    void(^reloadProject)(NSString *, NSString *) = ^(NSString *projectLocation, NSString *startPageName) {
+        NSLog(@"The project with name '%@' has been loaded.", projectMetadata.name);
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [progressHud hide:YES];
+            
+            EXApperyService *strongService = weakService;
+            EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:strongService projectMetadata:projectMetadata];
+            pvc.wwwFolderName = projectLocation;
+            pvc.startPage = startPageName;
+            
+            RootViewControllerManager *strongManager = weakManager;
+            EXProjectsMetadataViewController *pmvc = [[strongManager topSidebarController] as:[EXProjectsMetadataViewController class]];
+            pmvc.delegate = pvc;
+            
+            //ToDO: fix
+            NSMutableArray *viewControllers = [NSMutableArray arrayWithArray:[self.navigationController viewControllers]];
+            [viewControllers removeLastObject];
+            [viewControllers addObject:pvc];
+            
+            [self.navigationController setViewControllers:viewControllers animated:NO];
+        });
     };
     
-    if (self.apperyService.isLoggedOut) {
-        EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
-        EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
-        NSString *password = [SSKeychain passwordForService:APPERI_SERVICE account:lastUserSettings.userName];
+    // Start reload project
+    [self.apperyService loadProjectForMetadata:projectMetadata succeed:reloadProject failed:^(NSError *error) {
+        NSLog(@"The project with name: '%@' has NOT been loaded. Error: %@.", projectMetadata.name, error.localizedDescription);
         
-        [self.apperyService loginWithUsername:lastUserSettings.userName password:password succeed:^(NSArray *projectsMetadata) {
-            reloadProject();
-        } failed:^(NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [progressHud hide: NO];
-                EXApperyService *strongService = weakService;
-                [strongService quickLogout];
-                [self masterControllerDidLogout];
-            });
-        }];
-    }
-    else {
-        reloadProject();
-    }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [progressHud hide:NO];
+            
+            // Show error message
+            [[[UIAlertView alloc] initWithTitle:error.localizedDescription
+                                        message:error.localizedRecoverySuggestion
+                                       delegate:nil
+                              cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                              otherButtonTitles:nil] show];
+            
+            [self masterControllerDidLogout];
+        });
+    }];
 }
 
 

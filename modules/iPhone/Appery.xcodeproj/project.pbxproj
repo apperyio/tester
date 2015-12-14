@@ -260,9 +260,7 @@
 		370E327E1833E31100A88059 /* iTunesArtwork@2x */ = {isa = PBXFileReference; lastKnownFileType = file; path = "iTunesArtwork@2x"; sourceTree = "<group>"; };
 		371DB9141833ADDF005A6461 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Appery/Images.xcassets; sourceTree = SOURCE_ROOT; };
 		37792B301889897500544969 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
-		378012EF1907DC8F002A1B88 /* libxml2.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.2.dylib; path = usr/lib/libxml2.2.dylib; sourceTree = SDKROOT; };
 		37AEF2261891826300ABC0E5 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
-		37AEF2281891828000ABC0E5 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		683954F217452D2C001EC185 /* menu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu.png; sourceTree = "<group>"; };
 		683954F317452D2C001EC185 /* menu@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu@2x.png"; sourceTree = "<group>"; };
 		683954F417452D2C001EC185 /* reload.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reload.png; sourceTree = "<group>"; };
@@ -291,7 +289,6 @@
 		6F35CBAE14250B0600283C88 /* logout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logout.png; sourceTree = "<group>"; };
 		6F35CBAF14250B0600283C88 /* logout@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logout@2x.png"; sourceTree = "<group>"; };
 		6F597AED14B4F84D00E80565 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
-		6F597AF014B4F8AF00E80565 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		6F743BC31369C67600DBA1A3 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		6F743BC51369C67E00DBA1A3 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		6FAA012D139F8E1F00DD1FE7 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
@@ -411,7 +408,6 @@
 		D4C1DC601C11C49C004591C0 /* EXSAMLRequestSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSAMLRequestSerializer.m; sourceTree = "<group>"; };
 		D4CE764F1C0DE2C50091C2B1 /* NSString+URLUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+URLUtility.h"; sourceTree = "<group>"; };
 		D4CE76501C0DE2C50091C2B1 /* NSString+URLUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+URLUtility.m"; sourceTree = "<group>"; };
-		D4D5C18A1A516C0B0069A40F /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		D4DE3B931C0EFE9B00B8CB41 /* AFHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperation.h; sourceTree = "<group>"; };
 		D4DE3B941C0EFE9B00B8CB41 /* AFHTTPRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPRequestOperation.m; sourceTree = "<group>"; };
 		D4DE3B951C0EFE9B00B8CB41 /* AFHTTPRequestOperationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperationManager.h; sourceTree = "<group>"; };
@@ -522,10 +518,6 @@
 				D4B774181BDED24000D08421 /* libxml2.2.tbd */,
 				D4B774161BDED22D00D08421 /* libz.tbd */,
 				D4B774141BDED1D200D08421 /* libsqlite3.tbd */,
-				D4D5C18A1A516C0B0069A40F /* libxml2.dylib */,
-				378012EF1907DC8F002A1B88 /* libxml2.2.dylib */,
-				37AEF2281891828000ABC0E5 /* libz.dylib */,
-				6F597AF014B4F8AF00E80565 /* libiconv.dylib */,
 				6F597AED14B4F84D00E80565 /* AssetsLibrary.framework */,
 				6FAA0139139F8E4F00DD1FE7 /* AudioToolbox.framework */,
 				6FAA012D139F8E1F00DD1FE7 /* AddressBook.framework */,
@@ -658,7 +650,6 @@
 				3629DE9D1B832B050066D254 /* EXSignInViewController.h */,
 				3629DE9E1B832B050066D254 /* EXSignInViewController.m */,
 				3629DE9F1B832B050066D254 /* EXSignInViewController.xib */,
-				D4B59F3419F7CB2F00649292 /* EXMainWindow.xib */,
 				D4B59F3519F7CB2F00649292 /* EXProjectsMetadataViewController.h */,
 				D4B59F3619F7CB2F00649292 /* EXProjectsMetadataViewController.m */,
 				D4B59F3719F7CB2F00649292 /* EXProjectsMetadataViewController.xib */,
@@ -667,6 +658,7 @@
 				D4B59F3B19F7CB2F00649292 /* EXProjectViewController.m */,
 				361449F51B8F392800CD2CE2 /* EXBaseViewController.h */,
 				361449F61B8F392800CD2CE2 /* EXBaseViewController.m */,
+				D4B59F3419F7CB2F00649292 /* EXMainWindow.xib */,
 			);
 			name = Controller;
 			path = controller;

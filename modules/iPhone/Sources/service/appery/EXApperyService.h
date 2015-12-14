@@ -20,21 +20,6 @@
 @property (nonatomic, strong) NSString *baseUrl;
 
 /**
- * Returns current logged in user name or nil otherwise.
- */
-@property (nonatomic, readonly) NSString *loggedUserName;
-
-/**
- * Returns YES if user is logged in, NO - otherwise.
- */
-@property (nonatomic, readonly) BOOL isLoggedIn;
-
-/**
- * Returns YES if user is logged out, NO - otherwise.
- */
-@property (nonatomic, readonly) BOOL isLoggedOut;
-
-/**
  * @name Service methods
  */
 
@@ -45,8 +30,6 @@
  * @param password - user password
  * @param succeed  - block of code invoked when operation is successfull 
  * @param failed   - block of code invoked when operation is failed, error parameter describes details
- *
- * @exception NSException - if user has already made login
  */
 - (void)loginWithUsername:(NSString *)userName password:(NSString *)password
                   succeed:(void (^)(NSArray *projectsMetadata))succeed
@@ -57,18 +40,9 @@
  *
  * @param succeed - block of code invoked when operation is successfull 
  * @param failed  - block of code invoked when opeartion is failed, error parameter describes details
- *                  if logout:failed: opeartion is failed user can invoke quickLogout method
- *
- * @exception NSException - if user is not logged in
+ *                  if logout:failed: opeartion is failed
  */
 - (void)logoutSucceed:(void(^)(void))succeed failed:(void(^)(NSError *error))failed;
-
-/**
- * Change log state to logout, and clear local autentication credentials.
- *
- * @exception NSException - if user is not logged in
- */
-- (void)quickLogout;
 
 /**
  * Interrupt all appery.io service operation.
@@ -81,8 +55,6 @@
  * @param succeed - block of code invoked when operation is successfull,
  *                  projectsMetadata parameter contains array of EXProjectMetadata objects
  * @param failed  - block of code invoked when oeration is failed, error parameter describes details
- *
- * @exception NSException - if user is not logged in
  */
 - (void)loadProjectsMetadata:(void (^)(NSArray *projectsMetadata))succeed failed:(void (^)(NSError *error))failed;
 
@@ -93,8 +65,6 @@
  * @param succeed - block of code invoked when operation is successfull, where projectLocation parameter contains full
  *                  path to the uzipped project location and startPageName parameter contains root html page name
  * @param failed  - block of code invoked when operation is failed, error parameter describes details
- *
- * @exception NSException - if user is not logged in
  */
 - (void)loadProjectForMetadata:(EXProjectMetadata *)projectMetadata
                        succeed:(void (^)(NSString *projectLocation, NSString *startPageName))succeed
@@ -107,8 +77,6 @@
  * @param succeed - block of code invoked when operation is successfull, where projectLocation parameter contains full
  *                  path to the uzipped project location and startPageName parameter contains root html page name
  * @param failed  - block of code invoked when operation is failed, error parameter describes details
- *
- * @exception NSException - if user is not logged in
  */
 - (void)loadProjectForAppCode:(NSString *)appCode
                       succeed:(void (^)(NSString *projectLocation, NSString *startPageName))succeed

@@ -27,8 +27,6 @@
 - (BOOL)addSkipBackupAttributeToItemAtPath:(NSString *)filePathString;
 - (void)createAndConfigureApperyService;
 - (BOOL)updateBaseUrl;
-- (void)hideAllHuds;
-- (void)cancelApperyServiceActivity;
 
 @end
 
@@ -59,7 +57,7 @@
     }
     
     EXSignInViewController *signIn = [[EXSignInViewController alloc] initWithNibName:nil bundle:nil service:self.apperyService];
-    [[RootViewControllerManager sharedInstance] pushRootViewController:signIn animated:NO completionBlock:nil];
+    [manager pushRootViewController:signIn animated:NO completionBlock:nil];
 }
 
 - (void)navigateToProjectsViewController
@@ -75,6 +73,7 @@
         
         [manager setSidebarViewController:pmvc];
         [manager setSidebarEnabled:YES];
+        
         __weak RootViewControllerManager *weakManager = manager;
         [manager pushRootViewController:pvc animated:YES completionBlock:^{
             RootViewControllerManager *strongManager = weakManager;
@@ -91,9 +90,15 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
+    NSString *baseURL = [standardUserDefaults objectForKey:@"baseURL"];
+    if (!baseURL) {
+        [self registerDefaultsFromSettingsBundle];
+    }
+    
     NSError  *error = nil;
     NSArray  *directoriesInDomain = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsFolderPath = [directoriesInDomain objectAtIndex: 0];
+    NSString *documentsFolderPath = [directoriesInDomain objectAtIndex:0];
     NSString *projectsLocation    = [NSString pathWithComponents:@[documentsFolderPath, @"projects"]];
     
     // Create projects location directory if it's needed
@@ -104,16 +109,15 @@
     [self addSkipBackupAttributeToItemAtPath:projectsLocation];
     [self createAndConfigureApperyService];
     
+    // Auto login
     EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
     EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
-    if (lastUserSettings != nil) {
-        NSString *password = [SSKeychain passwordForService:APPERI_SERVICE account:lastUserSettings.userName];
-        if (password != nil) {
-            [self navigateToProjectsViewController];
-        } else {
-            [self navigateToSignInViewController];
-        }
-    } else {
+    NSString *userName = lastUserSettings.userName;
+    NSString *password = [SSKeychain passwordForService:APPERI_SERVICE account:userName];
+    if ([self autoLogin] && userName && password) {
+        [self navigateToProjectsViewController];
+    } else
+    {
         [self navigateToSignInViewController];
     }
     
@@ -130,14 +134,31 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    [self hideAllHuds];
-    [self cancelApperyServiceActivity];
+    [MBProgressHUD hideAllHUDsForView:self.window.rootViewController.view animated:NO];
+    [self.apperyService cancelAllOperation];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    // When user turn off auto login or change base url we must go to SignIn page
-    if ([self updateBaseUrl] || ![self autoLogin]) {
+    // When user change base url we must go to SignIn page
+    if ([self updateBaseUrl]) {
+        [self navigateToSignInViewController];
+        return;
+    }
+    
+    // Auto login
+    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
+    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
+    NSString *userName = lastUserSettings.userName;
+    NSString *password = [SSKeychain passwordForService:APPERI_SERVICE account:userName];
+    if ([self autoLogin] && userName && password) {
+        [self.apperyService loginWithUsername:userName password:password succeed:^(NSArray *projectsMetadata) {
+            NSLog(@"Auto login was success");
+        } failed:^(NSError *error) {
+            NSLog(@"Auto login faile with error: %@", [error localizedDescription]);
+        }];
+    }
+    else {
         [self navigateToSignInViewController];
     }
 }
@@ -169,43 +190,51 @@
 {
     NSAssert(self.apperyService == nil, @"self.apperyService is already initialized");
     
+    NSString *baseUrl = [[NSUserDefaults standardUserDefaults] stringForKey:@"baseURL"];
     self.apperyService = [[EXApperyService alloc] init];
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSString *baseUrl = [defaults stringForKey:@"baseURL"];
     self.apperyService.baseUrl = baseUrl;
+    
     NSLog(@"Appery service base URL: %@", baseUrl);
 }
 
 - (BOOL)autoLogin
 {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSString *autoLogin = [defaults stringForKey:@"autoLogin"];
+    BOOL autoLogin = [[NSUserDefaults standardUserDefaults] boolForKey:@"autoLogin"];
     NSLog(@"Auto login is turn %@", autoLogin ? @"on" : @"off");
     
-    return YES;
+    return autoLogin;
 }
 
 - (BOOL)updateBaseUrl
 {
     NSString *oldBaseUrl = self.apperyService.baseUrl;
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    self.apperyService.baseUrl = [defaults valueForKey:@"baseURL"];
+    self.apperyService.baseUrl = [[NSUserDefaults standardUserDefaults] valueForKey:@"baseURL"];
     
     return ![self.apperyService.baseUrl isEqualToString:oldBaseUrl];
 }
 
-- (void)hideAllHuds
-{
-    [MBProgressHUD hideAllHUDsForView:self.window.rootViewController.view animated:NO];
-}
+#pragma mark - NSUserDefaults
 
-- (void)cancelApperyServiceActivity
+- (void)registerDefaultsFromSettingsBundle
 {
-    [self.apperyService cancelAllOperation];
-    
-    if (self.apperyService.isLoggedIn) {
-        [self.apperyService quickLogout];
+    NSString *settingsBundle = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"bundle"];
+    if(!settingsBundle) {
+        NSLog(@"Could not find Settings.bundle");
+        return;
     }
+    
+    NSDictionary *settings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"Root.plist"]];
+    NSArray *preferences = [settings objectForKey:@"PreferenceSpecifiers"];
+    
+    NSMutableDictionary *defaultsToRegister = [[NSMutableDictionary alloc] initWithCapacity:[preferences count]];
+    for (NSDictionary *prefSpecification in preferences) {
+        NSString *key = [prefSpecification objectForKey:@"Key"];
+        if (key) {
+            [defaultsToRegister setObject:[prefSpecification objectForKey:@"DefaultValue"] forKey:key];
+        }
+    }
+    
+    [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsToRegister];
 }
 
 @end

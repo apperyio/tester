@@ -10,8 +10,6 @@
 
 #import <Cordova/CDVViewController.h>
 
-#import "MBProgressHUD.h"
-
 #import "EXUserSettingsStorage.h"
 #import "EXProjectMetadataCell.h"
 #import "EXProjectViewController.h"
@@ -22,9 +20,9 @@
 
 #import "RootViewControllerManager.h"
 
+#import "MBProgressHUD.h"
 #import "NSObject+Utils.h"
 #import "SSKeychain.h"
-
 
 #pragma mark - UI string constants
 
@@ -39,7 +37,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 /// @name UI properties
 @property (nonatomic, weak) IBOutlet UITableView *rootTableView;
-
 @property (nonatomic, weak) IBOutlet UIToolbar *toolBar;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 
@@ -49,19 +46,11 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 /// Handles filtered projects metadata.
 @property (nonatomic, strong) NSMutableArray *filteredProjectsMetadata;
 
-/// Contains projects observers list.
-@property (nonatomic, strong) NSMutableArray *projectsObservers;
-
 /// Current selected folder name.
 @property (nonatomic, strong) NSString *currentFolder;
 
 /// Current selected sorting method for projects metadata.
 @property (nonatomic, assign) EXSortingMethodType currentProjectsSortingMethod;
-
-/// Defines wheter KVO is registered.
-@property (nonatomic, assign) BOOL isObservingRegistered;
-
-@property (nonatomic, strong) NSArray *folders;
 
 @property (nonatomic, strong) NSArray *toolbarActualItems;
 
@@ -69,22 +58,18 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 @property (nonatomic, strong) NSIndexPath *selectedItemPath;
 
-/// @name UI actions
+/// UI actions
 - (void)logoutAction:(id)sender;
 
 - (void)reloadProjects;
-/**
- * Initialize Projects Metadata
- */
+
+/// Initialize Projects Metadata
 - (void)initializeProjectsMetadata:(NSArray *)projectsMetadata;
 
-/**
- * Perform logout process.
- */
+/// Perform logout process
 - (void)logoutFromService;
 
-- (void)loadProjectsMetadataCompletion:(EXProjectsMetadataViewControllerCompletionBlock)completion;
-
+/// Projects sorting and filtering
 - (void)sortMetadataArray:(NSMutableArray *)metadata withMethod:(EXSortingMethodType)sortMethod;
 - (void)setupNameSortMethod;
 - (void)setupCreationDateSortMethod;
@@ -110,7 +95,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }
     
     _apperyService = service;
-    _projectsObservers = [[NSMutableArray alloc] init];
     _filteredProjectsMetadata = [[NSMutableArray alloc] init];
     
     if (metadata.count > 0) {
@@ -131,12 +115,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     self.rootTableView.separatorColor = [UIColor clearColor];
     
     [self configureToolbar];
-    if (self.projectsMetadata.count == 0) {
-        [self reloadProjects];
-    }
-    else {
-        [self sortByCurrentMethodAndUpdateUI];
-    }
+    
+    [self reloadProjects];
     
     self.title = NSLocalizedString(@"My apps", @"EXProjectsViewController title");
     
@@ -183,52 +163,62 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 - (void)reloadProjects
 {
-    if (self.apperyService.isLoggedOut) {
-        self.rootTableView.userInteractionEnabled = NO;
+    NSAssert(self.apperyService != nil, @"apperyService property is not defined");
+    
+    self.rootTableView.userInteractionEnabled = NO;
+    
+    __weak __typeof(self)weakSelf = self;
+    void(^endRefresh)(NSArray *) = ^(NSArray *projectsMetadata) {
+        __strong __typeof(weakSelf)strongSelf = weakSelf;
+        [strongSelf initializeProjectsMetadata:projectsMetadata];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            strongSelf.rootTableView.userInteractionEnabled = YES;
+            [strongSelf.refreshControl endRefreshing];
+            
+            UIView *rootView = [[[EXMainWindowAppDelegate mainWindow] rootViewController] view];
+            [MBProgressHUD hideAllHUDsForView:rootView animated:YES];
+        });
+    };
+    
+    __weak EXApperyService *weakService = self.apperyService;
+    [self.apperyService loadProjectsMetadata:endRefresh failed:^(NSError *error) {
+        NSLog(@"Apps loading failed due to: %@", error.localizedDescription);
         
         UIView *rootView = [[[EXMainWindowAppDelegate mainWindow] rootViewController] view];
-        MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
+        MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo:rootView animated:YES];
         progressHud.labelText = NSLocalizedString(@"Login", @"Login progress hud title");
         
         EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
         EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
         NSString *password = [SSKeychain passwordForService:APPERI_SERVICE account:lastUserSettings.userName];
         
-        [self.apperyService loginWithUsername:lastUserSettings.userName password:password succeed:^(NSArray *projectsMetadata) {
+        EXApperyService *strongService = weakService;
+        [strongService loginWithUsername:lastUserSettings.userName password:password succeed:endRefresh failed:^(NSError *error) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [progressHud hide:YES];
-            });
-            
-            [self initializeProjectsMetadata:projectsMetadata];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.rootTableView.userInteractionEnabled = YES;
-                [self.refreshControl endRefreshing];
-            });
-        } failed:^(NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.rootTableView.userInteractionEnabled = YES;
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                strongSelf.rootTableView.userInteractionEnabled = YES;
                 
-                [self.apperyService quickLogout];
-                id<EXProjectControllerActionDelegate> del = self.delegate;
+                UIView *rootView = [[[EXMainWindowAppDelegate mainWindow] rootViewController] view];
+                [MBProgressHUD hideAllHUDsForView:rootView animated:NO];
+                
+                // Show error message
+                [[[UIAlertView alloc] initWithTitle:error.localizedDescription
+                                            message:error.localizedRecoverySuggestion
+                                           delegate:nil
+                                  cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                                  otherButtonTitles:nil] show];
+                
+                id<EXProjectControllerActionDelegate> del = strongSelf.delegate;
                 if (del != nil) {
                     [del masterControllerDidLogout];
                 }
                 else {
-                    RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
-                    [manager popRootViewControllerAnimated:YES completionBlock:nil];
+                    [[EXMainWindowAppDelegate appDelegate] navigateToSignInViewController];
                 }
             });
         }];
-    }
-    else {
-        [self loadProjectsMetadataCompletion:^(BOOL succeeded) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.rootTableView.userInteractionEnabled = YES;
-                [self.refreshControl endRefreshing];
-            });
-        }];
-    }
+    }];
 }
 
 - (void)logoutAction:(id)sender
@@ -376,46 +366,23 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     self.projectsMetadata = enabledProjectsMetadata;
     [self.filteredProjectsMetadata removeAllObjects];
     [self.filteredProjectsMetadata addObjectsFromArray:enabledProjectsMetadata];
-    [self redefineAvailableFolders];
     [self sortByCurrentMethodAndUpdateUI];
-}
-
-- (void)loadProjectsMetadataCompletion:(EXProjectsMetadataViewControllerCompletionBlock)completion
-{
-    NSAssert(self.apperyService != nil, @"apperyService property is not defined");
-    
-    [self.apperyService loadProjectsMetadata: ^(NSArray *projectsMetadata) {
-        [self initializeProjectsMetadata:projectsMetadata];
-        
-        if (completion) {
-            completion(YES);
-        }
-    } failed:^(NSError *error) {
-        DLog(@"Apps loading failed due to: %@", error.localizedDescription);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[[UIAlertView alloc] initWithTitle:error.localizedDescription
-                                        message:error.localizedRecoverySuggestion
-                                       delegate:nil
-                              cancelButtonTitle:NSLocalizedString(@"Ok", nil)
-                              otherButtonTitles:nil] show];
-        });
-        
-        if (completion) {
-            completion(NO);
-        }
-    }];
 }
 
 - (void)logoutFromService
 {
+    NSAssert(self.apperyService != nil, @"apperyService property is not defined");
+    
     UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
     MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo:rootView animated:YES];
     progressHud.labelText = NSLocalizedString(@"Logout", @"Logout progress hud title");
     
     // Delete password
-    [SSKeychain deletePasswordForService:APPERI_SERVICE account:self.apperyService.loggedUserName];
+    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
+    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
+    [SSKeychain deletePasswordForService:APPERI_SERVICE account:lastUserSettings.userName];
     
-    void(^finalize)(void)  = ^{
+    void(^finalize)(void) = ^{
         dispatch_async(dispatch_get_main_queue(), ^{
             [progressHud hide: YES];
             id<EXProjectControllerActionDelegate> del = self.delegate;
@@ -431,19 +398,9 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [self.apperyService logoutSucceed: ^{
         finalize();
     } failed:^(NSError *error) {
-        DLog(@"Error was occured during remote logout operation. Details: %@", [error localizedDescription]);
+        NSLog(@"Error was occured during remote logout operation. Details: %@", [error localizedDescription]);
         finalize();
     }];
-}
-
-#pragma mark - UI helpers
-
-- (void)redefineAvailableFolders
-{
-    NSArray *availableFolders = [self.projectsMetadata valueForKeyPath:@"@distinctUnionOfObjects.creator"];
-    NSString *allFolderName = NSLocalizedString(@"All", @"Apps list | Toolbar | Folder button possible value");
-    self.folders = [@[allFolderName] arrayByAddingObjectsFromArray:availableFolders];
-    self.currentFolder = allFolderName;
 }
 
 #pragma mark - Projects sorting / filtering

@@ -30,10 +30,12 @@
 
 /**
  * Initialize with view controller and configures it with loaded project correspond to the specified project metadata.
- *
- * @param projectMetadata - project metadata for loading project, if nil empty view will be shown
  */
 - (instancetype)initWithService:(EXApperyService *)service projectMetadata:(EXProjectMetadata *)projectMetadata NS_DESIGNATED_INITIALIZER;
+
+/**
+ * Initialize with view controller and configures it with loaded project correspond to the specified project app code.
+ */
 - (instancetype)initWithService:(EXApperyService *)service projectCode:(NSString *)projectCode NS_DESIGNATED_INITIALIZER;
 
 - (void)updateContent;
