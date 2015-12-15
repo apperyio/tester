@@ -2,6 +2,7 @@
 <resources>
     <string name="application_name">Appery.io Tester</string>
     <string name="base_url">https://appery.io</string>
+    <string name="toast_permissions_denied">Permissions denied, please provide all needed permissions for tester</string>
 
     <!-- LABELS -->
     <string name="login_label">Login: </string>

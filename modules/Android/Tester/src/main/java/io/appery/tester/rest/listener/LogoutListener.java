@@ -5,7 +5,9 @@ import android.content.Context;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
+import io.appery.tester.Constants;
 import io.appery.tester.utils.DialogHelper;
+import io.appery.tester.utils.UserHelper;
 import retrofit.client.Response;
 
 /**
@@ -28,11 +30,17 @@ public class LogoutListener extends BaseListener<Response> {
     public void onRequestFailure(SpiceException spiceException) {
         super.onRequestFailure(spiceException);
         dialog.dismiss();
+        clean();
     }
 
     @Override
     public void onRequestSuccess(Response response) {
         super.onRequestSuccess(response);
         dialog.dismiss();
+        clean();
+    }
+
+    private void clean() {
+        UserHelper.updateSAMLKey(Constants.EMPTY_STRING);
     }
 }

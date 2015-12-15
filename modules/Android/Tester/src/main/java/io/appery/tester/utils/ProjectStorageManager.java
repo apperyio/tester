@@ -23,6 +23,6 @@ public class ProjectStorageManager {
     }
 
     public static String getWORK_DIRECTORY() {
-        return getBase_DIR() + "/unpack_folder";
+        return getBase_DIR() + "/project";
     }
 }

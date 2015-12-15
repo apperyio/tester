@@ -48,26 +48,8 @@ public class CommonUtil {
         return result;
     }
 
-    public static <T> Class<T> getGenericClass(Collection<T> collection) {
-        if (isEmpty(collection)) {
-            throw new IllegalArgumentException("add() " + ((collection == null) ? "null" : "empty") + " collection");
-        }
-        return (Class<T>) collection.iterator().next().getClass();
-
-    }
-
     public static <T> List<T> getNewArrayList() {
         return new ArrayList<T>();
     }
 
-    static public Header getHeaderByName(List<Header> headersList, String name) {
-        Header result = null;
-        for (Header temp : headersList) {
-            if (temp.getName().equals(name)) {
-                result = temp;
-                break;
-            }
-        }
-        return result;
-    }
 }

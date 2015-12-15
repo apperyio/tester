@@ -11,6 +11,10 @@ public interface Constants {
         int PROJECT_LOADER = 0x0001;
     }
 
+    interface RequestCode {
+        int PPERMISSION_REQUEST_CODE = 123;
+    }
+
     interface Direction {
         public static final String ASC = "ASC";
         public static final String DESC = "DESC";
