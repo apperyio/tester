@@ -151,6 +151,25 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 
 - (void)signIn
 {
+    // Checking that credential was entered
+    NSString *msg = nil;
+    if (self.uname.length) {
+        msg = NSLocalizedString(@"Missing email address", nil);
+    }
+    else if (!self.pwd.length) {
+        msg = NSLocalizedString(@"Missing password", nil);
+    }
+    
+    if (msg) {
+        // Show error message
+        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Failed", nil)
+                                    message:NSLocalizedString(msg, nil)
+                                   delegate:nil
+                          cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                          otherButtonTitles:nil] show];
+        return;
+    }
+    
     UIView *rootView = [[[EXMainWindowAppDelegate mainWindow] rootViewController] view];
     MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
     progressHud.labelText = NSLocalizedString(@"Login", @"Login progress hud title");
