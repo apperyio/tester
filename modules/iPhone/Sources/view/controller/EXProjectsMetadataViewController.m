@@ -231,25 +231,39 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 - (void)appCodeAction:(id)sender
 {
     #pragma unused(sender)
+    
     self.appCodeController = [[EXAppCodeController alloc] init];
-    [self.appCodeController requestCodeWithCompletionHandler:^(NSString *appCode) {
-        if (self.selectedItemPath != nil) {
-            [self.rootTableView deselectRowAtIndexPath:self.selectedItemPath animated:YES];
-            self.selectedItemPath = nil;
-        }
-        id<EXProjectControllerActionDelegate> del = self.delegate;
-        if (del != nil) {
-            [del masterControllerDidAcquireAppCode:appCode];
-        }
-        else {
-            EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectCode:appCode];
-            pvc.wwwFolderName = @"www";
-            pvc.startPage = @"index.html";
-            
-            [self.navigationController pushViewController:pvc animated:YES];
-            [pvc updateContent];            
-        }
-        self.appCodeController = nil;
+    
+    __weak __typeof(self)weakSelf = self;
+    [self.appCodeController requestCodeWithSucceed:^(NSString *appCode) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __strong __typeof(weakSelf)strongSelf = weakSelf;
+            if (strongSelf.selectedItemPath != nil) {
+                [strongSelf.rootTableView deselectRowAtIndexPath:strongSelf.selectedItemPath animated:YES];
+                strongSelf.selectedItemPath = nil;
+            }
+            id<EXProjectControllerActionDelegate> del = strongSelf.delegate;
+            if (del != nil) {
+                [del masterControllerDidAcquireAppCode:appCode];
+            }
+            else {
+                EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:strongSelf.apperyService projectCode:appCode];
+                pvc.wwwFolderName = @"www";
+                pvc.startPage = @"index.html";
+                
+                [strongSelf.navigationController pushViewController:pvc animated:YES];
+                [pvc updateContent];
+            }
+            strongSelf.appCodeController = nil;
+        });
+    } failed:^(NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[[UIAlertView alloc] initWithTitle:error.localizedDescription
+                                        message:error.localizedRecoverySuggestion
+                                       delegate:nil
+                              cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                              otherButtonTitles:nil] show];
+        });
     }];
 }
 

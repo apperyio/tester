@@ -74,8 +74,6 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     _apperyService = service;
     self.shouldHideNavigationBar = YES;
     
-    self.edgesForExtendedLayout = UIRectEdgeNone;
-    
     return self;
 }
 
@@ -87,6 +85,8 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 
     self.title = NSLocalizedString(@"Login", @"EXSignInViewController title");
     self.view.backgroundColor = [UIColor colorFromHEXString:@"#FBFBFB"];
+    
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     
     self.svScroll.backgroundColor = [UIColor clearColor];
     self.vContent.backgroundColor = [UIColor colorFromHEXString:@"#FBFBFB"];
@@ -153,7 +153,7 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 {
     // Checking that credential was entered
     NSString *msg = nil;
-    if (self.uname.length) {
+    if (!self.uname.length) {
         msg = NSLocalizedString(@"Missing email address", nil);
     }
     else if (!self.pwd.length) {
@@ -270,9 +270,22 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 - (IBAction)appCodeAction:(id)sender
 {
     self.appCodeController = [[EXAppCodeController alloc] init];
-    [self.appCodeController requestCodeWithCompletionHandler:^(NSString *appCode){
-        [self composeUIForMetadata:nil appCode:appCode location:@"www" startPage:@"index.html"];
-        self.appCodeController = nil;
+    
+    __weak __typeof(self)weakSelf = self;
+    [self.appCodeController requestCodeWithSucceed:^(NSString *appCode) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __strong __typeof(weakSelf)strongSelf = weakSelf;
+            [strongSelf composeUIForMetadata:nil appCode:appCode location:@"www" startPage:@"index.html"];
+            strongSelf.appCodeController = nil;
+        });
+    } failed:^(NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[[UIAlertView alloc] initWithTitle:error.localizedDescription
+                                        message:error.localizedRecoverySuggestion
+                                       delegate:nil
+                              cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                              otherButtonTitles:nil] show];
+        });
     }];
 }
 

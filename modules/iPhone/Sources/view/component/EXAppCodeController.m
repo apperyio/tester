@@ -11,14 +11,16 @@ static const NSInteger kAppCodeTextFieldTag = 111;
 
 @interface EXAppCodeController () <UIAlertViewDelegate, UITextFieldDelegate>
 
-@property (nonatomic, copy) EXAppControllerCompletionHandler handler;
+@property (nonatomic, copy) EXAppControllerSucceedHandler succeedHandler;
+@property (nonatomic, copy) EXAppControllerFailedHandler failedHandler;
 @property (nonatomic, strong) NSStringMask *mask;
 
 @end
 
 @implementation EXAppCodeController
 
-@synthesize handler = _handler;
+@synthesize succeedHandler = _succeedHandler;
+@synthesize failedHandler = _failedHandler;
 @synthesize mask = _mask;
 
 #pragma mark - Lifecycle
@@ -34,9 +36,10 @@ static const NSInteger kAppCodeTextFieldTag = 111;
 
 #pragma mark - Public class logic
 
-- (void)requestCodeWithCompletionHandler:(EXAppControllerCompletionHandler)completionHandler
+- (void)requestCodeWithSucceed:(EXAppControllerSucceedHandler)succeed failed:(EXAppControllerFailedHandler)failed
 {
-    self.handler = completionHandler;
+    self.succeedHandler = succeed;
+    self.failedHandler = failed;
     
     UIAlertView *shareAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Enter an app code", @"Enter an app code")
                                                          message:nil
@@ -64,10 +67,27 @@ static const NSInteger kAppCodeTextFieldTag = 111;
         return;
     }
     
-    if (self.handler != nil) {
-        NSString *appCode = [[alertView textFieldAtIndex:0] text];
-        self.handler(appCode);
-        self.handler = nil;
+    NSError *error = nil;
+    NSString *appCode = [[alertView textFieldAtIndex:0] text];
+    
+    if (appCode.length <= 0 || [appCode rangeOfString:@"_"].location != NSNotFound) {
+        if (self.failedHandler == nil) {
+            return;
+        }
+        
+        NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
+                                  NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Incorrect app code. Please enter all 9 digit number", nil)};
+        error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];
+        
+        self.failedHandler(error);
+        self.failedHandler = nil;
+        
+        return;
+    }
+    
+    if (self.succeedHandler != nil) {
+        self.succeedHandler(appCode);
+        self.succeedHandler = nil;
     }
 }
 

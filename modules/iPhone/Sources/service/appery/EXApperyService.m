@@ -123,7 +123,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
         [SAMLOperation setResponseSerializer:serializer];
         [strongSelf.manager.operationQueue addOperation:SAMLOperation];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        if (error == nil) {
+        if (operation.response != nil) {
             NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
                                       NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Incorrect email address or password", nil)};
             error = [[NSError alloc] initWithDomain:APPERI_SERVICE_ERROR_DOMAIN code:0 userInfo:errInfo];

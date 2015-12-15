@@ -5,11 +5,12 @@
 
 #import <Foundation/Foundation.h>
 
-typedef void(^EXAppControllerCompletionHandler)(NSString *appCode);
+typedef void(^EXAppControllerSucceedHandler)(NSString *appCode);
+typedef void(^EXAppControllerFailedHandler)(NSError *error);
 
 @interface EXAppCodeController : NSObject
 
-- (void)requestCodeWithCompletionHandler:(EXAppControllerCompletionHandler)completionHandler;
+- (void)requestCodeWithSucceed:(EXAppControllerSucceedHandler)succeed failed:(EXAppControllerFailedHandler)failed;
 
 @end
 

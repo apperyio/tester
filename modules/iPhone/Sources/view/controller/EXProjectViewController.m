@@ -123,9 +123,9 @@ static NSString *const kDefaultWebResourceFolder = @"www";
 - (void)configureNavigationBar
 {
     UIBarButtonItem *projectsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"back"]
-                                                          style:UIBarButtonItemStylePlain
-                                                         target:self
-                                                         action:@selector(showProjectsViewController)];
+                                                                       style:UIBarButtonItemStylePlain
+                                                                      target:self
+                                                                      action:@selector(showProjectsViewController)];
     UIBarButtonItem *reloadProjectButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"reload"]
                                                                             style:UIBarButtonItemStylePlain
                                                                            target:self
@@ -154,30 +154,21 @@ static NSString *const kDefaultWebResourceFolder = @"www";
 
 - (void)reloadProject
 {
-    if (self.isShare && self.appCode.length > 0) {
+    if (self.isShare) {
         [self loadProjectForAppCode:self.appCode];
         return;
     }
-    
-    if (self.projectMetadata != nil) {
+    else {
         [self loadProjectForMetadata:self.projectMetadata];
         return;
     }
-    
-    // TODO: fix
-    // Show error message
-    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Info", nil)
-                                message:NSLocalizedString(@"Please select an app from the app list", nil)
-                               delegate:nil
-                      cancelButtonTitle:NSLocalizedString(@"Ok", nil)
-                      otherButtonTitles:nil] show];
 }
 
 - (void)loadProjectForAppCode:(NSString *)appCode
 {
     if (appCode.length == 0) {
-        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Application code is not given.", @"Application code is not given.")
-                                    message:NSLocalizedString(@"There is no application code to load the project.", @"There is no application code to load the project.")
+        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Application code is not given.", nil)
+                                    message:NSLocalizedString(@"There is no application code to load the project.", nil)
                                    delegate:nil
                           cancelButtonTitle:NSLocalizedString(@"Ok", nil)
                           otherButtonTitles:nil] show];
