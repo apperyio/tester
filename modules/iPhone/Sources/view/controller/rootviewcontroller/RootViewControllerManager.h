@@ -72,9 +72,9 @@
 - (void)toggleSidebarControllerAnimated:(BOOL)animated completionBlock:(void (^)(void))completionBlock;
 
 /**
+ * Set sidebar controller
  *
- *
- * @param controller
+ * @param controller Content controller to set as the only (root) child od the sidebar navigation controller.
  */
 - (void)setSidebarViewController:(UIViewController *)controller;
 
@@ -96,6 +96,13 @@
  * @param completionBlock Code block to call on animation completion. If no animation was requested or there is only one controller in the stack, the code block will be called in context of this method.
  */
 - (void)popRootViewControllerAnimated:(BOOL)animated completionBlock:(void (^)(void)) completionBlock;
+
+/**
+ * Replace the top-most content controller from the existing stack on the root screen area to new controller
+ *
+ * @param controller New the top-most content controller
+ */
+- (void)replaceTopContentViewController:(UIViewController *)controller animated:(BOOL)animated;
 
 /**
  * Returns controller which is currently on the top of the stack.

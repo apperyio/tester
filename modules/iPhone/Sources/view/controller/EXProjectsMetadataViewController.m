@@ -234,37 +234,50 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     
     self.appCodeController = [[EXAppCodeController alloc] init];
     
-    __weak __typeof(self)weakSelf = self;
     [self.appCodeController requestCodeWithSucceed:^(NSString *appCode) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            if (strongSelf.selectedItemPath != nil) {
-                [strongSelf.rootTableView deselectRowAtIndexPath:strongSelf.selectedItemPath animated:YES];
-                strongSelf.selectedItemPath = nil;
-            }
-            id<EXProjectControllerActionDelegate> del = strongSelf.delegate;
-            if (del != nil) {
-                [del masterControllerDidAcquireAppCode:appCode];
-            }
-            else {
-                EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:strongSelf.apperyService projectCode:appCode];
-                pvc.wwwFolderName = @"www";
-                pvc.startPage = @"index.html";
-                
-                [strongSelf.navigationController pushViewController:pvc animated:YES];
-                [pvc updateContent];
-            }
-            strongSelf.appCodeController = nil;
-        });
+        UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
+        MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo:rootView animated:YES];
+        progressHud.labelText = NSLocalizedString(@"Loading app", @"Loading app progress hud title");
+        
+        __weak __typeof(self)weakSelf = self;
+        [self.apperyService loadProjectForAppCode:appCode
+                                          succeed:^(NSString *projectLocation, NSString *startPageName) {
+                                              NSLog(@"The project for code: '%@' has been loaded.", appCode);
+                                              dispatch_async(dispatch_get_main_queue(), ^{
+                                                  [progressHud hide:NO];
+                                                  __strong __typeof(weakSelf)strongSelf = weakSelf;
+                                                  id<EXProjectControllerActionDelegate> del = strongSelf.delegate;
+                                                  if (del != nil) {
+                                                      [del masterControllerDidAcquireAppCode:appCode];
+                                                  }
+                                                  else {
+                                                      EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:strongSelf.apperyService projectCode:appCode];
+                                                      pvc.wwwFolderName = projectLocation;
+                                                      pvc.startPage = startPageName;
+                                                      
+                                                      [weakSelf.navigationController pushViewController:pvc animated:YES];
+                                                  }
+                                              });
+                                          } failed:^(NSError *error) {
+                                              NSLog(@"The project for code: '%@' has NOT been loaded. Error: %@.", appCode, [error localizedDescription]);
+                                              dispatch_async(dispatch_get_main_queue(), ^{
+                                                  [progressHud hide:NO];
+                                                  [[[UIAlertView alloc] initWithTitle:error.localizedDescription
+                                                                              message:error.localizedRecoverySuggestion
+                                                                             delegate:nil
+                                                                    cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                                                                    otherButtonTitles:nil] show];
+                                              });
+                                          }
+         ];
     } failed:^(NSError *error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[[UIAlertView alloc] initWithTitle:error.localizedDescription
-                                        message:error.localizedRecoverySuggestion
-                                       delegate:nil
-                              cancelButtonTitle:NSLocalizedString(@"Ok", nil)
-                              otherButtonTitles:nil] show];
-        });
+        [[[UIAlertView alloc] initWithTitle:error.localizedDescription
+                                    message:error.localizedRecoverySuggestion
+                                   delegate:nil
+                          cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                          otherButtonTitles:nil] show];
     }];
+    
 }
 
 #pragma mark - UITableViewDataSource protocol implementation
@@ -315,10 +328,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }
     else {
         EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectMetadata:projectMetadata];
-        pvc.wwwFolderName = @"www";
-        pvc.startPage = @"index.html";
+        [pvc masterControllerDidLoadMetadata:projectMetadata];
         
-        [pvc updateContent];
         [self.navigationController pushViewController:pvc animated:YES];
         
         [tableView deselectRowAtIndexPath:indexPath animated:YES];

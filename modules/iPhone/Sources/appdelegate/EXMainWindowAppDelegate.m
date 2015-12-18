@@ -82,8 +82,9 @@
             });
         }];
     }
-    
-    [manager pushRootViewController:pmvc animated:NO completionBlock:nil];
+    else {
+        [manager pushRootViewController:pmvc animated:NO completionBlock:nil];
+    }
 }
 
 #pragma mark - UIApplicationDelegate protocol - Monitoring Application State Changes

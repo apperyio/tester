@@ -24,7 +24,6 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 
 @property (nonatomic, weak) IBOutlet UIScrollView *svScroll;
 @property (nonatomic, weak) IBOutlet UIView *vContent;
-
 @property (nonatomic, weak) IBOutlet UIImageView *ivLogo;
 @property (nonatomic, weak) IBOutlet UITableView *tvSignIn;
 @property (nonatomic, weak) IBOutlet UIButton *bAppCode;
@@ -38,10 +37,10 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 
 - (IBAction)appCodeAction:(id)sender;
 
+- (void)composeUIForMetadata:(NSArray *)metadata location:(NSString *)location startPage:(NSString *)startPage;
+
 - (void)keyboardWillShowNotification:(NSNotification *)notification;
 - (void)keyboardWillHideNotification:(NSNotification *)notification;
-
-- (void)composeUIForMetadata:(NSArray *)metadata appCode:(NSString *)appCode location:(NSString *)location startPage:(NSString *)startPage;
 
 @end
 
@@ -188,7 +187,7 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
             self.pwd = nil;
             [self.tvSignIn reloadData];
             
-            [self composeUIForMetadata:projectsMetadata appCode:nil location:@"www" startPage:@"index.html"];
+            [self composeUIForMetadata:projectsMetadata location:@"www" startPage:@"index.html"];
         });
     }
     failed:^(NSError *error) {
@@ -229,39 +228,31 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     }
 }
 
-- (void)composeUIForMetadata:(NSArray *)metadata appCode:(NSString *)appCode location:(NSString *)location startPage:(NSString *)startPage
+- (void)composeUIForMetadata:(NSArray *)metadata location:(NSString *)location startPage:(NSString *)startPage
 {
+    NSAssert(metadata != nil, @"Project's metadata is not given");
+    
     RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
-    
-    if (metadata != nil) {
-        EXProjectsMetadataViewController *pmvc = [[EXProjectsMetadataViewController alloc] initWithNibName:nil bundle:nil service:self.apperyService projectsMetadata:metadata];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectMetadata:nil];
-            pvc.wwwFolderName = location;
-            pvc.startPage = startPage;
-            pmvc.delegate = pvc;
-            
-            [manager setSidebarViewController:pmvc];
-            [manager setSidebarEnabled:YES];
-            __weak RootViewControllerManager *weakManager = manager;
-            [manager pushRootViewController:pvc animated:YES completionBlock:^{
-                RootViewControllerManager *strongManager = weakManager;
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [strongManager showSidebarController:nil animated:YES completionBlock:nil];
-                });
-            }];
-        }
-        else {
-            [manager pushRootViewController:pmvc animated:YES completionBlock:nil];
-        }
-    }
-    
-    if (appCode != nil) {
-        EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectCode:appCode];
+    EXProjectsMetadataViewController *pmvc = [[EXProjectsMetadataViewController alloc] initWithNibName:nil bundle:nil service:self.apperyService projectsMetadata:metadata];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectMetadata:nil];
         pvc.wwwFolderName = location;
         pvc.startPage = startPage;
-        [manager pushRootViewController:pvc animated:YES completionBlock:nil];
-        [pvc updateContent];
+        pmvc.delegate = pvc;
+        
+        [manager setSidebarViewController:pmvc];
+        [manager setSidebarEnabled:YES];
+        
+        __weak RootViewControllerManager *weakManager = manager;
+        [manager pushRootViewController:pvc animated:YES completionBlock:^{
+            RootViewControllerManager *strongManager = weakManager;
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [strongManager showSidebarController:nil animated:YES completionBlock:nil];
+            });
+        }];
+    }
+    else {
+        [manager pushRootViewController:pmvc animated:YES completionBlock:nil];
     }
 }
 
@@ -271,21 +262,49 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 {
     self.appCodeController = [[EXAppCodeController alloc] init];
     
-    __weak __typeof(self)weakSelf = self;
     [self.appCodeController requestCodeWithSucceed:^(NSString *appCode) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            [strongSelf composeUIForMetadata:nil appCode:appCode location:@"www" startPage:@"index.html"];
-            strongSelf.appCodeController = nil;
-        });
+        RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
+        
+        UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
+        MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo:rootView animated:YES];
+        progressHud.labelText = NSLocalizedString(@"Loading app", @"Loading app progress hud title");
+        
+        __weak EXApperyService *weakService = self.apperyService;
+        __weak RootViewControllerManager *weakManager = manager;
+        [self.apperyService loadProjectForAppCode:appCode
+                                          succeed:^(NSString *projectLocation, NSString *startPageName) {
+                                              NSLog(@"The project for code: '%@' has been loaded.", appCode);
+                                              
+                                              dispatch_async(dispatch_get_main_queue(), ^{
+                                                  [progressHud hide:NO];
+                                                  
+                                                  EXApperyService *strongService = weakService;
+                                                  EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:strongService projectCode:appCode];
+                                                  pvc.wwwFolderName = projectLocation;
+                                                  pvc.startPage = startPageName;
+                                                  
+                                                  RootViewControllerManager *strongManager = weakManager;
+                                                  [strongManager replaceTopContentViewController:pvc animated:NO];
+                                              });
+                                          } failed:^(NSError *error) {
+                                              NSLog(@"The project for code: '%@' has NOT been loaded. Error: %@.", appCode, [error localizedDescription]);
+                                              
+                                              dispatch_async(dispatch_get_main_queue(), ^{
+                                                  [progressHud hide:NO];
+                                                  [[[UIAlertView alloc] initWithTitle:error.localizedDescription
+                                                                              message:error.localizedRecoverySuggestion
+                                                                             delegate:nil
+                                                                    cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                                                                    otherButtonTitles:nil] show];
+                                              });
+                                          }
+         ];
     } failed:^(NSError *error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
             [[[UIAlertView alloc] initWithTitle:error.localizedDescription
                                         message:error.localizedRecoverySuggestion
                                        delegate:nil
                               cancelButtonTitle:NSLocalizedString(@"Ok", nil)
                               otherButtonTitles:nil] show];
-        });
     }];
 }
 

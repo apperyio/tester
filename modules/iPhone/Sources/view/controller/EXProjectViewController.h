@@ -17,7 +17,7 @@
  * Provides container for cordova projects.
  *     Inheritance is used to configure navigation controller bar appearance and behaviour.
  */
-@interface EXProjectViewController : CDVViewController <CDVScreenOrientationDelegate, EXProjectControllerActionDelegate>
+@interface EXProjectViewController : CDVViewController <EXProjectControllerActionDelegate>
 
 /**
  * Reference to the appery.io web service.

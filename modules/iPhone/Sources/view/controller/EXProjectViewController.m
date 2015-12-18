@@ -18,10 +18,6 @@
 
 #import "NSObject+Utils.h"
 
-#pragma mark - UI constants
-
-static NSString *const kDefaultWebResourceFolder = @"www";
-
 @interface EXProjectViewController ()
 
 @property (nonatomic, strong) EXProjectMetadata *projectMetadata;
@@ -177,10 +173,6 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     
     RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
     
-    if ([manager isSidebarShown]) {
-        [manager hideSidebarControllerAnimated:YES completionBlock:nil];
-    }
-    
     UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
     MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo:rootView animated:YES];
     progressHud.labelText = NSLocalizedString(@"Loading app", @"Loading app progress hud title");
@@ -192,22 +184,24 @@ static NSString *const kDefaultWebResourceFolder = @"www";
                                           NSLog(@"The project for code: '%@' has been loaded.", appCode);
                                           
                                           dispatch_async(dispatch_get_main_queue(), ^{
-                                              EXApperyService *strongService = weakService;
                                               [progressHud hide:NO];
+                                              
+                                              if ([weakManager isSidebarShown]) {
+                                                  [weakManager hideSidebarControllerAnimated:YES completionBlock:nil];
+                                              }
+                                              
+                                              EXApperyService *strongService = weakService;
                                               EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:strongService projectCode:appCode];
                                               pvc.wwwFolderName = projectLocation;
                                               pvc.startPage = startPageName;
                                               
                                               RootViewControllerManager *strongManager = weakManager;
-                                              EXProjectsMetadataViewController *pmvc = [[strongManager topSidebarController] as:[EXProjectsMetadataViewController class]];
-                                              pmvc.delegate = pvc;
+                                              if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                                                  EXProjectsMetadataViewController *pmvc = [[strongManager topSidebarController] as:[EXProjectsMetadataViewController class]];
+                                                  pmvc.delegate = pvc;
+                                              }
                                               
-                                              //ToDo: fix
-                                              NSMutableArray *viewControllers = [NSMutableArray arrayWithArray:[self.navigationController viewControllers]];
-                                              [viewControllers removeLastObject];
-                                              [viewControllers addObject:pvc];
-                                              
-                                              [self.navigationController setViewControllers:viewControllers animated:NO];
+                                              [strongManager replaceTopContentViewController:pvc animated:NO];
                                           });
                                         } failed:^(NSError *error) {
                                             NSLog(@"The project for code: '%@' has NOT been loaded. Error: %@.", appCode, [error localizedDescription]);
@@ -236,9 +230,7 @@ static NSString *const kDefaultWebResourceFolder = @"www";
     }
     
     RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
-    if ([manager isSidebarShown]) {
-        [manager hideSidebarControllerAnimated:YES completionBlock:nil];
-    }
+    
     
     UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
     MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
@@ -252,21 +244,22 @@ static NSString *const kDefaultWebResourceFolder = @"www";
         dispatch_async(dispatch_get_main_queue(), ^{
             [progressHud hide:YES];
             
+            if ([weakManager isSidebarShown]) {
+                [weakManager hideSidebarControllerAnimated:YES completionBlock:nil];
+            }
+            
             EXApperyService *strongService = weakService;
             EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:strongService projectMetadata:projectMetadata];
             pvc.wwwFolderName = projectLocation;
             pvc.startPage = startPageName;
             
             RootViewControllerManager *strongManager = weakManager;
-            EXProjectsMetadataViewController *pmvc = [[strongManager topSidebarController] as:[EXProjectsMetadataViewController class]];
-            pmvc.delegate = pvc;
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                EXProjectsMetadataViewController *pmvc = [[strongManager topSidebarController] as:[EXProjectsMetadataViewController class]];
+                pmvc.delegate = pvc;
+            }
             
-            //ToDO: fix
-            NSMutableArray *viewControllers = [NSMutableArray arrayWithArray:[self.navigationController viewControllers]];
-            [viewControllers removeLastObject];
-            [viewControllers addObject:pvc];
-            
-            [self.navigationController setViewControllers:viewControllers animated:NO];
+            [weakManager replaceTopContentViewController:pvc animated:NO];
         });
     };
     

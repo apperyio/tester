@@ -14,7 +14,8 @@
 #import "EXBaseViewController.h"
 #import "EXApperyService.h"
 #import "EXProjectMetadata.h"
-#import "EXProjectControllerActionDelegate.h"
+
+@protocol EXProjectControllerActionDelegate;
 
 /// @name Additional types
 typedef void(^EXProjectsMetadataViewControllerCompletionBlock)(BOOL succeeded);

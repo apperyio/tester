@@ -97,7 +97,7 @@
     __weak RootViewControllerManager *weakSelf = self;
     [self setRootViewController:rootViewController animated:NO completionBlock:^{
         RootViewControllerManager *blockSelf = weakSelf;
-      
+        
         UIViewController *sidebar = [blockSelf topSidebarController];
         
         CGRect rootGeom = rootViewController.view.bounds;
@@ -433,6 +433,15 @@
     if (!animated && completionBlock != nil) {
         completionBlock();
     }
+}
+
+- (void)replaceTopContentViewController:(UIViewController *)controller animated:(BOOL)animated
+{
+    NSMutableArray *viewControllers = [NSMutableArray arrayWithArray:[self.rootNavigationController viewControllers]];
+    [viewControllers removeLastObject];
+    [viewControllers addObject:controller];
+    
+    [self.rootNavigationController setViewControllers:viewControllers animated:animated];
 }
 
 - (UIViewController *)topContentController
