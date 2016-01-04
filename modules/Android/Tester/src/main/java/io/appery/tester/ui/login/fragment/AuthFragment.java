@@ -2,6 +2,7 @@ package io.appery.tester.ui.login.fragment;
 
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.widget.EditText;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -24,6 +25,9 @@ import io.appery.tester.utils.WidgetUtils;
  * Created by Alexandr.Salin on 11/28/15.
  */
 public class AuthFragment extends BaseFragment implements AuthCallback {
+
+    private static final String TAG = "AuthFragment";
+
     @Bind(R.id.login_et)
     EditText etUsername;
 
@@ -75,6 +79,7 @@ public class AuthFragment extends BaseFragment implements AuthCallback {
 
     @Override
     public void onAuthFailed(Throwable spiceException) {
+        Log.e(TAG, "Authentication failed", spiceException);
         progressDialog.dismiss();
         Snackbar.make(etUsername, spiceException.getMessage(), Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
@@ -82,6 +87,7 @@ public class AuthFragment extends BaseFragment implements AuthCallback {
 
     @Override
     public void onAuthSuccess() {
+        Log.d(TAG, "Authentication successed");
         progressDialog.dismiss();
         Intent intent = new Intent(getContext(), GeneralProjectsActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

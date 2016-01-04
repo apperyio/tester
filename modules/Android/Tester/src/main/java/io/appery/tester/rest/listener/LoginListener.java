@@ -51,15 +51,21 @@ public class LoginListener extends BaseListener<Response> {
     public void onRequestSuccess(Response response) {
         super.onRequestSuccess(response);
         String bodyString = new String(((TypedByteArray) response.getBody()).getBytes());
-        logger.warn("retrofit {}", bodyString.replaceAll("\n", Constants.EMPTY_STRING));
+        logger.info("retrofit {}", bodyString.replaceAll("\n", Constants.EMPTY_STRING));
         //TODO: correct parse
         try {
-            String saml = bodyString.substring(bodyString.indexOf("VALUE=\"") + 7, bodyString.indexOf("\"/>"));
-            logger.warn("after retrofit login success we obtain and saml : {}", saml);
-            if (mAuthCallback != null) {
-                RestManager.samlRequest(mAuthCallback, saml, new SamlListener(mAuthCallback));
+            int pos = bodyString.indexOf("VALUE=\"");
+            if (pos > 0) {
+                String saml = bodyString.substring(pos + 7, bodyString.indexOf("\"/>"));
+                logger.info("after retrofit login success we obtain and saml : {}", saml);
+                if (mAuthCallback != null) {
+                    RestManager.samlRequest(mAuthCallback, saml, new SamlListener(mAuthCallback));
+                }
+            } else {
+                // already logged in
             }
         } catch (Exception e) {
+            logger.error("samlRequest couldn't be processed", e);
             if (mAuthCallback != null) {
                 mAuthCallback.onAuthFailed(e);
             }

@@ -24,6 +24,9 @@ import io.appery.tester.utils.PermissionsUtil;
  * Created by Alexandr.Salin on 12/6/15.
  */
 public class GeneralProjectsActivity extends BaseActivity implements MasterCallback, PermissionsUtil.PermissionRequestHandler {
+
+    private static final String TAG = "GeneralProjectsActivity";
+
     private SlaveCallback slave;
 
     @Bind(R.id.toolbar_home)
