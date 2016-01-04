@@ -1,3 +1,3 @@
 Appery.getTargetPlatform = function() {
-    return "#{targetPlatformSign}";
+    return "A";
 }

@@ -28,4 +28,6 @@
     <dimen name="margin_xlarge">20dp</dimen>
     <dimen name="rounded_btn_radius">5dp</dimen>
     <dimen name="rounded_btn_stroke">2dp</dimen>
+    <dimen name="standard_padding">8dip</dimen>
+    <dimen name="half_padding">4dip</dimen>
 </resources>

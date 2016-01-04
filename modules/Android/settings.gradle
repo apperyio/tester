@@ -1,3 +1,3 @@
-include ':BarcodeScanner'
+//include ':BarcodeScanner'
 include ':CordovaLib'
 include ':Tester'
