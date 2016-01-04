@@ -86,7 +86,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_margin="20dp"
                     android:padding="10dp"
-                    android:text="@string/entern_app_code_btn"
+                    android:text="@string/enter_app_code_btn"
                     android:textColor="@color/button_enabled_color"
                     android:textSize="20sp" />
             </LinearLayout>

@@ -19,7 +19,7 @@
     <string name="download_btn">Download</string>
     <string name="preview_btn">Preview</string>
     <string name="cancel_btn">Cancel</string>
-    <string name="entern_app_code_btn">Enter app code</string>
+    <string name="enter_app_code_btn">Enter app code</string>
         
     <!-- DIALOGS -->
     <string name="please_wait">Please wait...</string>
@@ -29,9 +29,8 @@
     <string name="download_project_files">Download project files</string>
     <string name="are_you_sure">Are you sure?</string>
     <string name="complete_action_title">Complete action</string>
-    <string name="complete_action_message">Please, complete action with %1$s application</string>
-    <string name="download_project_message">Would you like to download %1$s application?</string>
-    <string name="run_preview_message">Would you like to run preview for %1$s application?</string>
+    <string name="complete_action_message">Please, complete action with \'%1$s\' application</string>
+    <string name="run_preview_message">Would you like to run preview for \'%1$s\' application?</string>
     <string name="project_action_run">Run</string>
     <string name="project_action_cancel">Cancel</string>
     <string name="sort_order">Sort order</string>

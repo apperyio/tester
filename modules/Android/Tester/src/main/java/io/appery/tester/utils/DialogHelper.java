@@ -46,7 +46,7 @@ public class DialogHelper {
     static public MaterialDialog buildProjectActionDialog(final Context context, final Project project) {
         return new MaterialDialog.Builder(context)
                 .title(R.string.application_name)
-                .content(String.format(context.getString(R.string.download_project_message), project.getName()))
+                .content(String.format(context.getString(R.string.run_preview_message), project.getName()))
                 .positiveText(R.string.project_action_run)
                 .negativeText(R.string.project_action_cancel)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
