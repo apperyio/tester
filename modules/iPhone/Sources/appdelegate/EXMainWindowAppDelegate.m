@@ -26,7 +26,9 @@
 
 - (BOOL)addSkipBackupAttributeToItemAtPath:(NSString *)filePathString;
 - (void)createAndConfigureApperyService;
+- (BOOL)autoLogin;
 - (BOOL)updateBaseUrl;
+- (void)registerDefaultsFromSettingsBundle;
 
 @end
 
@@ -153,10 +155,17 @@
     NSString *userName = lastUserSettings.userName;
     NSString *password = [SSKeychain passwordForService:APPERI_SERVICE account:userName];
     if ([self autoLogin] && userName && password) {
+        [EXMainWindowAppDelegate mainWindow].userInteractionEnabled = NO;
         [self.apperyService loginWithUsername:userName password:password succeed:^(NSArray *projectsMetadata) {
             NSLog(@"Auto login was success");
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [EXMainWindowAppDelegate mainWindow].userInteractionEnabled = YES;
+            });
         } failed:^(NSError *error) {
             NSLog(@"Auto login faile with error: %@", [error localizedDescription]);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [EXMainWindowAppDelegate mainWindow].userInteractionEnabled = YES;
+            });
         }];
     }
     else {

@@ -36,8 +36,6 @@
 
 #pragma mark - Interface rotation handling
 
-#warning Rotation functionality should be reviewed.
-
 - (BOOL)shouldAutorotate
 {
     UIViewController *child = [self childResponsibleForRotation];

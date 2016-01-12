@@ -9,14 +9,13 @@
 #import "EXProjectViewController.h"
 
 #import "MBProgressHUD.h"
+#import "NSObject+Utils.h"
 
 #import "EXUserSettingsStorage.h"
 #import "EXProjectsMetadataViewController.h"
 #import "EXMainWindowAppDelegate.h"
 
 #import "RootViewControllerManager.h"
-
-#import "NSObject+Utils.h"
 
 @interface EXProjectViewController ()
 
@@ -267,7 +266,7 @@
     [self.apperyService loadProjectForMetadata:projectMetadata succeed:reloadProject failed:^(NSError *error) {
         NSLog(@"The project with name: '%@' has NOT been loaded. Error: %@.", projectMetadata.name, error.localizedDescription);
         
-        dispatch_async(dispatch_get_main_queue(), ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [progressHud hide:NO];
             
             // Show error message

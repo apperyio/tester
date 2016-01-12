@@ -6,19 +6,6 @@
 #import "RootNavigationController.h"
 #import "NSObject+Utils.h"
 
-#warning Should be reviewed.
-//When both the NavigationController and the TopViewController have the same orientation then IOS creates the following call sequence:
-//
-// - SomeTopViewController ViewWillDisappear
-// - WillShowViewController viewController: the new TopViewController
-// - SomeTopViewController ViewDidDisappear
-// - DidShowViewController viewController: the new TopViewController
-//
-//When the NavigationController and the TopViewController have different orientations then the NavigationController delegate is not called as you described. The call sequence is therefore:
-//
-// - SomeTopViewController ViewWillDisappear
-// - SomeTopViewController ViewDidDisappear
-
 @interface RootNavigationControllerDelegate : NSObject <UINavigationControllerDelegate>
 
 @property (assign, nonatomic) BOOL didCalled;
