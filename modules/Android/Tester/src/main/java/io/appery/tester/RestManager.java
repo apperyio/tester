@@ -63,7 +63,7 @@ public class RestManager {
 
     public static void getProjectFileByCode(Context context, String code) {
         SpiceHolder holder = (SpiceHolder) context;
-        String cUrl = TesterSpiceEndpoint.getBaseIdpUrl() + String.format(Constants.API.GET_PROJECT_RESOURCE_BY_CODE, Uri.encode(code));
+        String cUrl = TesterSpiceEndpoint.getBaseUrl() + String.format(Constants.API.GET_PROJECT_RESOURCE_BY_CODE, Uri.encode(code));
         ProjectFileRequest request = new ProjectFileRequest(context, DialogHelper.buildDownloadProjectDialog(context), cUrl);
         holder.getSpiceManager().removeDataFromCache(InputStream.class);
         holder.getSpiceManager().execute(request, "PROJECT_FILE_ZIP", DurationInMillis.ALWAYS_EXPIRED, request);
