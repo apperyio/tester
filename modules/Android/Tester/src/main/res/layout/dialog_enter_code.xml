@@ -7,5 +7,9 @@
     <EditText
         android:id="@+id/et_code"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:digits="1234567890-"
+        android:maxLength="11"/>
+
 </RelativeLayout>

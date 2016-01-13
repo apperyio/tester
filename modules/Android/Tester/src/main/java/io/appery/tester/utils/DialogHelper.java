@@ -11,6 +11,7 @@ import io.appery.tester.RestManager;
 import io.appery.tester.TesterApplication;
 import io.appery.tester.db.entity.Project;
 import io.appery.tester.rest.TesterSpiceEndpoint;
+import io.appery.tester.ui.widget.EnterCodeTextWatcher;
 
 /**
  * Created by Alexandr.Salin on 12/2/15.
@@ -66,7 +67,7 @@ public class DialogHelper {
     }
 
     static public MaterialDialog buildProjectByCodeDialog(final Context context) {
-        return new MaterialDialog.Builder(context)
+        MaterialDialog dialog = new MaterialDialog.Builder(context)
                 .title(R.string.enter_app_code_dialog_title)
                 .customView(R.layout.dialog_enter_code, true)
                 .positiveText(R.string.enter_app_code_pos_button)
@@ -85,7 +86,12 @@ public class DialogHelper {
                         materialDialog.dismiss();
                     }
                 })
-                .show();
+                .build();
+
+        EditText enterCode = (EditText) dialog.findViewById(R.id.et_code);
+        enterCode.addTextChangedListener(new EnterCodeTextWatcher(enterCode));
+        dialog.show();
+        return dialog;
     }
 
     public static MaterialDialog buildDownloadProjectDialog(Context context) {
