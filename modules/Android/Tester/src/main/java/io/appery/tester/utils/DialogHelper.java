@@ -71,7 +71,7 @@ public class DialogHelper {
 
     public static MaterialDialog buildDownloadProjectDialog(Context context) {
         return new MaterialDialog.Builder(context)
-                .title(R.string.download_project_files)
+                .title(R.string.loading_app)
                 .content(R.string.please_wait)
                 .progress(true, 0)
                 .cancelable(false)

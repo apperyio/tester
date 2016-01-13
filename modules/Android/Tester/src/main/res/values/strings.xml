@@ -26,7 +26,7 @@
     <string name="signing_in">Signing in...</string>
     <string name="signing_out">Signing out...</string>
     <string name="refresh_projects_list">Refresh projects...</string>
-    <string name="download_project_files">Download project files</string>
+    <string name="loading_app">Loading app</string>
     <string name="are_you_sure">Are you sure?</string>
     <string name="complete_action_title">Complete action</string>
     <string name="complete_action_message">Please, complete action with \'%1$s\' application</string>
