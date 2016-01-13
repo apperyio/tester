@@ -55,7 +55,7 @@ public class ProjectListFragment extends BaseFragment implements RequestListener
         String name = cursor.getString(cursor.getColumnIndexOrThrow(Project.NAME_FIELD));
         String guid = cursor.getString(cursor.getColumnIndexOrThrow(Project.GUID_FIELD));
         Project project = new Project(name, guid);
-        DialogHelper.buildProjectActionDialog(getContext(), project);
+        RestManager.getProjectFile(getContext(), project.getResourcesLink());
     }
 
     @Override

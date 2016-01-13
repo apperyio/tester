@@ -8,9 +8,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import io.appery.tester.R;
 import io.appery.tester.RestManager;
-import io.appery.tester.TesterApplication;
-import io.appery.tester.db.entity.Project;
-import io.appery.tester.rest.TesterSpiceEndpoint;
 import io.appery.tester.ui.widget.EnterCodeTextWatcher;
 
 /**
@@ -41,28 +38,6 @@ public class DialogHelper {
                 .content(R.string.please_wait)
                 .progress(true, 0)
                 .cancelable(false)
-                .show();
-    }
-
-    static public MaterialDialog buildProjectActionDialog(final Context context, final Project project) {
-        return new MaterialDialog.Builder(context)
-                .title(R.string.application_name)
-                .content(String.format(context.getString(R.string.run_preview_message), project.getName()))
-                .positiveText(R.string.project_action_run)
-                .negativeText(R.string.project_action_cancel)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                        materialDialog.dismiss();
-                        RestManager.getProjectFile(context, project.getResourcesLink());
-                    }
-                })
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                        materialDialog.dismiss();
-                    }
-                })
                 .show();
     }
 
