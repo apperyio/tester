@@ -13,8 +13,10 @@
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 
 + (EXMainWindowAppDelegate *)appDelegate;
+
 + (UIWindow *)mainWindow;
 
-- (void)navigateToStartPage;
+- (void)navigateToSignInViewController;
+- (void)navigateToProjectsViewController;
 
 @end

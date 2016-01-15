@@ -12,7 +12,8 @@
 
 @implementation NSThread (BlockExecutionPrivate)
 
-- (void)__performBlock:(void(^)(void))block {
+- (void)__performBlock:(void(^)(void))block
+{
     if (block != nil) {
         block();
     }
@@ -22,7 +23,8 @@
 
 @implementation NSThread (BlockExecution)
 
-- (void)performBlockAsync:(void(^)(void))block {
+- (void)performBlockAsync:(void(^)(void))block
+{
     if ([NSThread currentThread] == self) {
         block();
         return;
@@ -31,7 +33,8 @@
     [self performSelector:@selector(__performBlock:) onThread:self withObject:block waitUntilDone:NO];
 }
 
-- (void)performBlockSync:(void(^)(void))block {
+- (void)performBlockSync:(void(^)(void))block
+{
     if ([NSThread currentThread] == self) {
         block();
         return;

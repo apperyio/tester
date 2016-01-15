@@ -1,5 +1,6 @@
 //
 //  DeviceModelInfo.h
+//
 
 #import <Foundation/Foundation.h>
 

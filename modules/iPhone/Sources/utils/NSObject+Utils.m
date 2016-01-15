@@ -6,20 +6,25 @@
 
 @implementation NSObject (Utils)
 
-- (id)as:(Class)expectedClass {
+- (id)as:(Class)expectedClass
+{
     if ([self isKindOfClass:expectedClass]) {
         return self;
     }
+    
     return nil;
 }
 
-- (id)asStringOrNumber {
+- (id)asStringOrNumber
+{
     if ([self isKindOfClass:[NSString class]]) {
         return self;
     }
-    if([self isKindOfClass:[NSNumber class]]) {
+    
+    if ([self isKindOfClass:[NSNumber class]]) {
         return self;
     }
+    
     return nil;
 }
 

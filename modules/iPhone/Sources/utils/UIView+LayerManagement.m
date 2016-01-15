@@ -14,10 +14,10 @@
 
 - (void)setBorderColor:(UIColor *)color
 {
-    if (nil == color)
-    {
+    if (nil == color) {
         color = [UIColor clearColor];
     }
+    
     self.layer.borderColor = [color CGColor];
 }
 

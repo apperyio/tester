@@ -10,21 +10,19 @@
 
 #import <Cordova/CDVViewController.h>
 
-#import "MBProgressHUD.h"
-
-#import "EXCredentialsManager.h"
 #import "EXUserSettingsStorage.h"
 #import "EXProjectMetadataCell.h"
-#import "EXSelectViewController.h"
 #import "EXProjectViewController.h"
-
+#import "EXAppCodeController.h"
 #import "EXToolbarItem.h"
 #import "EXToolbarItemActionDelegate.h"
-
 #import "EXMainWindowAppDelegate.h"
+
 #import "RootViewControllerManager.h"
+
+#import "MBProgressHUD.h"
 #import "NSObject+Utils.h"
-#import "EXAppCodeController.h"
+#import "SSKeychain.h"
 
 #pragma mark - UI string constants
 
@@ -39,7 +37,6 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 /// @name UI properties
 @property (nonatomic, weak) IBOutlet UITableView *rootTableView;
-
 @property (nonatomic, weak) IBOutlet UIToolbar *toolBar;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 
@@ -49,22 +46,11 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 /// Handles filtered projects metadata.
 @property (nonatomic, strong) NSMutableArray *filteredProjectsMetadata;
 
-/// Contains projects observers list.
-@property (nonatomic, strong) NSMutableArray *projectsObservers;
-
-/// Handles view controller for folder selection.
-@property (nonatomic, strong) EXSelectViewController *selectFolderController;
-
 /// Current selected folder name.
 @property (nonatomic, strong) NSString *currentFolder;
 
 /// Current selected sorting method for projects metadata.
 @property (nonatomic, assign) EXSortingMethodType currentProjectsSortingMethod;
-
-/// Defines wheter KVO is registered.
-@property (nonatomic, assign) BOOL isObservingRegistered;
-
-@property (nonatomic, strong) NSArray *folders;
 
 @property (nonatomic, strong) NSArray *toolbarActualItems;
 
@@ -72,22 +58,18 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 @property (nonatomic, strong) NSIndexPath *selectedItemPath;
 
-/// @name UI actions
+/// UI actions
 - (void)logoutAction:(id)sender;
 
 - (void)reloadProjects;
-/**
- * Initialize Projects Metadata
- */
+
+/// Initialize Projects Metadata
 - (void)initializeProjectsMetadata:(NSArray *)projectsMetadata;
 
-/**
- * Perform logout process.
- */
-- (void) logoutFromService;
+/// Perform logout process
+- (void)logoutFromService;
 
-- (void)loadProjectsMetadataCompletion:(EXProjectsMetadataViewControllerCompletionBlock)completion;
-
+/// Projects sorting and filtering
 - (void)sortMetadataArray:(NSMutableArray *)metadata withMethod:(EXSortingMethodType)sortMethod;
 - (void)setupNameSortMethod;
 - (void)setupCreationDateSortMethod;
@@ -105,30 +87,27 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - Life cycle
 
-- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil service:(EXApperyService *)service projectsMetadata:(NSArray *)metadata {
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil service:(EXApperyService *)service projectsMetadata:(NSArray *)metadata
+{
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self == nil) {
         return nil;
     }
     
     _apperyService = service;
-    _projectsObservers = [[NSMutableArray alloc] init];
     _filteredProjectsMetadata = [[NSMutableArray alloc] init];
-    _selectFolderController = [[EXSelectViewController alloc] initWithTitle:NSLocalizedString(@"Folders", @"Folders")];
-    _currentProjectsSortingMethod = EXSortingMethodType_DateDescending;
+    
     if (metadata.count > 0) {
         [self initializeProjectsMetadata:metadata];
     }
     
     self.preferredContentSize = CGSizeMake(320., 480.);
+    
     return self;
 }
 
-- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    return [self initWithNibName:nibNameOrNil bundle:nibBundleOrNil service:nil projectsMetadata:nil];
-}
-
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     
     [self.rootTableView registerNib:[UINib nibWithNibName:@"EXProjectMetadataCell" bundle:nil] forCellReuseIdentifier:kEXProjectMetadataCell];
@@ -136,18 +115,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     self.rootTableView.separatorColor = [UIColor clearColor];
     
     [self configureToolbar];
-    if (self.projectsMetadata.count == 0) {
-        [self loadProjectsMetadataCompletion:^(BOOL succeeded) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.rootTableView.userInteractionEnabled = YES;
-                [self.refreshControl endRefreshing];
-                [self sortByCurrentMethodAndUpdateUI];
-            });
-        }];
-    }
-    else {
-        [self sortByCurrentMethodAndUpdateUI];
-    }
+    
+    [self reloadProjects];
     
     self.title = NSLocalizedString(@"My apps", @"EXProjectsViewController title");
     
@@ -173,123 +142,182 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     self.navigationItem.rightBarButtonItem = bbAppCode;
 }
 
-- (void) viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:animated];
     
     [self.navigationController setNavigationBarHidden:NO animated:NO];
 }
 
-- (void)viewWillLayoutSubviews {
+- (void)viewWillLayoutSubviews
+{
     [super viewWillLayoutSubviews];
     
-    CGRect viewRect = self.view.frame;
-    
     CGRect frm = self.toolBar.frame;
+    CGRect viewRect = self.view.frame;
     frm.size.width = viewRect.size.width;
     self.toolBar.frame = frm;
 }
 
 #pragma mark - UI actions
 
-- (void)reloadProjects {
-    void(^reloadProjectsInfo)(void) = ^{
-        [self loadProjectsMetadataCompletion:^(BOOL succeeded) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.rootTableView.userInteractionEnabled = YES;
-                [self.refreshControl endRefreshing];
-            });
-        }];
+- (void)reloadProjects
+{
+    NSAssert(self.apperyService != nil, @"apperyService property is not defined");
+    
+    self.rootTableView.userInteractionEnabled = NO;
+    
+    __weak __typeof(self)weakSelf = self;
+    void(^endRefresh)(NSArray *) = ^(NSArray *projectsMetadata) {
+        __strong __typeof(weakSelf)strongSelf = weakSelf;
+        [strongSelf initializeProjectsMetadata:projectsMetadata];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            strongSelf.rootTableView.userInteractionEnabled = YES;
+            [strongSelf.refreshControl endRefreshing];
+            
+            UIView *rootView = [[[EXMainWindowAppDelegate mainWindow] rootViewController] view];
+            [MBProgressHUD hideAllHUDsForView:rootView animated:YES];
+        });
     };
     
-    if(self.apperyService.isLoggedOut) {
-        self.rootTableView.userInteractionEnabled = NO;
+    __weak EXApperyService *weakService = self.apperyService;
+    [self.apperyService loadProjectsMetadata:endRefresh failed:^(NSError *error) {
+        NSLog(@"Apps loading failed due to: %@", error.localizedDescription);
+        
+        UIView *rootView = [[[EXMainWindowAppDelegate mainWindow] rootViewController] view];
+        MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo:rootView animated:YES];
+        progressHud.labelText = NSLocalizedString(@"Login", @"Login progress hud title");
         
         EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
         EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
-        NSString *password = [EXCredentialsManager retreivePasswordForUser: lastUserSettings.userName];
+        NSString *password = [SSKeychain passwordForService:APPERI_SERVICE account:lastUserSettings.userName];
         
-        [self.apperyService loginWithUsername:lastUserSettings.userName password:password succeed:^(NSArray *projectsMetadata) {
-            reloadProjectsInfo();
-        } failed:^(NSError *error) {
+        EXApperyService *strongService = weakService;
+        [strongService loginWithUsername:lastUserSettings.userName password:password succeed:endRefresh failed:^(NSError *error) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                self.rootTableView.userInteractionEnabled = YES;
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                strongSelf.rootTableView.userInteractionEnabled = YES;
                 
-                [self.apperyService quickLogout];
-                id<EXProjectControllerActionDelegate> del = self.delegate;
+                UIView *rootView = [[[EXMainWindowAppDelegate mainWindow] rootViewController] view];
+                [MBProgressHUD hideAllHUDsForView:rootView animated:NO];
+                
+                // Show error message
+                [[[UIAlertView alloc] initWithTitle:error.localizedDescription
+                                            message:error.localizedRecoverySuggestion
+                                           delegate:nil
+                                  cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                                  otherButtonTitles:nil] show];
+                
+                id<EXProjectControllerActionDelegate> del = strongSelf.delegate;
                 if (del != nil) {
                     [del masterControllerDidLogout];
                 }
                 else {
-                    [self.navigationController popToRootViewControllerAnimated:YES];
+                    [[EXMainWindowAppDelegate appDelegate] navigateToSignInViewController];
                 }
             });
         }];
-    }
-    else {
-        reloadProjectsInfo();
-    }
+    }];
 }
 
-- (void)logoutAction:(id)sender {
+- (void)logoutAction:(id)sender
+{
     #pragma unused(sender)
     _currentProjectsSortingMethod = EXSortingMethodType_DateDescending;
     [self logoutFromService];
 }
 
-- (void)appCodeAction:(id)sender {
+- (void)appCodeAction:(id)sender
+{
     #pragma unused(sender)
+    
     self.appCodeController = [[EXAppCodeController alloc] init];
-    [self.appCodeController requestCodeWithCompletionHandler:^(NSString *appCode) {
-        if (self.selectedItemPath != nil) {
-            [self.rootTableView deselectRowAtIndexPath:self.selectedItemPath animated:YES];
-            self.selectedItemPath = nil;
-        }
-        id<EXProjectControllerActionDelegate> del = self.delegate;
-        if (del != nil) {
-            [del masterControllerDidAcquireAppCode:appCode];
-        }
-        else {
-            EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectCode:appCode];
-            pvc.wwwFolderName = @"www";
-            pvc.startPage = @"index.html";
-            
-            [self.navigationController pushViewController:pvc animated:YES];
-            [pvc updateContent];            
-        }
-        self.appCodeController = nil;
+    
+    [self.appCodeController requestCodeWithSucceed:^(NSString *appCode) {
+        UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
+        MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo:rootView animated:YES];
+        progressHud.labelText = NSLocalizedString(@"Loading app", @"Loading app progress hud title");
+        
+        __weak __typeof(self)weakSelf = self;
+        [self.apperyService loadProjectForAppCode:appCode
+                                          succeed:^(NSString *projectLocation, NSString *startPageName) {
+                                              NSLog(@"The project for code: '%@' has been loaded.", appCode);
+                                              dispatch_async(dispatch_get_main_queue(), ^{
+                                                  [progressHud hide:NO];
+                                                  __strong __typeof(weakSelf)strongSelf = weakSelf;
+                                                  id<EXProjectControllerActionDelegate> del = strongSelf.delegate;
+                                                  if (del != nil) {
+                                                      [del masterControllerDidAcquireAppCode:appCode];
+                                                  }
+                                                  else {
+                                                      EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:strongSelf.apperyService projectCode:appCode];
+                                                      pvc.wwwFolderName = projectLocation;
+                                                      pvc.startPage = startPageName;
+                                                      
+                                                      [weakSelf.navigationController pushViewController:pvc animated:YES];
+                                                  }
+                                              });
+                                          } failed:^(NSError *error) {
+                                              NSLog(@"The project for code: '%@' has NOT been loaded. Error: %@.", appCode, [error localizedDescription]);
+                                              dispatch_async(dispatch_get_main_queue(), ^{
+                                                  [progressHud hide:NO];
+                                                  [[[UIAlertView alloc] initWithTitle:error.localizedDescription
+                                                                              message:error.localizedRecoverySuggestion
+                                                                             delegate:nil
+                                                                    cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                                                                    otherButtonTitles:nil] show];
+                                              });
+                                          }
+         ];
+    } failed:^(NSError *error) {
+        [[[UIAlertView alloc] initWithTitle:error.localizedDescription
+                                    message:error.localizedRecoverySuggestion
+                                   delegate:nil
+                          cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                          otherButtonTitles:nil] show];
     }];
+    
 }
 
 #pragma mark - UITableViewDataSource protocol implementation
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
     return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
     return self.filteredProjectsMetadata != nil ? self.filteredProjectsMetadata.count : 0;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     NSAssert(self.filteredProjectsMetadata != nil, @"No data to feed EXProjectsViewController");
     NSAssert(indexPath.row < self.filteredProjectsMetadata.count , @"No data for the specified indexPath");
     
     EXProjectMetadata* projectMetadata = [self.filteredProjectsMetadata objectAtIndex:indexPath.row];
     EXProjectMetadataCell* cell = [tableView dequeueReusableCellWithIdentifier:kEXProjectMetadataCell];
+    
     if (cell == nil) {
         return [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"UNEXPECTED_CELL"];
     }
+    
     [cell updateWithMetadata:projectMetadata];
+    
     return cell;
 }
 
 #pragma mark - UITableViewDelegete protocol implementation
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     return [EXProjectMetadataCell height];
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
     NSAssert(indexPath.row < self.filteredProjectsMetadata.count , @"No data for the specified indexPath");
     
     EXProjectMetadata *projectMetadata = [self.filteredProjectsMetadata objectAtIndex: indexPath.row];
@@ -300,10 +328,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }
     else {
         EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectMetadata:projectMetadata];
-        pvc.wwwFolderName = @"www";
-        pvc.startPage = @"index.html";
+        [pvc masterControllerDidLoadMetadata:projectMetadata];
         
-        [pvc updateContent];
         [self.navigationController pushViewController:pvc animated:YES];
         
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -314,7 +340,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - Configuration helpers
 
-- (void)configureToolbar {
+- (void)configureToolbar
+{
     NSMutableArray *actualTBItems = [NSMutableArray array];
     
     EXToolbarItem *name = [[EXToolbarItem alloc] initWithImageName:@"name" activeImageName:@"name_b" title:NSLocalizedString(@"Name", @"Name")];
@@ -351,54 +378,36 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     self.toolbarActualItems = actualTBItems;
 }
 
-- (void)deactivateToolbarItems {
+- (void)deactivateToolbarItems
+{
     for (EXToolbarItem *item in self.toolbarActualItems) {
         [item setStateToActive:NO];
     }
 }
 
-- (void)initializeProjectsMetadata:(NSArray *)projectsMetadata {
+- (void)initializeProjectsMetadata:(NSArray *)projectsMetadata
+{
     NSArray *enabledProjectsMetadata = [self getEnabledProjectsMetadata:projectsMetadata];
     self.projectsMetadata = enabledProjectsMetadata;
     [self.filteredProjectsMetadata removeAllObjects];
     [self.filteredProjectsMetadata addObjectsFromArray:enabledProjectsMetadata];
-    [self redefineAvailableFolders];
-    [self configureSelectFolderViewController];
     [self sortByCurrentMethodAndUpdateUI];
 }
 
-- (void)loadProjectsMetadataCompletion:(EXProjectsMetadataViewControllerCompletionBlock)completion {
+- (void)logoutFromService
+{
     NSAssert(self.apperyService != nil, @"apperyService property is not defined");
     
-    [self.apperyService loadProjectsMetadata: ^(NSArray *projectsMetadata) {
-        [self initializeProjectsMetadata:projectsMetadata];
-        
-        if (completion) {
-            completion(YES);
-        }
-    } failed:^(NSError *error) {
-        DLog(@"Apps loading failed due to: %@", error.localizedDescription);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[[UIAlertView alloc] initWithTitle: error.localizedDescription
-                                        message: error.localizedRecoverySuggestion
-                                       delegate: nil
-                              cancelButtonTitle: NSLocalizedString(@"Ok", nil)
-                              otherButtonTitles: nil] show];
-            
-        });
-        
-        if (completion) {
-            completion(NO);
-        }
-    }];
-}
-
-- (void)logoutFromService {
     UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
-    MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
+    MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo:rootView animated:YES];
     progressHud.labelText = NSLocalizedString(@"Logout", @"Logout progress hud title");
     
-    void(^finalize)(void)  = ^{
+    // Delete password
+    EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
+    EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
+    [SSKeychain deletePasswordForService:APPERI_SERVICE account:lastUserSettings.userName];
+    
+    void(^finalize)(void) = ^{
         dispatch_async(dispatch_get_main_queue(), ^{
             [progressHud hide: YES];
             id<EXProjectControllerActionDelegate> del = self.delegate;
@@ -406,7 +415,7 @@ static const NSString * kArrowDownSymbol = @"\u2193";
                 [del masterControllerDidLogout];
             }
             else {
-                [[EXMainWindowAppDelegate appDelegate] navigateToStartPage];
+                [[EXMainWindowAppDelegate appDelegate] navigateToSignInViewController];
             }
         });
     };
@@ -414,29 +423,15 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     [self.apperyService logoutSucceed: ^{
         finalize();
     } failed:^(NSError *error) {
-        DLog(@"Error was occured during remote logout operation. Details: %@", [error localizedDescription]);
+        NSLog(@"Error was occured during remote logout operation. Details: %@", [error localizedDescription]);
         finalize();
     }];
 }
 
-#pragma mark - UI helpers
-
-- (void)redefineAvailableFolders {
-    NSArray *availableFolders = [self.projectsMetadata valueForKeyPath:@"@distinctUnionOfObjects.creator"];
-    NSString *allFolderName = NSLocalizedString(@"All", @"Apps list | Toolbar | Folder button possible value");
-    self.folders = [[NSArray arrayWithObject:allFolderName] arrayByAddingObjectsFromArray:availableFolders];
-    self.currentFolder = allFolderName;
-}
-
-- (void)configureSelectFolderViewController {
-    self.selectFolderController.data = self.folders;
-    [self.selectFolderController updateUI];
-    self.selectFolderController.completion = nil;
-}
-
 #pragma mark - Projects sorting / filtering
 
-- (void)setCurrentProjectsSortingMethod:(EXSortingMethodType) type {
+- (void)setCurrentProjectsSortingMethod:(EXSortingMethodType)type
+{
     _currentProjectsSortingMethod = type;
     
     EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
@@ -448,7 +443,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }
 }
 
-- (EXSortingMethodType)currentProjectsSortingMethod {
+- (EXSortingMethodType)currentProjectsSortingMethod
+{
     EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
     EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
     
@@ -459,12 +455,14 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     return _currentProjectsSortingMethod;
 }
 
-- (NSArray *)getEnabledProjectsMetadata:(NSArray *)projectsMetadata {
+- (NSArray *)getEnabledProjectsMetadata:(NSArray *)projectsMetadata
+{
     NSPredicate *enabledProjectsPredicate = [NSPredicate predicateWithFormat:@"disabled == %@", @0];
     return [projectsMetadata filteredArrayUsingPredicate:enabledProjectsPredicate];
 }
 
-- (void)sortMetadataArray:(NSMutableArray *)metadata withMethod:(EXSortingMethodType)sortMethod {
+- (void)sortMetadataArray:(NSMutableArray *)metadata withMethod:(EXSortingMethodType)sortMethod
+{
     [metadata sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
         EXProjectMetadata *first = [obj1 as:[EXProjectMetadata class]];
         EXProjectMetadata *second = [obj2 as:[EXProjectMetadata class]];
@@ -503,7 +501,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }];
 }
 
-- (void)setupNameSortMethod {
+- (void)setupNameSortMethod
+{
     switch (self.currentProjectsSortingMethod) {
         case EXSortingMethodType_NameAscending:
             self.currentProjectsSortingMethod = EXSortingMethodType_NameDescending;
@@ -514,7 +513,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }
 }
 
-- (void)setupCreationDateSortMethod {
+- (void)setupCreationDateSortMethod
+{
     switch (self.currentProjectsSortingMethod) {
         case EXSortingMethodType_DateDescending:
             self.currentProjectsSortingMethod = EXSortingMethodType_DateAscending;
@@ -525,7 +525,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }
 }
 
-- (void)setupModificationDateSortMethod {
+- (void)setupModificationDateSortMethod
+{
     switch (self.currentProjectsSortingMethod) {
         case EXSortingMethodType_ModificationdDescending:
             self.currentProjectsSortingMethod = EXSortingMethodType_ModificationAscending;
@@ -536,7 +537,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }
 }
 
-- (void)setupCreatorUserSortMethod {
+- (void)setupCreatorUserSortMethod
+{
     switch (self.currentProjectsSortingMethod) {
         case EXSortingMethodType_CreatorAscending:
             self.currentProjectsSortingMethod = EXSortingMethodType_CreatorDescending;
@@ -547,7 +549,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     }
 }
 
-- (void)sortByCurrentMethodAndUpdateUI {
+- (void)sortByCurrentMethodAndUpdateUI
+{
     MBProgressHUD *localHud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     [localHud setLabelText:NSLocalizedString(@"Sorting...", @"Sorting...")];
     
@@ -564,7 +567,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     });
 }
 
-- (NSInteger)tagBySortMethod:(EXSortingMethodType)method {
+- (NSInteger)tagBySortMethod:(EXSortingMethodType)method
+{
     NSInteger tag = -1;
     switch (method) {
         case EXSortingMethodType_NameAscending:
@@ -589,11 +593,13 @@ static const NSString * kArrowDownSymbol = @"\u2193";
     return tag;
 }
 
-- (NSInteger)tagByCurrentSortMethod {
+- (NSInteger)tagByCurrentSortMethod
+{
     return [self tagBySortMethod:self.currentProjectsSortingMethod];
 }
 
-- (void)setCurrentSortMethodByTag:(NSInteger)tag {
+- (void)setCurrentSortMethodByTag:(NSInteger)tag
+{
     switch (tag) {
         case 0:
             [self setupNameSortMethod];
@@ -614,7 +620,8 @@ static const NSString * kArrowDownSymbol = @"\u2193";
 
 #pragma mark - EXToolbarItemActionDelegate 
 
-- (void)didActivateToolbarItem:(EXToolbarItem *)item {
+- (void)didActivateToolbarItem:(EXToolbarItem *)item
+{
     [self setCurrentSortMethodByTag:item.tag];
     [self sortByCurrentMethodAndUpdateUI];
 }

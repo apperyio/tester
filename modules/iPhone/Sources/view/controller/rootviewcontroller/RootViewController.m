@@ -13,7 +13,8 @@
 
 #pragma mark - Private class logic
 
-- (UIViewController *)childResponsibleForRotation {
+- (UIViewController *)childResponsibleForRotation
+{
     for (UIViewController *child in self.childViewControllers) {
         if ([child managesRotation]) {
             return child;
@@ -25,7 +26,8 @@
 
 #pragma mark - Overloaded UIViewController methods
 
-- (void)loadView {
+- (void)loadView
+{
     UIWindow *window = [EXMainWindowAppDelegate mainWindow];
     CGRect viewFrame = window.bounds;
     self.view = [[UIView alloc] initWithFrame:viewFrame];
@@ -34,19 +36,18 @@
 
 #pragma mark - Interface rotation handling
 
-#warning Rotation functionality should be reviewed.
-
-- (BOOL)shouldAutorotate {
+- (BOOL)shouldAutorotate
+{
     UIViewController *child = [self childResponsibleForRotation];
     if (nil == child) {
         return YES;
     }
-    else {
-        return [child shouldAutorotate];
-    }
+    
+    return [child shouldAutorotate];
 }
 
-- (NSUInteger)supportedInterfaceOrientations {
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
     UIViewController *child = [self childResponsibleForRotation];
     if (nil == child) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -61,9 +62,11 @@
     }
 }
 
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
     UIView *sView = self.view;
     CGRect sBounds = sView.bounds;
+    
     for (UIViewController *ctrl in self.childViewControllers) {
         UIView *v = ctrl.view;
         if (v.superview != sView) {
@@ -77,12 +80,15 @@
         
         v.hidden = YES;
     }
+    
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
     UIView *sView = self.view;
     CGRect sBounds = sView.bounds;
+    
     for (UIViewController* ctrl in self.childViewControllers) {
         UIView *v = ctrl.view;
         if (v.superview != sView) {
@@ -96,6 +102,7 @@
         
         v.hidden = NO;
     }
+    
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 }
 

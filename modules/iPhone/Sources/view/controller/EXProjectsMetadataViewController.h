@@ -14,7 +14,8 @@
 #import "EXBaseViewController.h"
 #import "EXApperyService.h"
 #import "EXProjectMetadata.h"
-#import "EXProjectControllerActionDelegate.h"
+
+@protocol EXProjectControllerActionDelegate;
 
 /// @name Additional types
 typedef void(^EXProjectsMetadataViewControllerCompletionBlock)(BOOL succeeded);
@@ -34,6 +35,8 @@ typedef void(^EXProjectsMetadataViewControllerCompletionBlock)(BOOL succeeded);
 
 @property (nonatomic, weak) id<EXProjectControllerActionDelegate> delegate;
 
+- (instancetype)initWithCoder:(NSCoder *)aDecoder NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil NS_UNAVAILABLE;
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil service:(EXApperyService *)service projectsMetadata:(NSArray *)metadata NS_DESIGNATED_INITIALIZER;
 
 @end

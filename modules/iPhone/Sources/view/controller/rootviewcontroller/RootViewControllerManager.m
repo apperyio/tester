@@ -73,7 +73,8 @@
 
 #pragma mark - Initialization and configuration
 
-- (instancetype)init {
+- (instancetype)init
+{
     if ((self = [super init]) == nil) {
         return nil;
     }
@@ -96,7 +97,7 @@
     __weak RootViewControllerManager *weakSelf = self;
     [self setRootViewController:rootViewController animated:NO completionBlock:^{
         RootViewControllerManager *blockSelf = weakSelf;
-      
+        
         UIViewController *sidebar = [blockSelf topSidebarController];
         
         CGRect rootGeom = rootViewController.view.bounds;
@@ -118,42 +119,46 @@
     return self;
 }
 
-- (void)dealloc {
-    assert("RootViewControllerManager deallocated!" == NULL);
+- (void)dealloc
+{
+    NSAssert(NO, @"RootViewControllerManager deallocated!");
 }
 
 #pragma mark - Public API implementation
 
-- (void)setSidebarEnabled:(BOOL)sidebarEnabled {
+- (void)setSidebarEnabled:(BOOL)sidebarEnabled
+{
     [self setSidebarEnabled:sidebarEnabled animated:NO completionBlock:nil];
 }
 
-- (void)setSidebarEnabled:(BOOL)sidebarEnabled animated:(BOOL)animated completionBlock:(void (^)(void))completionBlock {
-    if( sidebarEnabled == _sidebarEnabled )
-    {
-        if( completionBlock != nil )
-        {
+- (void)setSidebarEnabled:(BOOL)sidebarEnabled animated:(BOOL)animated completionBlock:(void (^)(void))completionBlock
+{
+    if( sidebarEnabled == _sidebarEnabled ) {
+        if( completionBlock != nil ) {
             completionBlock();
         }
+        
         return;
     }
+    
     _sidebarEnabled = sidebarEnabled;
-    if( !sidebarEnabled )
-    {
+    
+    if( !sidebarEnabled ) {
         [self hideSidebarControllerAnimated:animated completionBlock:completionBlock];
     }
-    else if( completionBlock != nil )
-    {
+    else if( completionBlock != nil ) {
         completionBlock();
     }
 }
 
-- (void)hideSidebarControllerAnimated:(BOOL)animated completionBlock:(void (^)(void))completionBlock {
+- (void)hideSidebarControllerAnimated:(BOOL)animated completionBlock:(void (^)(void))completionBlock
+{
     if (self.isSidebarShown) {
         if (self.animating) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 [self hideSidebarControllerAnimated:animated completionBlock:completionBlock];
             });
+            
             return;
         }
         
@@ -183,6 +188,7 @@
         }
         
         processingBlock();
+        
         [self.maskSidebarView removeFromSuperview];
         [self.shadowView removeFromSuperview];
         
@@ -195,14 +201,17 @@
     }
 }
 
-- (void)showSidebarController:(UIViewController *)sidebarContentController animated:(BOOL)animated completionBlock:(void (^)(void))completionBlock {
+- (void)showSidebarController:(UIViewController *)sidebarContentController animated:(BOOL)animated completionBlock:(void (^)(void))completionBlock
+{
     if (sidebarContentController == nil) {
         sidebarContentController = [self.sidebarNavigationController.viewControllers firstObject];
     }
+    
     if (!self.sidebarEnabled || self.isSidebarShown || sidebarContentController == nil) {
         if (completionBlock != nil) {
             completionBlock();
         }
+        
         return;
     }
     
@@ -210,11 +219,12 @@
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self showSidebarController:sidebarContentController animated:animated completionBlock:completionBlock];
         });
+        
         return;
     }
     
-    UINavigationController* rootNavController = self.rootNavigationController;
-    UINavigationController* sidebarNavController = self.sidebarNavigationController;
+    UINavigationController *rootNavController = self.rootNavigationController;
+    UINavigationController *sidebarNavController = self.sidebarNavigationController;
     
     void (^presentationBlock)(void) = ^(void) {
         if (sidebarContentController != nil && sidebarNavController.topViewController != sidebarContentController) {
@@ -236,8 +246,6 @@
         
         self.maskSidebarView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.shadowView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleRightMargin;
-        
-        
         
         if (animated) {
             self.shadowView.alpha = self.maskSidebarView.alpha = 0;
@@ -261,8 +269,10 @@
         else {
             rootNavController.view.transform = rootNavTrx;
             sidebarNavController.view.transform = rootNavTrx;
+            
             [rootNavController.view addSubview:self.maskSidebarView];
             [rootNavController.view addSubview:self.shadowView];
+            
             self.isSidebarShown = YES;
             self.animating = NO;
             
@@ -282,7 +292,8 @@
     presentationBlock();
 }
 
-- (void)toggleSidebarControllerAnimated:(BOOL)animated completionBlock:(void (^)(void))completionBlock {
+- (void)toggleSidebarControllerAnimated:(BOOL)animated completionBlock:(void (^)(void))completionBlock
+{
     if (self.isSidebarShown) {
         [self hideSidebarControllerAnimated:animated completionBlock:completionBlock];
     }
@@ -291,11 +302,13 @@
     }
 }
 
-- (void)hideSidebarControllerByTappingOnMainView {
+- (void)hideSidebarControllerByTappingOnMainView
+{
     [self hideSidebarControllerAnimated:YES completionBlock:nil];
 }
 
-- (void)setSidebarViewController:(UIViewController *)controller {
+- (void)setSidebarViewController:(UIViewController *)controller
+{
     if (controller == nil) {
         [self.sidebarNavigationController setViewControllers:@[] animated:NO];
     }
@@ -316,8 +329,10 @@
     
 }
 
-- (void)pushRootViewController:(UIViewController *)rootController animated:(BOOL)animated completionBlock:(void (^)(void))completionBlock {
-    assert(rootController);
+- (void)pushRootViewController:(UIViewController *)rootController animated:(BOOL)animated completionBlock:(void (^)(void))completionBlock
+{
+    NSAssert(rootController != nil, @"The root controller does not have to be nil");
+
     if (self.mainControllerAnimating) {
         __weak RootViewControllerManager *weakSelf = self;
         @synchronized(self) {
@@ -328,8 +343,10 @@
         }
         return;
     }
+    
     [self.maskSidebarView removeFromSuperview];
     [self.shadowView removeFromSuperview];
+    
     if (rootController == nil || rootController == self.rootNavigationController.topViewController) {
         if (completionBlock != nil) {
             completionBlock();
@@ -350,11 +367,13 @@
         if (!animated && completionBlock != nil) {
             completionBlock();
         }
+        
         return;
     }
     
     UIWindow *window = [EXMainWindowAppDelegate mainWindow];
-    assert(window != nil);
+    NSAssert(window != nil, @"The window does not have to be nil");
+    
     
     void (^presentationBlock)(void) = ^(void) {
         [self.rootNavigationController setViewControllers:@[rootController] animated:animated];
@@ -377,7 +396,8 @@
     presentationBlock();
 }
 
-- (void)popRootViewControllerAnimated:(BOOL)animated completionBlock:(void (^)(void))completionBlock {
+- (void)popRootViewControllerAnimated:(BOOL)animated completionBlock:(void (^)(void))completionBlock
+{
     if( self.mainControllerAnimating ) {
         __weak RootViewControllerManager *weakSelf = self;
         @synchronized(self) {
@@ -388,8 +408,10 @@
         }
         return;
     }
+    
     [self.maskSidebarView removeFromSuperview];
     [self.shadowView removeFromSuperview];
+    
     NSUInteger navStackDepth = [self.rootNavigationController.viewControllers count];
     if (navStackDepth <= 1) {
         if (completionBlock != nil) {
@@ -399,11 +421,13 @@
     }
     
     UIViewController *controllerToPop = [self.rootNavigationController.viewControllers objectAtIndex:navStackDepth - 2];
-    assert(nil != controllerToPop);
+    NSAssert(controllerToPop != nil, @"The controller does not have to be nil");
+    
     if (animated && completionBlock != nil) {
         self.mainControllerAnimating = YES;
         objc_setAssociatedObject(controllerToPop, "popCompletionBlock", completionBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
     }
+    
     [self.rootNavigationController popViewControllerAnimated:YES];
     
     if (!animated && completionBlock != nil) {
@@ -411,17 +435,29 @@
     }
 }
 
-- (UIViewController *)topContentController {
+- (void)replaceTopContentViewController:(UIViewController *)controller animated:(BOOL)animated
+{
+    NSMutableArray *viewControllers = [NSMutableArray arrayWithArray:[self.rootNavigationController viewControllers]];
+    [viewControllers removeLastObject];
+    [viewControllers addObject:controller];
+    
+    [self.rootNavigationController setViewControllers:viewControllers animated:animated];
+}
+
+- (UIViewController *)topContentController
+{
     UIViewController* top = [self.rootNavigationController topViewController];
     return top;
 }
 
-- (UIViewController *)topSidebarController {
+- (UIViewController *)topSidebarController
+{
     UIViewController* top = [self.sidebarNavigationController topViewController];
     return top;
 }
 
-- (void)clearDeferredNavigation {
+- (void)clearDeferredNavigation
+{
     @synchronized(self) {
         self.deferredNavigation = nil;
     }
@@ -429,9 +465,10 @@
 
 #pragma mark - Utility methods
 
-- (void)setRootViewController:(UIViewController *)rootController animated:(BOOL)animated completionBlock:(void (^)(void))completionBlock {
+- (void)setRootViewController:(UIViewController *)rootController animated:(BOOL)animated completionBlock:(void (^)(void))completionBlock
+{
     UIWindow* window = [EXMainWindowAppDelegate mainWindow];
-    assert(window != nil);
+    NSAssert(window != nil, @"The window does not have to be nil");
     
     if (window.rootViewController != rootController) {
         if (CGAffineTransformIsIdentity(self.sidebarNavigationController.view.transform)) {
@@ -441,10 +478,12 @@
                     completionBlock();
                 }
             }];
+            
             return;
         }
         window.rootViewController = rootController;
     }
+    
     if (completionBlock != nil) {
         completionBlock();
     }
@@ -452,16 +491,20 @@
 
 #pragma mark - UINavigationControllerDelegate implementation
 
-- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
     [self.maskSidebarView removeFromSuperview];
     [self.shadowView removeFromSuperview];
+    
     EXBaseViewController *baseVC = [viewController as:[EXBaseViewController class]];
+    
     if (baseVC != nil) {
         [navigationController setNavigationBarHidden:baseVC.shouldHideNavigationBar animated:animated];
     }
 }
 
-- (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+- (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
     #pragma unused(navigationController, animated)
     void (^completionBlock)(void) = objc_getAssociatedObject(viewController, "pushCompletionBlock");
     if (completionBlock != nil) {

@@ -31,7 +31,8 @@
 
 /// Navigation controller for the root screen area content.
 @property (nonatomic, strong, readonly) RootNavigationController *rootNavigationController;
-/// mask view for main controller when sidebar is shown
+
+/// Mask view for main controller when sidebar is shown
 @property (nonatomic, strong) UIView *maskSidebarView;
 
 @property (nonatomic, strong) UIView *shadowView;
@@ -70,6 +71,11 @@
  */
 - (void)toggleSidebarControllerAnimated:(BOOL)animated completionBlock:(void (^)(void))completionBlock;
 
+/**
+ * Set sidebar controller
+ *
+ * @param controller Content controller to set as the only (root) child od the sidebar navigation controller.
+ */
 - (void)setSidebarViewController:(UIViewController *)controller;
 
 #pragma mark - Main navigation stack management
@@ -92,6 +98,13 @@
 - (void)popRootViewControllerAnimated:(BOOL)animated completionBlock:(void (^)(void)) completionBlock;
 
 /**
+ * Replace the top-most content controller from the existing stack on the root screen area to new controller
+ *
+ * @param controller New the top-most content controller
+ */
+- (void)replaceTopContentViewController:(UIViewController *)controller animated:(BOOL)animated;
+
+/**
  * Returns controller which is currently on the top of the stack.
  * If top controller exists and is BaseContentViewController or its descendant - it is returned.
  * Otherwise returns nil.
@@ -108,6 +121,6 @@
 /**
  * Sets deferred navigation block to nil, if there was any.
  */
-- (void) clearDeferredNavigation;
+- (void)clearDeferredNavigation;
 
 @end

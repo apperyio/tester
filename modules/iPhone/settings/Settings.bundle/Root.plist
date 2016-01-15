@@ -14,8 +14,18 @@
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Auto login</string>
+			<key>Key</key>
+			<string>autoLogin</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
 	</array>
 	<key>Title</key>
-	<string>Appery</string>
+	<string>Appery.io</string>
 </dict>
 </plist>

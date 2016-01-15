@@ -4,46 +4,43 @@
 //
 
 #import "EXSignInViewController.h"
-#import "EXSignInCell.h"
-#import "NSObject+Utils.h"
-#import "UIColor+hexColor.h"
 
-#import "EXProjectViewController.h"
+#import "EXSignInCell.h"
 #import "EXApperyService.h"
 #import "EXUserSettingsStorage.h"
-#import "EXCredentialsManager.h"
-
-#import "RootViewControllerManager.h"
+#import "EXAppCodeController.h"
+#import "EXProjectViewController.h"
 #import "EXMainWindowAppDelegate.h"
+#import "RootViewControllerManager.h"
 
 #import "MBProgressHUD.h"
-#import "EXAppCodeController.h"
+#import "NSObject+Utils.h"
+#import "UIColor+hexColor.h"
+#import "SSKeychain.h"
 
 static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 
 @interface EXSignInViewController () <UITableViewDataSource, UITableViewDelegate, EXSignInCellActionDelegate, UITextFieldDelegate>
 
-@property (nonatomic, strong, readwrite) EXApperyService *apperyService;
-
 @property (nonatomic, weak) IBOutlet UIScrollView *svScroll;
 @property (nonatomic, weak) IBOutlet UIView *vContent;
-
 @property (nonatomic, weak) IBOutlet UIImageView *ivLogo;
 @property (nonatomic, weak) IBOutlet UITableView *tvSignIn;
 @property (nonatomic, weak) IBOutlet UIButton *bAppCode;
 @property (nonatomic, weak) IBOutlet UILabel *lCopyright;
 
-@property (nonatomic, strong) NSString *uname;
-@property (nonatomic, strong) NSString *pwd;
+@property (nonatomic, copy) NSString *uname;
+@property (nonatomic, copy) NSString *pwd;
 
+@property (nonatomic, strong, readwrite) EXApperyService *apperyService;
 @property (nonatomic, strong) EXAppCodeController *appCodeController;
 
 - (IBAction)appCodeAction:(id)sender;
 
+- (void)composeUIForMetadata:(NSArray *)metadata location:(NSString *)location startPage:(NSString *)startPage;
+
 - (void)keyboardWillShowNotification:(NSNotification *)notification;
 - (void)keyboardWillHideNotification:(NSNotification *)notification;
-
-- (void) composeUIForMetadata:(NSArray *)metadata appCode:(NSString *)appCode location:(NSString *)location startPage:(NSString *)startPage;
 
 @end
 
@@ -66,18 +63,14 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 
 #pragma mark - Lifecycle
 
-- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    return [self initWithNibName:nibNameOrNil bundle:nibBundleOrNil service:nil];
-}
-
-- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil service:(EXApperyService *)service {
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil service:(EXApperyService *)service
+{
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self == nil) {
         return nil;
     }
     
     _apperyService = service;
-    self.edgesForExtendedLayout = UIRectEdgeNone;
     self.shouldHideNavigationBar = YES;
     
     return self;
@@ -85,11 +78,14 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 
 #pragma mark - View management
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
 
     self.title = NSLocalizedString(@"Login", @"EXSignInViewController title");
     self.view.backgroundColor = [UIColor colorFromHEXString:@"#FBFBFB"];
+    
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     
     self.svScroll.backgroundColor = [UIColor clearColor];
     self.vContent.backgroundColor = [UIColor colorFromHEXString:@"#FBFBFB"];
@@ -117,22 +113,25 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     [btn setTitleColor:[UIColor colorFromHEXString:@"#1E88E5"] forState:UIControlStateNormal];
     
     UILabel *l = self.lCopyright;
-    l.text = NSLocalizedString(@"© 2015 Appery, LLC. All rights reserved.", @"© 2015 Appery, LLC. All rights reserved.");
-    l.font = [UIFont fontWithName:@"HelveticaNeue" size:10.];
+    l.text = NSLocalizedString(@"© 2016 Appery, LLC. All rights reserved.", @"© 2015 Appery, LLC. All rights reserved.");
+    l.font = [UIFont fontWithName:@"HelveticaNeue" size:16.];
     l.textColor = [UIColor colorFromHEXString:@"#BDBDBD"];
     l.textAlignment = NSTextAlignmentCenter;
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:animated];
     
     [self.navigationController setNavigationBarHidden:YES animated:NO];
+    
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     [center addObserver:self selector:@selector(keyboardWillShowNotification:) name:UIKeyboardWillShowNotification object:nil];
     [center addObserver:self selector:@selector(keyboardWillHideNotification:) name:UIKeyboardWillHideNotification object:nil];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
+- (void)viewWillDisappear:(BOOL)animated
+{
     [super viewWillDisappear:animated];
     
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
@@ -140,7 +139,8 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     [center removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
 
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.tvSignIn reloadData];
     });
@@ -148,123 +148,191 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 
 #pragma mark - Private class logic
 
-- (void) signIn {
+- (void)signIn
+{
+    // Checking that credential was entered
+    NSString *msg = nil;
+    if (!self.uname.length) {
+        msg = NSLocalizedString(@"Missing email address", nil);
+    }
+    else if (!self.pwd.length) {
+        msg = NSLocalizedString(@"Missing password", nil);
+    }
+    
+    if (msg) {
+        // Show error message
+        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Failed", nil)
+                                    message:NSLocalizedString(msg, nil)
+                                   delegate:nil
+                          cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                          otherButtonTitles:nil] show];
+        return;
+    }
+    
     UIView *rootView = [[[EXMainWindowAppDelegate mainWindow] rootViewController] view];
     MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
     progressHud.labelText = NSLocalizedString(@"Login", @"Login progress hud title");
     
-    [self.apperyService quickLogout];
     __weak EXApperyService *weakService = self.apperyService;
     [self.apperyService loginWithUsername:self.uname password:self.pwd succeed: ^(NSArray *projectsMetadata) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [progressHud hide: YES];
+            [progressHud hide:YES];
+            
             EXApperyService *strongService = weakService;
-
-            DLog(@"User %@ login to %@", self.uname, strongService.baseUrl);
+            NSLog(@"User %@ login to %@", self.uname, strongService.baseUrl);
+            
             [self saveUserSettings];
             
             self.uname = nil;
             self.pwd = nil;
             [self.tvSignIn reloadData];
-            [self composeUIForMetadata:projectsMetadata appCode:nil location:@"www" startPage:@"index.html"];
+            
+            [self composeUIForMetadata:projectsMetadata location:@"www" startPage:@"index.html"];
         });
     }
-                                    failed:^(NSError *error) {
-                                        EXApperyService *strongService = weakService;
-                                        DLog(@"User %@ can't login to %@",self.uname, strongService.baseUrl);
-                                        dispatch_async(dispatch_get_main_queue(), ^{
-                                            [progressHud hide: YES];
-                                            self.uname = nil;
-                                            self.pwd = nil;
-                                            [self.tvSignIn reloadData];
-                                            
-                                            [[[UIAlertView alloc] initWithTitle: error.localizedDescription
-                                                                        message: error.localizedRecoverySuggestion
-                                                                       delegate: nil
-                                                              cancelButtonTitle: NSLocalizedString(@"Ok", nil)
-                                                              otherButtonTitles: nil] show];
-                                        });
-                                   }];
+    failed:^(NSError *error) {
+        EXApperyService *strongService = weakService;
+        NSLog(@"User %@ can't login to %@",self.uname, strongService.baseUrl);
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [progressHud hide:YES];
+            self.uname = nil;
+            self.pwd = nil;
+            [self.tvSignIn reloadData];
+            
+            // Show error message
+            [[[UIAlertView alloc] initWithTitle:error.localizedDescription
+                                        message:error.localizedRecoverySuggestion
+                                       delegate:nil
+                              cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                              otherButtonTitles:nil] show];
+        });
+    }];
 }
 
-- (void) saveUserSettings {
+- (void)saveUserSettings
+{
     EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
     
-    // save user settings
-    EXUserSettings *userSettings = [[EXUserSettings alloc] init];
+    BOOL rememberMe = [[NSUserDefaults standardUserDefaults] boolForKey:@"autoLogin"];
     
+    // Save user settings
+    EXUserSettings *userSettings = [[EXUserSettings alloc] init];
     userSettings.userName = self.uname;
-    userSettings.shouldRememberMe = YES;
     userSettings.sortMethodType = [[usStorage retreiveLastStoredSettings] sortMethodType];
-    [usStorage storeSettings: userSettings];    
+    [usStorage storeSettings:userSettings];
+    
+    // Save password
+    if (rememberMe) {
+        [SSKeychain setPassword:self.pwd forService:APPERI_SERVICE account:self.uname];
+    }
 }
 
-- (void) composeUIForMetadata:(NSArray *)metadata appCode:(NSString *)appCode location:(NSString *)location startPage:(NSString *)startPage {
-    RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
-    if (metadata != nil) {
-        EXProjectsMetadataViewController *pmvc = [[EXProjectsMetadataViewController alloc] initWithNibName:nil bundle:nil service:self.apperyService projectsMetadata:metadata];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectMetadata:nil];
-            
-            pvc.wwwFolderName = location;
-            pvc.startPage = startPage;
-            pmvc.delegate = pvc;
-            
-            [manager setSidebarViewController:pmvc];
-            [manager setSidebarEnabled:YES];
-            __weak RootViewControllerManager *weakManager = manager;
-            [manager pushRootViewController:pvc animated:YES completionBlock:^{
-                RootViewControllerManager *strongManager = weakManager;
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [strongManager showSidebarController:nil animated:YES completionBlock:nil];
-                });
-            }];
-        }
-        else {
-            [manager pushRootViewController:pmvc animated:YES completionBlock:nil];
-        }
-    }
+- (void)composeUIForMetadata:(NSArray *)metadata location:(NSString *)location startPage:(NSString *)startPage
+{
+    NSAssert(metadata != nil, @"Project's metadata is not given");
     
-    if (appCode != nil) {
-        EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectCode:appCode];
+    RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
+    EXProjectsMetadataViewController *pmvc = [[EXProjectsMetadataViewController alloc] initWithNibName:nil bundle:nil service:self.apperyService projectsMetadata:metadata];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:self.apperyService projectMetadata:nil];
         pvc.wwwFolderName = location;
         pvc.startPage = startPage;
-        [manager pushRootViewController:pvc animated:YES completionBlock:nil];
-        [pvc updateContent];
+        pmvc.delegate = pvc;
+        
+        [manager setSidebarViewController:pmvc];
+        [manager setSidebarEnabled:YES];
+        
+        __weak RootViewControllerManager *weakManager = manager;
+        [manager pushRootViewController:pvc animated:YES completionBlock:^{
+            RootViewControllerManager *strongManager = weakManager;
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [strongManager showSidebarController:nil animated:YES completionBlock:nil];
+            });
+        }];
+    }
+    else {
+        [manager pushRootViewController:pmvc animated:YES completionBlock:nil];
     }
 }
 
 #pragma mark - Action handlers
 
-- (IBAction)appCodeAction:(id)sender {
+- (IBAction)appCodeAction:(id)sender
+{
     self.appCodeController = [[EXAppCodeController alloc] init];
-    [self.appCodeController requestCodeWithCompletionHandler:^(NSString *appCode){
-        [self composeUIForMetadata:nil appCode:appCode location:@"www" startPage:@"index.html"];
-        self.appCodeController = nil;
+    
+    [self.appCodeController requestCodeWithSucceed:^(NSString *appCode) {
+        RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
+        
+        UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
+        MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo:rootView animated:YES];
+        progressHud.labelText = NSLocalizedString(@"Loading app", @"Loading app progress hud title");
+        
+        __weak EXApperyService *weakService = self.apperyService;
+        __weak RootViewControllerManager *weakManager = manager;
+        [self.apperyService loadProjectForAppCode:appCode
+                                          succeed:^(NSString *projectLocation, NSString *startPageName) {
+                                              NSLog(@"The project for code: '%@' has been loaded.", appCode);
+                                              
+                                              dispatch_async(dispatch_get_main_queue(), ^{
+                                                  [progressHud hide:NO];
+                                                  
+                                                  EXApperyService *strongService = weakService;
+                                                  EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:strongService projectCode:appCode];
+                                                  pvc.wwwFolderName = projectLocation;
+                                                  pvc.startPage = startPageName;
+                                                  
+                                                  RootViewControllerManager *strongManager = weakManager;
+                                                  [strongManager replaceTopContentViewController:pvc animated:NO];
+                                              });
+                                          } failed:^(NSError *error) {
+                                              NSLog(@"The project for code: '%@' has NOT been loaded. Error: %@.", appCode, [error localizedDescription]);
+                                              
+                                              dispatch_async(dispatch_get_main_queue(), ^{
+                                                  [progressHud hide:NO];
+                                                  [[[UIAlertView alloc] initWithTitle:error.localizedDescription
+                                                                              message:error.localizedRecoverySuggestion
+                                                                             delegate:nil
+                                                                    cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                                                                    otherButtonTitles:nil] show];
+                                              });
+                                          }
+         ];
+    } failed:^(NSError *error) {
+            [[[UIAlertView alloc] initWithTitle:error.localizedDescription
+                                        message:error.localizedRecoverySuggestion
+                                       delegate:nil
+                              cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+                              otherButtonTitles:nil] show];
     }];
 }
 
 #pragma mark - UITableViewDataSource
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
     #pragma unused(tableView)
     return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
     #pragma unused(tableView, section)
     return 2;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kEXSignInCellIdentifier];
-    if (cell == nil)
-    {
+    if (cell == nil) {
         NSArray *content = [[NSBundle mainBundle] loadNibNamed:kEXSignInCellIdentifier owner:nil options:nil];
         cell = content[0];
     }
+    
     EXSignInCell *siCell = [cell as:[EXSignInCell class]];
     siCell.delegate = self;
+    
     if (indexPath.row == 0) {
         EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
         EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
@@ -278,17 +346,21 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"UNEXPECTED_CELL"];
     }
+    
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
     return cell;
 }
 
 #pragma mark - UITableViewDelegate
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     return [EXSignInCell height];
 }
 
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
     if ([cell respondsToSelector:@selector(tintColor)]) {
         CGFloat cornerRadius = 5.;
         cell.backgroundColor = [UIColor clearColor];
@@ -330,6 +402,7 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
             lineLayer.backgroundColor = tableView.separatorColor.CGColor;
             [layer addSublayer:lineLayer];
         }
+        
         UIView *testView = [[UIView alloc] initWithFrame:bounds];
         [testView.layer insertSublayer:layer atIndex:0];
         testView.backgroundColor = UIColor.clearColor;
@@ -337,17 +410,20 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     }
 }
 
-- (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath {
+- (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
+{
     return NO;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
 #pragma mark - ExSignInCellActionDelegate
 
-- (void)cell:(EXSignInCell *)cell didUpdateText:(NSString *)text {
+- (void)cell:(EXSignInCell *)cell didUpdateText:(NSString *)text
+{
     switch (cell.type) {
         case SignInCellTypeLogin:
             self.uname = text;
@@ -360,7 +436,8 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     }
 }
 
-- (void)needToExecuteActionForCell:(EXSignInCell *)cell {
+- (void)needToExecuteActionForCell:(EXSignInCell *)cell
+{
     switch (cell.type) {
         case SignInCellTypePassword:
             [self signIn];
@@ -372,7 +449,8 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 
 #pragma mark - Keyboard notification handlers
 
-- (void)keyboardWillShowNotification:(NSNotification *)notification {
+- (void)keyboardWillShowNotification:(NSNotification *)notification
+{
     NSValue *val = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] as:[NSValue class]];
     CGRect keyboardEndFrame = val.CGRectValue;
     CGRect convertedKeyboardEndFrame = [self.view convertRect:keyboardEndFrame fromView:self.view.window];
@@ -382,7 +460,8 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     self.svScroll.contentInset = inset;
 }
 
-- (void)keyboardWillHideNotification:(NSNotification *)notification {
+- (void)keyboardWillHideNotification:(NSNotification *)notification
+{
     #pragma unused(notification)
     self.svScroll.contentInset = UIEdgeInsetsZero;
 }
