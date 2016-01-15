@@ -24,6 +24,7 @@
 
 static NSString * const BASE_URL_STRING = @"appery.io";
 static NSString * const LOGIN_PATH_URL_STRING = @"/idp/doLogin";
+static NSString * const PROJECTS_APP_URL_STRING = @"/app/";
 static NSString * const PROJECTS_PATH_URL_STRING = @"/app/rest/projects/";
 static NSString * const PROJECT_PATH_URL_STRING = @"/app/project/%@/export/sources/web_resources/";
 static NSString * const SHARE_PROJECT_PATH_URL_STRING = @"/app/rest/project/shared/%@/export/sources/WEB_RESOURCES";
@@ -86,7 +87,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     NSAssert(failed != nil, @"failed callback block is not specified");
     
     // Create login request
-    NSString *target = [[[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:@"/app/"] encodedUrlString];
+    NSString *target = [[[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:PROJECTS_APP_URL_STRING] encodedUrlString];
     NSString *loginUrlStr = [[@"https://idp." stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:LOGIN_PATH_URL_STRING];
     NSDictionary *parameters = @{@"cn":userName, @"pwd":password, @"target":target};
     NSURLRequest *request = [self.manager.requestSerializer requestWithMethod:@"GET" URLString:loginUrlStr parameters:parameters error:nil];

@@ -17,6 +17,7 @@
 #import "SSKeychain.h"
 #import "MBProgressHUD.h"
 #import "UIColor+hexColor.h"
+#import "AFHTTPRequestOperationLogger.h"
 
 #pragma mark - Private interface declaration
 
@@ -111,7 +112,10 @@
     
     [self addSkipBackupAttributeToItemAtPath:projectsLocation];
     [self createAndConfigureApperyService];
-    
+#if 0
+    [[AFHTTPRequestOperationLogger sharedLogger] startLogging];
+    [[AFHTTPRequestOperationLogger sharedLogger] setLevel:AFLoggerLevelDebug];
+#endif
     // Auto login
     EXUserSettingsStorage *usStorage = [EXUserSettingsStorage sharedUserSettingsStorage];
     EXUserSettings *lastUserSettings = [usStorage retreiveLastStoredSettings];
@@ -244,7 +248,10 @@
         }
     }
     
-    [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsToRegister];
+    // Set the application defaults
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults registerDefaults:defaultsToRegister];
+    [defaults synchronize];
 }
 
 @end
