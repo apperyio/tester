@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EXSignInViewController">
@@ -28,11 +28,11 @@
                             <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="x7d-Ih-lw8">
-                                    <rect key="frame" x="8" y="571" width="584" height="21"/>
+                                    <rect key="frame" x="8" y="559" width="584" height="21"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="21" id="v7l-70-SA2"/>
                                     </constraints>
-                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
@@ -49,29 +49,20 @@
                                         <action selector="appCodeAction:" destination="-1" eventType="touchUpInside" id="DuB-s5-59W"/>
                                     </connections>
                                 </button>
-                                <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" alwaysBounceVertical="YES" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="UAf-qa-eGv">
+                                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="UAf-qa-eGv">
                                     <rect key="frame" x="140" y="223" width="320" height="153"/>
                                     <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                                     <constraints>
-                                        <constraint firstAttribute="width" constant="350" id="e5J-ec-spk"/>
+                                        <constraint firstAttribute="width" constant="320" id="fTd-h6-v5u">
+                                            <variation key="heightClass=regular-widthClass=regular" constant="350"/>
+                                        </constraint>
                                         <constraint firstAttribute="height" constant="153" id="pGY-8g-gq5"/>
                                     </constraints>
-                                    <variation key="default">
-                                        <mask key="constraints">
-                                            <exclude reference="e5J-ec-spk"/>
-                                        </mask>
-                                    </variation>
                                     <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
                                         <rect key="frame" x="140" y="223" width="320" height="153"/>
-                                        <mask key="constraints">
-                                            <exclude reference="e5J-ec-spk"/>
-                                        </mask>
                                     </variation>
                                     <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
                                         <rect key="frame" x="8" y="223" width="584" height="153"/>
-                                        <mask key="constraints">
-                                            <include reference="e5J-ec-spk"/>
-                                        </mask>
                                     </variation>
                                     <connections>
                                         <outlet property="dataSource" destination="-1" id="pyh-hJ-CBg"/>
@@ -93,7 +84,7 @@
                                 <constraint firstAttribute="centerX" secondItem="bRm-Q6-ARc" secondAttribute="centerX" id="CFf-Ws-XWz"/>
                                 <constraint firstItem="bRm-Q6-ARc" firstAttribute="top" secondItem="9Y8-1k-VBK" secondAttribute="top" constant="80" id="FYq-gj-f0e"/>
                                 <constraint firstAttribute="centerX" secondItem="vMb-aj-t3l" secondAttribute="centerX" id="Nxx-94-LKt"/>
-                                <constraint firstAttribute="bottom" secondItem="x7d-Ih-lw8" secondAttribute="bottom" constant="8" id="R2y-1q-U6j"/>
+                                <constraint firstAttribute="bottom" secondItem="x7d-Ih-lw8" secondAttribute="bottom" constant="20" id="R2y-1q-U6j"/>
                                 <constraint firstItem="vMb-aj-t3l" firstAttribute="top" secondItem="UAf-qa-eGv" secondAttribute="bottom" constant="30" id="RC0-HO-wjs"/>
                                 <constraint firstAttribute="width" constant="600" placeholder="YES" id="SVU-Cp-WLi"/>
                                 <constraint firstItem="UAf-qa-eGv" firstAttribute="leading" secondItem="9Y8-1k-VBK" secondAttribute="leading" constant="8" id="Vhv-cj-0rv"/>
