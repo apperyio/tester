@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    style="@style/ProjectList"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_home"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="top"
+        app:popupTheme="@style/Toolbar_Popup">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/toolbar_tv_title"
+                style="@style/TextView_tool_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_marginLeft="80dp"
+                android:text="@string/tool_bar_title_projects"
+                tools:text="Title"/>
+
+            <TextView
+                android:id="@+id/toolbar_enter_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
+                android:drawableLeft="@drawable/ic_enter_code"
+                />
+        </RelativeLayout>
+    </android.support.v7.widget.Toolbar>
+
+    <fragment
+        android:id="@+id/auth_fragment"
+        android:name="io.appery.tester.ui.projects.fragment.ProjectListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar_home"
+        tools:layout="@layout/fragment_projects"/>
+
+</RelativeLayout>

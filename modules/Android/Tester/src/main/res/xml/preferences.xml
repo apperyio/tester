@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<PreferenceCategory android:key="Authorization"
+		android:title="@string/authorization_pc">
+
+		<EditTextPreference android:key="base_url"
+			android:title="@string/url_label" android:enabled="true"
+			android:selectable="true" android:defaultValue="https://appery.io"></EditTextPreference>
+
+		<io.appery.tester.ui.widget.ButtonPreference
+			android:key="username"
+			android:selectable="true" android:title="@string/clear_credentials_label"
+			android:enabled="true"></io.appery.tester.ui.widget.ButtonPreference>
+	
+		
+	</PreferenceCategory>
+
+</PreferenceScreen>

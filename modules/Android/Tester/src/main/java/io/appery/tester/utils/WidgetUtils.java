@@ -1,6 +1,7 @@
 package io.appery.tester.utils;
 
 import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.TextView;
 
@@ -40,6 +41,13 @@ public class WidgetUtils {
      *            new text value.
      */
     public static void setText(Activity activity, int id, String value) {
+        TextView tv = (TextView) activity.findViewById(id);
+        if (tv != null) {
+            tv.setText(value);
+        }
+    }
+
+    public static void setText(FragmentActivity activity, int id, String value) {
         TextView tv = (TextView) activity.findViewById(id);
         if (tv != null) {
             tv.setText(value);

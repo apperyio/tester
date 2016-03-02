@@ -1,9 +1,0 @@
-
-    <resources>
-        <color name="windowBackground">#FFFFFFFF</color>
-        <color name="primary_text">#FF616161</color>
-        <color name="secondary_text">#FF616161</color>
-        <color name="list_background">#FFfafafa</color>
-        <color name="list_items_divider">#FFdddddd</color>
-        <color name="button_enabled_color">#FF0585ED</color>
-    </resources>

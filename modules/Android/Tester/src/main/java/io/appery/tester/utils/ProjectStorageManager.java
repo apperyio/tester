@@ -1,20 +1,28 @@
 package io.appery.tester.utils;
 
-import android.os.Environment;
+import com.nostra13.universalimageloader.utils.StorageUtils;
+
+import java.io.File;
+
+import io.appery.tester.Constants;
+import io.appery.tester.TesterApplication;
 
 public class ProjectStorageManager {
 
     public static String getBase_DIR() {
-        return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) ? Environment
-                .getExternalStorageDirectory() + "/data/io.appery.tester" : Environment.getDataDirectory()
-                + "/data/io.appery.tester";
+        return StorageUtils.getCacheDirectory(TesterApplication.getInstance()).getAbsolutePath();
     }
 
     public static String getPROJECT_ZIP_FILE() {
-        return getBase_DIR() + "/files/" + Constants.FILENAME_ZIP;
+        String result = getBase_DIR() + "/arch/";
+        File dir = new File(result);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        return result + Constants.FILENAME_ZIP;
     }
 
     public static String getWORK_DIRECTORY() {
-        return getBase_DIR() + "/app_default";
+        return getBase_DIR() + "/project";
     }
 }

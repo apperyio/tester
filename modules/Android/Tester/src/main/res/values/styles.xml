@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="Button" parent="@android:style/Widget.Button">
+        <item name="android:gravity">center_vertical|center_horizontal</item>
+        <item name="android:textColor">#FFFFFFFF</item>
+        <item name="android:shadowColor">#FF8b5309</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">-1</item>
+        <item name="android:shadowRadius">0.5</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:background">@drawable/btn_selector</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+    <style name="Label">
+        <item name="android:textColor">#FF333333</item>
+        <item name="android:textSize">14dp</item>
+        <item name="android:paddingBottom">6dp</item>
+    </style>
+
+    <style name="TextEdit">
+        <item name="android:textColor">#FF63b9f2</item>
+    </style>
+
+    <style name="Rights">
+        <item name="android:textColor">#FFA9A9A9</item>
+        <item name="android:textSize">14dp</item>
+    </style>
+
+    <style name="AppName" parent="Rights">
+        <item name="android:textColor">#FFA9A9A9</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="ProjectList">
+        <item name="android:background">@color/list_background</item>
+    </style>
+
+    <style name="ProjectItem">
+        <item name="android:background">@color/list_background</item>
+    </style>
+
+    <style name="ProjectItemTitle">
+        <item name="android:textColor">#FF0778e4</item>
+        <item name="android:textSize">24dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ProjectItemLastEditor">
+        <item name="android:textColor">#FF333333</item>
+        <item name="android:textSize">18dp</item>
+    </style>
+
+    <style name="ProjectItemLastEditDate">
+        <item name="android:textColor">#FF666666</item>
+        <item name="android:textSize">14dp</item>
+    </style>
+
+    <style name="Loading">
+        <item name="android:textColor">#FF343434</item>
+        <item name="android:textSize">35dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextView_tool_bar">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+</resources>
