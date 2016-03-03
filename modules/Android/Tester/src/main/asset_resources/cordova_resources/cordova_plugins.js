@@ -481,7 +481,7 @@ module.exports.metadata =
     "cordova-plugin-contacts": "1.1.0",
     "cordova-plugin-device-motion": "1.1.1",
     "cordova-plugin-device-orientation": "1.0.1",
-    "cordova-plugin-device": "1.0.1",
+    "cordova-plugin-device": "1.1.1",
     "cordova-plugin-dialogs": "1.1.1",
     "cordova-plugin-file": "3.0.0",
     "cordova-plugin-geolocation": "1.0.1",
@@ -491,7 +491,7 @@ module.exports.metadata =
     "cordova-plugin-splashscreen": "2.1.0",
     "cordova-plugin-vibration": "1.2.0",
     "phonegap-plugin-barcodescanner": "4.0.2",
-    "phonegap-plugin-push": "1.3.0",
+    "phonegap-plugin-push": "1.4.5",
     "cordova-plugin-file-transfer": "1.2.1",
     "cordova-plugin-media-capture": "1.0.1",
     "cordova-plugin-media": "1.0.1"
