@@ -9,7 +9,7 @@ android {
         applicationId "io.appery.tester"
         minSdkVersion 17
         targetSdkVersion 23
-        versionCode 43
+        versionCode 44
         versionName "4.1"
     }
 

@@ -2,6 +2,7 @@ package io.appery.tester.rest.request;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -20,11 +21,11 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.appery.tester.ui.appery.ApperyActivity;
+import io.appery.tester.Constants;
 import io.appery.tester.R;
 import io.appery.tester.TesterApplication;
+import io.appery.tester.ui.appery.ApperyActivity;
 import io.appery.tester.utils.CommonUtil;
-import io.appery.tester.Constants;
 import io.appery.tester.utils.FileUtils;
 import io.appery.tester.utils.ProjectStorageManager;
 import retrofit.RetrofitError;
@@ -107,6 +108,17 @@ public class ProjectFileRequest extends BinaryRequest implements RequestListener
             try {
                 FileUtils.checkDir(dirPath);
                 FileUtils.clearDirectory(dirPath);
+
+                // Add .nomedia file to exclude project images from Gallery
+                try {
+                    File nomedia = new File(ProjectStorageManager.getBase_DIR(), ".nomedia");
+                    if (!nomedia.exists()) {
+                        nomedia.createNewFile();
+                    }
+                } catch (Exception e) {
+                    Log.e("ProjectFileRequest", "Can't create .nomedia file", e);
+                }
+
                 FileUtils.unzip(ProjectStorageManager.getPROJECT_ZIP_FILE(), dirPath);
                 replaceCordovaResources(dirPath);
                 Intent intent = new Intent(context, ApperyActivity.class);
