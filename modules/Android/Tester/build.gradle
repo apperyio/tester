@@ -9,8 +9,8 @@ android {
         applicationId "io.appery.tester"
         minSdkVersion 17
         targetSdkVersion 23
-        versionCode 10
-        versionName "1.6"
+        versionCode 43
+        versionName "4.1"
     }
 
     signingConfigs {

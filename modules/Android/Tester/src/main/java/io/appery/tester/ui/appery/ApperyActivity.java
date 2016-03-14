@@ -1,10 +1,16 @@
 package io.appery.tester.ui.appery;
 
+import android.app.ActivityManager;
+import android.content.Context;
+import android.content.pm.ConfigurationInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 
 import org.apache.cordova.CordovaActivity;
+import org.apache.cordova.CordovaWebViewEngine;
+import org.apache.cordova.engine.SystemWebViewEngine;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -24,7 +30,20 @@ public class ApperyActivity extends CordovaActivity {
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
+
         loadUrl("file://" + getStartFileName());
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+
+        // Workaround for https://bugs.chromium.org/p/chromium/issues/detail?id=541145
+        CordovaWebViewEngine engine = appView.getEngine();
+        if (engine instanceof SystemWebViewEngine) {
+            ((SystemWebViewEngine) engine).getView().setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
+        // End of workaround
     }
 
     @Override
