@@ -19,6 +19,7 @@
     <allow-intent href="geo:*" />
     <preference name="splashscreen" value="splash" />
     <preference name="AndroidPersistentFileLocation" value="Internal" />
+    <preference name="AppendUserAgent" value="Appery.io Mobile Tester" />
     <feature name="Accelerometer">
         <param name="android-package" value="org.apache.cordova.devicemotion.AccelListener" />
     </feature>

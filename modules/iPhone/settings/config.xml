@@ -2,6 +2,7 @@
 <widget>
     <!-- Multi-Platform preferences -->
     <preference name="DisallowOverscroll" value="false" />
+    <preference name="AppendUserAgent" value="Appery.io Mobile Tester" />
     <!-- iOS preferences -->
     <preference name="AllowInlineMediaPlayback" value="false" />
     <preference name="BackupWebStorage" value="local" />
