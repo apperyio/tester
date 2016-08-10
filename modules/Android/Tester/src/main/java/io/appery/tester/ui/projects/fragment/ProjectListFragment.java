@@ -33,7 +33,7 @@ import io.appery.tester.utils.DialogHelper;
 public class ProjectListFragment extends BaseFragment implements RequestListener<ProjectsCollection>, SlaveCallback, LoaderManager.LoaderCallbacks<Cursor> {
     private MasterCallback master;
     private MaterialDialog dialog;
-    private SortType mSortType = SortType.BY_NAME;
+    private SortType mSortType = SortType.BY_CREATION_DATE;
 
     @Bind(R.id.project_list)
     ListView list;

@@ -25,7 +25,7 @@
     <string name="please_wait">Please wait...</string>
     <string name="signing_in">Signing in...</string>
     <string name="signing_out">Signing out...</string>
-    <string name="refresh_projects_list">Refresh projects...</string>
+    <string name="refresh_projects_list">Refreshing app list...</string>
     <string name="loading_app">Loading app</string>
     <string name="are_you_sure">Are you sure?</string>
     <string name="complete_action_title">Complete action</string>
