@@ -19,25 +19,33 @@
 package org.apache.cordova.contacts;
 
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaActivity;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.LOG;
+import org.apache.cordova.PermissionHelper;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.Build;
+import android.os.Bundle;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.RawContacts;
-import android.util.Log;
+
+import java.lang.reflect.Method;
 
 public class ContactManager extends CordovaPlugin {
 
     private ContactAccessor contactAccessor;
     private CallbackContext callbackContext;        // The callback context from which we were invoked.
     private JSONArray executeArgs;
-    
+
     private static final String LOG_TAG = "Contact Query";
 
     public static final int UNKNOWN_ERROR = 0;
@@ -46,14 +54,41 @@ public class ContactManager extends CordovaPlugin {
     public static final int PENDING_OPERATION_ERROR = 3;
     public static final int IO_ERROR = 4;
     public static final int NOT_SUPPORTED_ERROR = 5;
+    public static final int OPERATION_CANCELLED_ERROR = 6;
     public static final int PERMISSION_DENIED_ERROR = 20;
     private static final int CONTACT_PICKER_RESULT = 1000;
+    public static String [] permissions;
+
+
+    //Request code for the permissions picker (Pick is async and uses intents)
+    public static final int SEARCH_REQ_CODE = 0;
+    public static final int SAVE_REQ_CODE = 1;
+    public static final int REMOVE_REQ_CODE = 2;
+    public static final int PICK_REQ_CODE = 3;
+
+    public static final String READ = Manifest.permission.READ_CONTACTS;
+    public static final String WRITE = Manifest.permission.WRITE_CONTACTS;
+
 
     /**
      * Constructor.
      */
     public ContactManager() {
+
     }
+
+
+    protected void getReadPermission(int requestCode)
+    {
+        PermissionHelper.requestPermission(this, requestCode, READ);
+    }
+
+
+    protected void getWritePermission(int requestCode)
+    {
+        PermissionHelper.requestPermission(this, requestCode, WRITE);
+    }
+
 
     /**
      * Executes the request and returns PluginResult.
@@ -64,10 +99,10 @@ public class ContactManager extends CordovaPlugin {
      * @return                  True if the action was valid, false otherwise.
      */
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
-        
+
         this.callbackContext = callbackContext;
-        this.executeArgs = args; 
-        
+        this.executeArgs = args;
+
         /**
          * Check to see if we are on an Android 1.X device.  If we are return an error as we
          * do not support this as of Cordova 1.0.
@@ -86,57 +121,98 @@ public class ContactManager extends CordovaPlugin {
         }
 
         if (action.equals("search")) {
-            final JSONArray filter = args.getJSONArray(0);
-            final JSONObject options = args.get(1) == null ? null : args.getJSONObject(1);
-            this.cordova.getThreadPool().execute(new Runnable() {
-                public void run() {
-                    JSONArray res = contactAccessor.search(filter, options);
-                    callbackContext.success(res);
-                }
-            });
+            if(PermissionHelper.hasPermission(this, READ)) {
+                search(executeArgs);
+            }
+            else
+            {
+                getReadPermission(SEARCH_REQ_CODE);
+            }
         }
         else if (action.equals("save")) {
-            final JSONObject contact = args.getJSONObject(0);
-            this.cordova.getThreadPool().execute(new Runnable(){
-                public void run() {
-                    JSONObject res = null;
-                    String id = contactAccessor.save(contact);
-                    if (id != null) {
-                        try {
-                            res = contactAccessor.getContactById(id);
-                        } catch (JSONException e) {
-                            Log.e(LOG_TAG, "JSON fail.", e);
-                        }
-                    }
-                    if (res != null) {
-                        callbackContext.success(res);
-                    } else {
-                        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, UNKNOWN_ERROR));
-                    }
-                }
-            });
+            if(PermissionHelper.hasPermission(this, WRITE))
+            {
+                save(executeArgs);
+            }
+            else
+            {
+                getWritePermission(SAVE_REQ_CODE);
+            }
         }
         else if (action.equals("remove")) {
-            final String contactId = args.getString(0);
-            this.cordova.getThreadPool().execute(new Runnable() {
-                public void run() {
-                    if (contactAccessor.remove(contactId)) {
-                        callbackContext.success();
-                    } else {
-                        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, UNKNOWN_ERROR));
-                    }
-                }
-            });
+            if(PermissionHelper.hasPermission(this, WRITE))
+            {
+                remove(executeArgs);
+            }
+            else
+            {
+                getWritePermission(REMOVE_REQ_CODE);
+            }
         }
         else if (action.equals("pickContact")) {
-            pickContactAsync();
+            if(PermissionHelper.hasPermission(this, READ))
+            {
+                pickContactAsync();
+            }
+            else
+            {
+                getReadPermission(PICK_REQ_CODE);
+            }
         }
         else {
             return false;
         }
         return true;
     }
-    
+
+    private void remove(JSONArray args) throws JSONException {
+        final String contactId = args.getString(0);
+        this.cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                if (contactAccessor.remove(contactId)) {
+                    callbackContext.success();
+                } else {
+                    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, UNKNOWN_ERROR));
+                }
+            }
+        });
+    }
+
+    private void save(JSONArray args) throws JSONException {
+        final JSONObject contact = args.getJSONObject(0);
+        this.cordova.getThreadPool().execute(new Runnable(){
+            public void run() {
+                JSONObject res = null;
+                String id = contactAccessor.save(contact);
+                if (id != null) {
+                    try {
+                        res = contactAccessor.getContactById(id);
+                    } catch (JSONException e) {
+                        LOG.e(LOG_TAG, "JSON fail.", e);
+                    }
+                }
+                if (res != null) {
+                    callbackContext.success(res);
+                } else {
+                    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, UNKNOWN_ERROR));
+                }
+            }
+        });
+    }
+
+    private void search(JSONArray args) throws JSONException
+    {
+        final JSONArray filter = args.getJSONArray(0);
+        final JSONObject options = args.get(1) == null ? null : args.getJSONObject(1);
+        this.cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                JSONArray res = contactAccessor.search(filter, options);
+                callbackContext.success(res);
+            }
+        });
+    }
+
+
     /**
      * Launches the Contact Picker to select a single contact.
      */
@@ -150,7 +226,7 @@ public class ContactManager extends CordovaPlugin {
         };
         this.cordova.getThreadPool().execute(worker);
     }
-    
+
     /**
      * Called when user picks contact.
      * @param requestCode       The request code originally supplied to startActivityForResult(),
@@ -179,13 +255,53 @@ public class ContactManager extends CordovaPlugin {
                     this.callbackContext.success(contact);
                     return;
                 } catch (JSONException e) {
-                    Log.e(LOG_TAG, "JSON fail.", e);
+                    LOG.e(LOG_TAG, "JSON fail.", e);
                 }
-            } else if (resultCode == Activity.RESULT_CANCELED){
-                this.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.NO_RESULT, UNKNOWN_ERROR));
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                callbackContext.error(OPERATION_CANCELLED_ERROR);
                 return;
             }
+
             this.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, UNKNOWN_ERROR));
         }
+    }
+
+    public void onRequestPermissionResult(int requestCode, String[] permissions,
+                                             int[] grantResults) throws JSONException
+    {
+        for(int r:grantResults)
+        {
+            if(r == PackageManager.PERMISSION_DENIED)
+            {
+                this.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, PERMISSION_DENIED_ERROR));
+                return;
+            }
+        }
+        switch(requestCode)
+        {
+            case SEARCH_REQ_CODE:
+                search(executeArgs);
+                break;
+            case SAVE_REQ_CODE:
+                save(executeArgs);
+                break;
+            case REMOVE_REQ_CODE:
+                remove(executeArgs);
+                break;
+            case PICK_REQ_CODE:
+                pickContactAsync();
+                break;
+        }
+    }
+
+    /**
+     * This plugin launches an external Activity when a contact is picked, so we
+     * need to implement the save/restore API in case the Activity gets killed
+     * by the OS while it's in the background. We don't actually save anything
+     * because picking a contact doesn't take in any arguments.
+     */
+    public void onRestoreStateForActivityResult(Bundle state, CallbackContext callbackContext) {
+        this.callbackContext = callbackContext;
+        this.contactAccessor = new ContactAccessorSdk5(this.cordova);
     }
 }
