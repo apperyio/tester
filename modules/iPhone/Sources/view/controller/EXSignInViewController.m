@@ -112,11 +112,11 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     btn.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:18.];
     [btn setTitleColor:[UIColor colorFromHEXString:@"#1E88E5"] forState:UIControlStateNormal];
     
-    UILabel *l = self.lCopyright;
-    l.text = NSLocalizedString(@"© 2016 Appery, LLC. All rights reserved.", @"© 2015 Appery, LLC. All rights reserved.");
-    l.font = [UIFont fontWithName:@"HelveticaNeue" size:16.];
-    l.textColor = [UIColor colorFromHEXString:@"#BDBDBD"];
-    l.textAlignment = NSTextAlignmentCenter;
+//    UILabel *l = self.lCopyright;
+//    l.text = NSLocalizedString(@"© 2016 Appery, LLC. All rights reserved.", @"© 2015 Appery, LLC. All rights reserved.");
+//    l.font = [UIFont fontWithName:@"HelveticaNeue" size:16.];
+//    l.textColor = [UIColor colorFromHEXString:@"#BDBDBD"];
+//    l.textAlignment = NSTextAlignmentCenter;
 }
 
 - (void)viewWillAppear:(BOOL)animated
