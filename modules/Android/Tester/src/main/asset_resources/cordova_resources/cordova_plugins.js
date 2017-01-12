@@ -415,6 +415,13 @@ module.exports = [
         "clobbers": [
             "window.Media"
         ]
+    },
+    {
+        "file": "plugins/phonegap-plugin-push/www/push.js",
+        "id": "phonegap-plugin-push.PushNotification",
+        "clobbers": [
+            "PushNotification"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -438,7 +445,8 @@ module.exports.metadata =
     "cordova-plugin-file": "4.3.0",
     "cordova-plugin-file-transfer": "1.6.0",
     "cordova-plugin-geolocation": "2.4.0",
-    "cordova-plugin-media": "2.4.0"
+    "cordova-plugin-media": "2.4.0",
+    "phonegap-plugin-push": "1.8.4"
 }
 // BOTTOM OF METADATA
 });
