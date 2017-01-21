@@ -155,9 +155,9 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     if (!self.uname.length) {
         msg = NSLocalizedString(@"Missing email address", nil);
     }
-    else if (!self.pwd.length) {
-        msg = NSLocalizedString(@"Missing password", nil);
-    }
+//    else if (!self.pwd.length) {
+//        msg = NSLocalizedString(@"Missing password", nil);
+//    }
     
     if (msg) {
         // Show error message
@@ -166,6 +166,11 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
                                    delegate:nil
                           cancelButtonTitle:NSLocalizedString(@"Ok", nil)
                           otherButtonTitles:nil] show];
+        return;
+    }
+    
+    if (!self.pwd.length) {
+        [self signInWithAppCode:self.uname];
         return;
     }
     
@@ -256,13 +261,7 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     }
 }
 
-#pragma mark - Action handlers
-
-- (IBAction)appCodeAction:(id)sender
-{
-    self.appCodeController = [[EXAppCodeController alloc] init];
-    
-    [self.appCodeController requestCodeWithSucceed:^(NSString *appCode) {
+- (void)signInWithAppCode:(NSString*)appCode {
         RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
         
         UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
@@ -299,6 +298,16 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
                                               });
                                           }
          ];
+}
+
+#pragma mark - Action handlers
+
+- (IBAction)appCodeAction:(id)sender
+{
+    self.appCodeController = [[EXAppCodeController alloc] init];
+    
+    [self.appCodeController requestCodeWithSucceed:^(NSString *appCode) {
+        [self signInWithAppCode:appCode];
     } failed:^(NSError *error) {
             [[[UIAlertView alloc] initWithTitle:error.localizedDescription
                                         message:error.localizedRecoverySuggestion

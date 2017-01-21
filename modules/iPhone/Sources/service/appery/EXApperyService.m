@@ -18,7 +18,7 @@
 #import "EXProjectMetadata.h"
 #import "EXProjectsMetadataSerializer.h"
 #import "EXProjectExtractionOperation.h"
-#import <Cordova/CDVJSON.h>
+//#import <Cordova/CDVJSON.h>
 
 #pragma mark - Service configure constants
 
