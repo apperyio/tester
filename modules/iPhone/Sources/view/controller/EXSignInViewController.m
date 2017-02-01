@@ -155,10 +155,10 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     if (!self.uname.length) {
         msg = NSLocalizedString(@"Missing email address", nil);
     }
-//    else if (!self.pwd.length) {
-//        msg = NSLocalizedString(@"Missing password", nil);
-//    }
-    
+    else if (!self.pwd.length) {
+        msg = NSLocalizedString(@"Missing password", nil);
+    }
+	
     if (msg) {
         // Show error message
         [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Failed", nil)
@@ -169,11 +169,11 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
         return;
     }
     
-    if (!self.pwd.length) {
-        [self signInWithAppCode:self.uname];
-        return;
-    }
-    
+//    if (!self.pwd.length) {
+//        [self signInWithAppCode:self.uname];
+//        return;
+//    }
+	
     UIView *rootView = [[[EXMainWindowAppDelegate mainWindow] rootViewController] view];
     MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo: rootView animated: YES];
     progressHud.labelText = NSLocalizedString(@"Login", @"Login progress hud title");
@@ -261,61 +261,61 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     }
 }
 
-- (void)signInWithAppCode:(NSString*)appCode {
-        RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
-        
-        UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
-        MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo:rootView animated:YES];
-        progressHud.labelText = NSLocalizedString(@"Loading app", @"Loading app progress hud title");
-        
-        __weak EXApperyService *weakService = self.apperyService;
-        __weak RootViewControllerManager *weakManager = manager;
-        [self.apperyService loadProjectForAppCode:appCode
-                                          succeed:^(NSString *projectLocation, NSString *startPageName) {
-                                              NSLog(@"The project for code: '%@' has been loaded.", appCode);
-                                              
-                                              dispatch_async(dispatch_get_main_queue(), ^{
-                                                  [progressHud hide:NO];
-                                                  
-                                                  EXApperyService *strongService = weakService;
-                                                  EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:strongService projectCode:appCode];
-                                                  pvc.wwwFolderName = projectLocation;
-                                                  pvc.startPage = startPageName;
-                                                  
-                                                  RootViewControllerManager *strongManager = weakManager;
-                                                  [strongManager replaceTopContentViewController:pvc animated:NO];
-                                              });
-                                          } failed:^(NSError *error) {
-                                              NSLog(@"The project for code: '%@' has NOT been loaded. Error: %@.", appCode, [error localizedDescription]);
-                                              
-                                              dispatch_async(dispatch_get_main_queue(), ^{
-                                                  [progressHud hide:NO];
-                                                  [[[UIAlertView alloc] initWithTitle:error.localizedDescription
-                                                                              message:error.localizedRecoverySuggestion
-                                                                             delegate:nil
-                                                                    cancelButtonTitle:NSLocalizedString(@"Ok", nil)
-                                                                    otherButtonTitles:nil] show];
-                                              });
-                                          }
-         ];
-}
+//- (void)signInWithAppCode:(NSString*)appCode {
+//        RootViewControllerManager *manager = [RootViewControllerManager sharedInstance];
+//        
+//        UIView *rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
+//        MBProgressHUD *progressHud = [MBProgressHUD showHUDAddedTo:rootView animated:YES];
+//        progressHud.labelText = NSLocalizedString(@"Loading app", @"Loading app progress hud title");
+//        
+//        __weak EXApperyService *weakService = self.apperyService;
+//        __weak RootViewControllerManager *weakManager = manager;
+//        [self.apperyService loadProjectForAppCode:appCode
+//                                          succeed:^(NSString *projectLocation, NSString *startPageName) {
+//                                              NSLog(@"The project for code: '%@' has been loaded.", appCode);
+//                                              
+//                                              dispatch_async(dispatch_get_main_queue(), ^{
+//                                                  [progressHud hide:NO];
+//                                                  
+//                                                  EXApperyService *strongService = weakService;
+//                                                  EXProjectViewController *pvc = [[EXProjectViewController alloc] initWithService:strongService projectCode:appCode];
+//                                                  pvc.wwwFolderName = projectLocation;
+//                                                  pvc.startPage = startPageName;
+//                                                  
+//                                                  RootViewControllerManager *strongManager = weakManager;
+//                                                  [strongManager replaceTopContentViewController:pvc animated:NO];
+//                                              });
+//                                          } failed:^(NSError *error) {
+//                                              NSLog(@"The project for code: '%@' has NOT been loaded. Error: %@.", appCode, [error localizedDescription]);
+//                                              
+//                                              dispatch_async(dispatch_get_main_queue(), ^{
+//                                                  [progressHud hide:NO];
+//                                                  [[[UIAlertView alloc] initWithTitle:error.localizedDescription
+//                                                                              message:error.localizedRecoverySuggestion
+//                                                                             delegate:nil
+//                                                                    cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+//                                                                    otherButtonTitles:nil] show];
+//                                              });
+//                                          }
+//         ];
+//}
 
 #pragma mark - Action handlers
 
-- (IBAction)appCodeAction:(id)sender
-{
-    self.appCodeController = [[EXAppCodeController alloc] init];
-    
-    [self.appCodeController requestCodeWithSucceed:^(NSString *appCode) {
-        [self signInWithAppCode:appCode];
-    } failed:^(NSError *error) {
-            [[[UIAlertView alloc] initWithTitle:error.localizedDescription
-                                        message:error.localizedRecoverySuggestion
-                                       delegate:nil
-                              cancelButtonTitle:NSLocalizedString(@"Ok", nil)
-                              otherButtonTitles:nil] show];
-    }];
-}
+//- (IBAction)appCodeAction:(id)sender
+//{
+//    self.appCodeController = [[EXAppCodeController alloc] init];
+//    
+//    [self.appCodeController requestCodeWithSucceed:^(NSString *appCode) {
+//        [self signInWithAppCode:appCode];
+//    } failed:^(NSError *error) {
+//            [[[UIAlertView alloc] initWithTitle:error.localizedDescription
+//                                        message:error.localizedRecoverySuggestion
+//                                       delegate:nil
+//                              cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+//                              otherButtonTitles:nil] show];
+//    }];
+//}
 
 #pragma mark - UITableViewDataSource
 
