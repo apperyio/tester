@@ -85,10 +85,12 @@
         case SignInCellTypeLogin:
             btn.hidden = YES;
             tf.attributedPlaceholder = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"Email", @"Email") attributes:@{ NSFontAttributeName : tf.font, NSForegroundColorAttributeName: tf.textColor }];
+			tf.keyboardType = UIKeyboardTypeEmailAddress;
             break;
         case SignInCellTypePassword:
             btn.hidden = NO;
             tf.secureTextEntry = YES;
+			tf.keyboardType = UIKeyboardTypeDefault;
             tf.attributedPlaceholder = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"Password", @"Password") attributes:@{ NSFontAttributeName : tf.font, NSForegroundColorAttributeName: tf.textColor }];
             break;
         default:
