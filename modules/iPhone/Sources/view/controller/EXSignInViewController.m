@@ -26,7 +26,7 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 @property (nonatomic, weak) IBOutlet UIView *vContent;
 @property (nonatomic, weak) IBOutlet UIImageView *ivLogo;
 @property (nonatomic, weak) IBOutlet UITableView *tvSignIn;
-@property (nonatomic, weak) IBOutlet UIButton *bAppCode;
+//@property (nonatomic, weak) IBOutlet UIButton *bAppCode;
 @property (nonatomic, weak) IBOutlet UILabel *lCopyright;
 
 @property (nonatomic, copy) NSString *uname;
@@ -36,6 +36,7 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 @property (nonatomic, strong) EXAppCodeController *appCodeController;
 
 - (IBAction)appCodeAction:(id)sender;
+- (IBAction)signInAction:(id)sender;
 
 - (void)composeUIForMetadata:(NSArray *)metadata location:(NSString *)location startPage:(NSString *)startPage;
 
@@ -53,7 +54,7 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 
 @synthesize ivLogo = _ivLogo;
 @synthesize tvSignIn = _tvSignIn;
-@synthesize bAppCode = _bAppCode;
+//@synthesize bAppCode = _bAppCode;
 @synthesize lCopyright = _lCopyright;
 
 @synthesize uname = _uname;
@@ -108,10 +109,10 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     UIImageView *iv = self.ivLogo;
     iv.image = [UIImage imageNamed:@"logo"];
     
-    UIButton *btn = self.bAppCode;
-    btn.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:18.];
-    [btn setTitleColor:[UIColor colorFromHEXString:@"#1E88E5"] forState:UIControlStateNormal];
-    
+//    UIButton *btn = self.bAppCode;
+//    btn.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:18.];
+//    [btn setTitleColor:[UIColor colorFromHEXString:@"#1E88E5"] forState:UIControlStateNormal];
+	
 //    UILabel *l = self.lCopyright;
 //    l.text = NSLocalizedString(@"© 2016 Appery, LLC. All rights reserved.", @"© 2015 Appery, LLC. All rights reserved.");
 //    l.font = [UIFont fontWithName:@"HelveticaNeue" size:16.];
@@ -316,6 +317,10 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 //                              otherButtonTitles:nil] show];
 //    }];
 //}
+
+- (IBAction)signInAction:(id)sender {
+	[self signIn];
+}
 
 #pragma mark - UITableViewDataSource
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="ipad9_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -11,7 +11,6 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EXSignInViewController">
             <connections>
-                <outlet property="bAppCode" destination="vMb-aj-t3l" id="XcV-cT-L37"/>
                 <outlet property="ivLogo" destination="bRm-Q6-ARc" id="gEm-Or-NwE"/>
                 <outlet property="lCopyright" destination="x7d-Ih-lw8" id="nOa-2J-M4y"/>
                 <outlet property="svScroll" destination="Mgu-47-XxL" id="nop-HL-Rpd"/>
@@ -40,17 +39,25 @@
                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vMb-aj-t3l">
-                                    <rect key="frame" x="225" y="406" width="150" height="40"/>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vMb-aj-t3l">
+                                    <rect key="frame" x="210" y="382" width="180" height="40"/>
+                                    <color key="backgroundColor" red="0.23497343063354492" green="0.65025526285171509" blue="0.96423345804214478" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="40" id="NbP-96-18M"/>
-                                        <constraint firstAttribute="width" constant="150" id="Ouj-Gb-Agc"/>
+                                        <constraint firstAttribute="width" constant="180" id="Ouj-Gb-Agc"/>
                                     </constraints>
-                                    <state key="normal" title="Enter app code">
-                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="17"/>
+                                    <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <state key="normal" title="Log in">
+                                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                     </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                            <integer key="value" value="2"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
                                     <connections>
-                                        <action selector="appCodeAction:" destination="-1" eventType="touchUpInside" id="DuB-s5-59W"/>
+                                        <action selector="signInAction:" destination="-1" eventType="touchUpInside" id="pgq-i7-gYG"/>
                                     </connections>
                                 </button>
                                 <tableView clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" alwaysBounceVertical="YES" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="UAf-qa-eGv">
@@ -83,7 +90,7 @@
                                 <constraint firstItem="bRm-Q6-ARc" firstAttribute="top" secondItem="9Y8-1k-VBK" secondAttribute="top" constant="80" id="FYq-gj-f0e"/>
                                 <constraint firstAttribute="centerX" secondItem="vMb-aj-t3l" secondAttribute="centerX" id="Nxx-94-LKt"/>
                                 <constraint firstAttribute="bottom" secondItem="x7d-Ih-lw8" secondAttribute="bottom" constant="20" id="R2y-1q-U6j"/>
-                                <constraint firstItem="vMb-aj-t3l" firstAttribute="top" secondItem="UAf-qa-eGv" secondAttribute="bottom" constant="30" id="RC0-HO-wjs"/>
+                                <constraint firstItem="vMb-aj-t3l" firstAttribute="top" secondItem="UAf-qa-eGv" secondAttribute="bottom" constant="6" id="RC0-HO-wjs"/>
                                 <constraint firstAttribute="width" constant="600" placeholder="YES" id="SVU-Cp-WLi"/>
                                 <constraint firstItem="UAf-qa-eGv" firstAttribute="leading" secondItem="9Y8-1k-VBK" secondAttribute="leading" constant="8" id="Vhv-cj-0rv"/>
                                 <constraint firstAttribute="centerX" secondItem="UAf-qa-eGv" secondAttribute="centerX" id="fQ6-g9-9dO"/>
