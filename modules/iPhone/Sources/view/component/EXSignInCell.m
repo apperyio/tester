@@ -88,7 +88,7 @@
 			tf.keyboardType = UIKeyboardTypeEmailAddress;
             break;
         case SignInCellTypePassword:
-            btn.hidden = NO;
+            btn.hidden = YES;
             tf.secureTextEntry = YES;
 			tf.keyboardType = UIKeyboardTypeDefault;
             tf.attributedPlaceholder = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"Password", @"Password") attributes:@{ NSFontAttributeName : tf.font, NSForegroundColorAttributeName: tf.textColor }];
