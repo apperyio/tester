@@ -30,6 +30,7 @@
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
+    <allow-navigation href="*://*youtube.com" />
     <!-- Cordova plugins -->
     <feature name="LocalStorage">
         <param name="ios-package" value="CDVLocalStorage" />
