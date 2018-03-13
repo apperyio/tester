@@ -1,4 +1,4 @@
-cordova.define("cordova-plugin-media-capture.MediaFileData", function(require, exports, module) { /*
+cordova.define("cordova-plugin-geolocation.PositionError", function(require, exports, module) { /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -20,22 +20,21 @@ cordova.define("cordova-plugin-media-capture.MediaFileData", function(require, e
 */
 
 /**
- * MediaFileData encapsulates format information of a media file.
+ * Position error object
  *
- * @param {DOMString} codecs
- * @param {long} bitrate
- * @param {long} height
- * @param {long} width
- * @param {float} duration
+ * @constructor
+ * @param code
+ * @param message
  */
-var MediaFileData = function(codecs, bitrate, height, width, duration){
-    this.codecs = codecs || null;
-    this.bitrate = bitrate || 0;
-    this.height = height || 0;
-    this.width = width || 0;
-    this.duration = duration || 0;
+var PositionError = function(code, message) {
+    this.code = code || null;
+    this.message = message || '';
 };
 
-module.exports = MediaFileData;
+PositionError.prototype.PERMISSION_DENIED = PositionError.PERMISSION_DENIED = 1;
+PositionError.prototype.POSITION_UNAVAILABLE = PositionError.POSITION_UNAVAILABLE = 2;
+PositionError.prototype.TIMEOUT = PositionError.TIMEOUT = 3;
+
+module.exports = PositionError;
 
 });

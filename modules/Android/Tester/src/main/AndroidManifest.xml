@@ -56,15 +56,15 @@
 
     <application
         android:name="io.appery.tester.TesterApplication"
-        android:allowBackup="false"
+        android:allowBackup="true"
         android:icon="@drawable/icon"
-        android:label="@string/application_name"
+        android:label="@string/app_name"
         android:theme="@style/TesterTheme">
 
         <activity
             android:name=".ui.login.activity.AuthActivity"
             android:configChanges="keyboardHidden|orientation"
-            android:label="@string/application_name"
+            android:label="@string/app_name"
             android:launchMode="singleTop"
             android:theme="@style/LoginActivityTheme">
             <intent-filter>
@@ -75,19 +75,19 @@
         <activity
             android:name=".ui.projects.activity.GeneralProjectsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="@string/application_name"
+            android:label="@string/app_name"
             android:theme="@style/ProjectListTheme"/>
         <activity
             android:name=".ui.appery.ApperyActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/application_name"
+            android:label="@string/app_name"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/CordovaTheme"/>
         <activity
             android:name=".ui.preferences.PreferencesActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:label="@string/application_name"
+            android:label="@string/app_name"
             android:launchMode="singleTop"/>
 
         <!-- ZXing activities -->
@@ -106,6 +106,9 @@
         <provider
             android:name=".DatabaseProvider"
             android:authorities="io.appery.tester"/>
+        <provider android:authorities="io.appery.tester.provider" android:exported="false" android:grantUriPermissions="true" android:name="android.support.v4.content.FileProvider">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/provider_paths" />
+        </provider>
     </application>
 
 </manifest>
