@@ -22,10 +22,11 @@ buildscript {
     repositories {
         jcenter()
         mavenCentral()
+        google()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.2'
+        classpath 'com.android.tools.build:gradle:3.3.1'
     }
 
 }
@@ -58,5 +59,8 @@ android {
             res.srcDirs = ['src/main/res']
             assets.srcDirs = ['src/main/assets']
         }
+    }
+    defaultConfig {
+        minSdkVersion 14
     }
 }
