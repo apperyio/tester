@@ -1,3 +1,6 @@
+release
+build
+
 *.class
 .classpath
 .project
@@ -5,3 +8,4 @@
 .idea
 .gradle
 local.properties
+gradle.properties

@@ -16,28 +16,33 @@
    under the License.
 */
 
-
-
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        google()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.1'
-    }
-
-}
-
-apply plugin: 'com.android.library'
-
 ext {
     apply from: 'cordova.gradle'
     cdvCompileSdkVersion = privateHelpers.getProjectTarget()
     cdvBuildToolsVersion = privateHelpers.findLatestInstalledBuildTools()
 }
+
+buildscript {
+    repositories {
+        maven {
+            url "https://maven.google.com"
+        }
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+group = 'org.apache.cordova'
+version = '7.1.4'
 
 android {
     compileSdkVersion cdvCompileSdkVersion
@@ -45,22 +50,88 @@ android {
     publishNonDefault true
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_6
-        targetCompatibility JavaVersion.VERSION_1_6
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     sourceSets {
         main {
-            manifest.srcFile 'src/main/AndroidManifest.xml'
-            java.srcDirs = ['src/main/java']
-            resources.srcDirs = ['src/main/resources']
-            aidl.srcDirs = ['src/main/aidl']
-            renderscript.srcDirs = ['src/main/renderscript']
-            res.srcDirs = ['src/main/res']
-            assets.srcDirs = ['src/main/assets']
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            resources.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
         }
     }
-    defaultConfig {
-        minSdkVersion 14
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+    }
+}
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                packaging 'aar'
+                name 'Cordova'
+                url 'https://cordova.apache.org'
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'stevengill'
+                        name 'Steve Gill'
+                    }
+                }
+                scm {
+                    connection 'https://git-wip-us.apache.org/repos/asf?p=cordova-android.git'
+                    developerConnection 'https://git-wip-us.apache.org/repos/asf?p=cordova-android.git'
+                    url 'https://git-wip-us.apache.org/repos/asf?p=cordova-android'
+
+                }
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    configurations = ['archives']
+    pkg {
+        repo = 'maven'
+        name = 'cordova-android'
+        userOrg = 'cordova'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://git-wip-us.apache.org/repos/asf?p=cordova-android.git'
+        websiteUrl = 'https://cordova.apache.org'
+        issueTrackerUrl = 'https://issues.apache.org/jira/browse/CB'
+        publicDownloadNumbers = true
+        licenses = ['Apache-2.0']
+        labels = ['android', 'cordova', 'phonegap']
+        version {
+            name = '7.1.4'
+            released  = new Date()
+            vcsTag = '7.1.4'
+        }
     }
 }

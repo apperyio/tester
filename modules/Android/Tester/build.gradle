@@ -1,20 +1,21 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "28.0.3"
+    compileSdkVersion 27
 
     defaultConfig {
         applicationId "io.appery.tester"
         minSdkVersion 23
-        targetSdkVersion 26
-        versionCode 46
-        versionName "4.3"
+        targetSdkVersion 27
+        versionCode 48
+        versionName "5.0"
+
         javaCompileOptions {
             annotationProcessorOptions {
                 includeCompileClasspath = true
             }
         }
+        multiDexEnabled true
     }
 
     signingConfigs {
@@ -41,15 +42,18 @@ android {
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 repositories{
+    google()
     jcenter()
     flatDir{
         dirs 'libs'
@@ -57,44 +61,61 @@ repositories{
 }
 
 dependencies {
+    implementation(project(path: ":CordovaLib"))
+
     implementation "com.android.support:appcompat-v7:$versions.support"
     implementation "com.android.support:design:$versions.support"
-    implementation project(':CordovaLib')
     implementation "com.android.support:support-v4:$versions.support"
+    implementation "com.google.android.gms:play-services-analytics:11.6.2"
+    implementation "com.google.firebase:firebase-messaging:11.6.2"
 
     //Retrofit for REST
     implementation('com.squareup.retrofit:retrofit:1.9.0') {
         exclude group: 'commons-io', module: 'commons-io'
     }
+
     implementation "com.squareup.okhttp:okhttp:$versions.okhttp"
     implementation "com.squareup.okhttp:okhttp-urlconnection:$versions.okhttp"
+
     //Logger libs
-    implementation "com.github.tony19:logback-android-core:$versions.logback"
-    implementation "com.github.tony19:logback-android-classic:$versions.logback"
+    implementation ("com.github.tony19:logback-android-core:$versions.logback") {
+        exclude group: 'com.google.android', module: 'android'
+    }
+
+    implementation ("com.github.tony19:logback-android-classic:$versions.logback") {
+        exclude group: 'com.google.android', module: 'android'
+    }
+
     implementation 'org.slf4j:slf4j-api:1.7.7'
     //Database libs
     implementation 'com.j256.ormlite:ormlite-android:4.48'
     implementation 'com.tojc.ormlite.android:ormlite-content-provider-library:1.0.2@jar'
+
     //Auto inject view
     //compileOnly "com.google.dagger:dagger:$versions.dagger"
     //annotationProcessor "com.google.dagger:dagger-compiler:$versions.dagger"
     implementation 'com.jakewharton:butterknife:7.0.1'
     //Robospice
-    implementation("com.octo.android.robospice:robospice:$versions.robospice") {
-        exclude group: 'commons-io', module: 'commons-io'
-        exclude group: 'com.squareup.okhttp', module: 'okhttp'
-    }
     implementation("com.octo.android.robospice:robospice-retrofit:$versions.robospice") {
-        exclude group: 'commons-io', module: 'commons-io'
-        exclude group: 'com.squareup.okhttp', module: 'okhttp'
+        exclude group: 'com.octo.android.robospice', module: 'robospice'
     }
-    implementation "com.octo.android.robospice:robospice-ormlite:$versions.robospice"
-    // matirial design
+    implementation("com.octo.android.robospice:robospice:$versions.robospice") {
+        exclude group: 'com.octo.android.robospice', module: 'robospice-cache'
+    }
+    implementation("com.octo.android.robospice:robospice-cache:$versions.robospice") {
+        exclude group: 'org.apache.commons', module: 'commons-io'
+    }
+    implementation ("com.octo.android.robospice:robospice-ormlite:$versions.robospice") {
+        exclude group: 'com.octo.android.robospice', module: 'robospice-cache'
+        //exclude group: 'com.squareup.okhttp', module: 'okhttp'
+    }
+
+    // material design
     implementation('com.github.afollestad.material-dialogs:core:0.8.5.2@aar') {
         transitive = true
     }
 
     implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-    implementation 'com.google.android.gms:play-services-analytics:9.8.0'
-    implementation(name:'barcodescanner', ext:'aar')
+    implementation (name:'barcodescanner-release-2.1.5', ext:'aar')
+    implementation 'commons-io:commons-io:1.3.2'
 }
