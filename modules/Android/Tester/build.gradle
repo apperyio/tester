@@ -5,10 +5,10 @@ android {
 
     defaultConfig {
         applicationId "io.appery.tester"
-        minSdkVersion 23
+        minSdkVersion 21
         targetSdkVersion 27
-        versionCode 48
-        versionName "5.0"
+        versionCode 50203
+        versionName "5.2"
 
         javaCompileOptions {
             annotationProcessorOptions {
