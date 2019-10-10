@@ -39,10 +39,11 @@ public class Project implements Entity {
     public static final String LINK_FIELD = "link_date";
     public static final String TYPE_FIELD = "type";
     public static final String DISABLED_FIELD = "disabled";
+    public static final String LIB_VERSION_FIELD = "ideLibsVersion";
     public static final String PARENT_LIST_FIELD = "parent_list";
 
     public static final String[] PROJECT_LIST_FRAGMENT_PROJECTION = new String[]{Project._ID,
-            GUID_FIELD, NAME_FIELD, OWNER_FIELD, LAST_EDIT_DATE_FIELD, DISABLED_FIELD, TYPE_FIELD
+            GUID_FIELD, NAME_FIELD, OWNER_FIELD, LAST_EDIT_DATE_FIELD, DISABLED_FIELD, TYPE_FIELD, LIB_VERSION_FIELD
     };
     public static final String PROJECT_LIST_FRAGMENT_WHERE = DISABLED_FIELD + " = 0 ";
 
@@ -82,6 +83,10 @@ public class Project implements Entity {
     @DatabaseField(columnName = TYPE_FIELD)
     private int type;
 
+    @SerializedName(LIB_VERSION_FIELD)
+    @DatabaseField(columnName = LIB_VERSION_FIELD)
+    private String libVersion;
+
     @SerializedName(DISABLED_FIELD)
     @DatabaseField(columnName = DISABLED_FIELD)
     private boolean disabled;
@@ -95,6 +100,12 @@ public class Project implements Entity {
     public Project(String name, String guid) {
         this.name = name;
         this.guid = guid;
+    }
+
+    public Project(String name, String guid, int type, String libVersion) {
+        this(name, guid);
+        this.type = type;
+        this.libVersion = libVersion;
     }
 
     public String getGuid() {
@@ -151,6 +162,10 @@ public class Project implements Entity {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public String getLibVersion() {
+        return libVersion;
     }
 
     public String getResourcesLink() {

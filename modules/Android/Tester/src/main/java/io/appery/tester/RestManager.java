@@ -53,10 +53,10 @@ public class RestManager {
         holder.getSpiceManager().execute(new GetProjectsRequest(), Project.class.getSimpleName(), DurationInMillis.ALWAYS_EXPIRED, listener);
     }
 
-    public static void getProjectFile(Context context, String url) {
+    public static void getProjectFile(Context context, Project project, String url) {
         SpiceHolder holder = (SpiceHolder) context;
         String cUrl = TesterSpiceEndpoint.getBaseIdpUrl() + url;
-        ProjectFileRequest request = new ProjectFileRequest(context, DialogHelper.buildDownloadProjectDialog(context), cUrl);
+        ProjectFileRequest request = new ProjectFileRequest(context, project, DialogHelper.buildDownloadProjectDialog(context), cUrl);
         holder.getSpiceManager().removeDataFromCache(InputStream.class);
         holder.getSpiceManager().execute(request, "PROJECT_FILE_ZIP", DurationInMillis.ALWAYS_EXPIRED, request);
     }
@@ -64,7 +64,7 @@ public class RestManager {
     public static void getProjectFileByCode(Context context, String code) {
         SpiceHolder holder = (SpiceHolder) context;
         String cUrl = TesterSpiceEndpoint.getBaseUrl() + String.format(Constants.API.GET_PROJECT_RESOURCE_BY_CODE, Uri.encode(code));
-        ProjectFileRequest request = new ProjectFileRequest(context, DialogHelper.buildDownloadProjectDialog(context), cUrl);
+        ProjectFileRequest request = new ProjectFileRequest(context, null, DialogHelper.buildDownloadProjectDialog(context), cUrl);
         holder.getSpiceManager().removeDataFromCache(InputStream.class);
         holder.getSpiceManager().execute(request, "PROJECT_FILE_ZIP", DurationInMillis.ALWAYS_EXPIRED, request);
     }

@@ -9,10 +9,12 @@ package io.appery.tester.db.entity;
  * Created by Alexandr.Salin on 12/7/15.
  */
 public enum ProjectType {
-    MOBILE(1),
+    JQM(1),
     METRO(6),
     ANGULAR(7),
-    ANGULAR_IONIC(8);
+    ANGULAR_IONIC(8),
+    IONIC3(9),
+    IONIC4(10);
 
     private final int id;
 
@@ -25,24 +27,11 @@ public enum ProjectType {
     }
 
     public static ProjectType get(int value) {
-        ProjectType result = MOBILE;
-        switch (value) {
-            case 8: {
-                result = ANGULAR_IONIC;
-                break;
+        for (ProjectType projectType: ProjectType.values()) {
+            if (projectType.id == value) {
+                return projectType;
             }
-            case 7: {
-                result = ANGULAR;
-                break;
-            }
-            case 6: {
-                result = METRO;
-                break;
-            }
-            case 1:
-            default:
-                result = MOBILE;
         }
-        return result;
+        return JQM;
     }
 }

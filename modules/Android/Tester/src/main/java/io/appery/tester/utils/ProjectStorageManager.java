@@ -9,20 +9,19 @@ import io.appery.tester.TesterApplication;
 
 public class ProjectStorageManager {
 
-    public static String getBase_DIR() {
-        return StorageUtils.getCacheDirectory(TesterApplication.getInstance()).getAbsolutePath();
+    public static File getBase_DIR() {
+        return StorageUtils.getCacheDirectory(TesterApplication.getInstance()).getAbsoluteFile();
     }
 
-    public static String getPROJECT_ZIP_FILE() {
-        String result = getBase_DIR() + "/arch/";
-        File dir = new File(result);
+    public static File getPROJECT_ZIP_FILE() {
+        File dir = new File(getBase_DIR(), "arch");
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        return result + Constants.FILENAME_ZIP;
+        return new File(dir, Constants.FILENAME_ZIP);
     }
 
-    public static String getWORK_DIRECTORY() {
-        return getBase_DIR() + "/project";
+    public static File getWORK_DIRECTORY() {
+        return new File(getBase_DIR(), "project");
     }
 }

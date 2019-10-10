@@ -54,8 +54,10 @@ public class ProjectListFragment extends BaseFragment implements RequestListener
         Cursor cursor = (Cursor) list.getItemAtPosition(position);
         String name = cursor.getString(cursor.getColumnIndexOrThrow(Project.NAME_FIELD));
         String guid = cursor.getString(cursor.getColumnIndexOrThrow(Project.GUID_FIELD));
-        Project project = new Project(name, guid);
-        RestManager.getProjectFile(getContext(), project.getResourcesLink());
+        int type = cursor.getInt(cursor.getColumnIndexOrThrow(Project.TYPE_FIELD));
+        String libVersion = cursor.getString(cursor.getColumnIndexOrThrow(Project.LIB_VERSION_FIELD));
+        Project project = new Project(name, guid, type, libVersion);
+        RestManager.getProjectFile(getContext(), project, project.getResourcesLink());
     }
 
     @Override

@@ -56,17 +56,21 @@ public class ProjectsAdapter extends CursorAdapter {
 
     private void setupLogo(ImageView logo, int type) {
         switch (ProjectType.get(type)) {
-            case METRO:
-                logo.setImageResource(R.drawable.ic_bootstrap);
+            case JQM:
+                logo.setImageResource(R.drawable.ic_jqm);
                 break;
+            case METRO:
             case ANGULAR:
                 logo.setImageResource(R.drawable.ic_bootstrap);
                 break;
             case ANGULAR_IONIC:
                 logo.setImageResource(R.drawable.ic_ionic);
                 break;
-            case MOBILE:
-                logo.setImageResource(R.drawable.ic_jqm);
+            case IONIC3:
+                logo.setImageResource(R.drawable.ic_ionic3);
+                break;
+            case IONIC4:
+                logo.setImageResource(R.drawable.ic_ionic4);
                 break;
         }
     }

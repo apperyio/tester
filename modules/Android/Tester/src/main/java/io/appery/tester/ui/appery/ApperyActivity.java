@@ -30,8 +30,8 @@ public class ApperyActivity extends CordovaActivity {
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-
-        loadUrl("file://" + getStartFileName());
+        loadUrl(launchUrl);
+//        loadUrl("file://" + getStartFileName());
     }
 
     @Override
@@ -52,7 +52,7 @@ public class ApperyActivity extends CordovaActivity {
     }
 
     private String getStartFileName() {
-        String path = ProjectStorageManager.getWORK_DIRECTORY();
+        File path = ProjectStorageManager.getWORK_DIRECTORY();
         String fileName = "index.html";
 
         File descriptor = new File(path, "descriptor.txt");

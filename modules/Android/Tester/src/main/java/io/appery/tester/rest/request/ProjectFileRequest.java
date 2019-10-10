@@ -10,6 +10,9 @@ import com.octo.android.robospice.request.ProgressByteProcessor;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.octo.android.robospice.request.simple.BinaryRequest;
 
+import io.appery.tester.db.entity.Project;
+import io.appery.tester.db.entity.ProjectType;
+import io.appery.tester.utils.CordovaUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -38,19 +41,16 @@ public class ProjectFileRequest extends BinaryRequest implements RequestListener
 
     protected File cacheFile;
     private Context context;
+    private Project project;
     private MaterialDialog dialog;
-    private Map<String, String> CORDOVA_RESOURCES;
     private static final String DEBUG_OFF_SERVICE_PARAM = "debug=false";
 
-    public ProjectFileRequest(Context ctx, MaterialDialog dialog, final String url) {
+    public ProjectFileRequest(Context ctx, Project project, MaterialDialog dialog, final String url) {
         super(url + "?" + DEBUG_OFF_SERVICE_PARAM);
         this.dialog = dialog;
-        this.cacheFile = new File(ProjectStorageManager.getPROJECT_ZIP_FILE());
+        this.cacheFile = ProjectStorageManager.getPROJECT_ZIP_FILE();
         this.context = ctx;
-        CORDOVA_RESOURCES = new HashMap<String, String>();
-        CORDOVA_RESOURCES.put("cordova_resources.zip", "/files/resources/lib/");
-        CORDOVA_RESOURCES.put("cordova_resources_3.0.zip", "/libs/");
-        CORDOVA_RESOURCES.put("cordova_resources_3.1.zip", "/");
+        this.project = project;
     }
 
     @Override
@@ -105,9 +105,9 @@ public class ProjectFileRequest extends BinaryRequest implements RequestListener
         String fName = getCacheFile().getName();
         if (Constants.FILENAME_ZIP.equals(fName)) {
             // Unzip
-            String dirPath = ProjectStorageManager.getWORK_DIRECTORY();
+            File dirPath = ProjectStorageManager.getWORK_DIRECTORY();
             try {
-                FileUtils.checkDir(dirPath);
+                FileUtils.prepareDirectory(dirPath);
                 FileUtils.clearDirectory(dirPath);
 
                 // Add .nomedia file to exclude project images from Gallery
@@ -121,7 +121,13 @@ public class ProjectFileRequest extends BinaryRequest implements RequestListener
                 }
 
                 FileUtils.unzip(ProjectStorageManager.getPROJECT_ZIP_FILE(), dirPath);
-                replaceCordovaResources(dirPath);
+
+                if (this.project == null) {
+                    CordovaUtils.prepareAllCordovaResources(context, dirPath);
+                } else {
+                    String cordovaVersion = CordovaUtils.getCordovaVersion(project.getType(), project.getLibVersion());
+                    CordovaUtils.prepareCordovaResources(context, cordovaVersion, dirPath);
+                }
                 Intent intent = new Intent(context, ApperyActivity.class);
                 context.startActivity(intent);
             } catch (IOException e) {
@@ -131,19 +137,4 @@ public class ProjectFileRequest extends BinaryRequest implements RequestListener
         dialog.dismiss();
     }
 
-    private void replaceCordovaResources(String dirPath) {
-        for (String archive : this.CORDOVA_RESOURCES.keySet()) {
-            String path = dirPath + this.CORDOVA_RESOURCES.get(archive);
-            String cordovaArchiveFullPath = path + archive;
-
-            FileUtils.checkDir(path);
-            FileUtils.copyAsset(context, archive, cordovaArchiveFullPath);
-            try {
-                FileUtils.unzip(cordovaArchiveFullPath, path);
-                FileUtils.removeFile(cordovaArchiveFullPath);
-            } catch (IOException e) {
-                CommonUtil.showToast(context.getString(R.string.preview_error_toast));
-            }
-        }
-    }
 }

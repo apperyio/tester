@@ -26,14 +26,12 @@ public class FileUtils {
     /**
      * This method allow to unzip file from <code>zipPath</code> to <code>destPath</code>
      * 
-     * @param zipPath
-     * @param destPath
+     * @param zipFile
+     * @param destDir
      * @throws IOException
      */
-    public static final void unzip(String zipPath, String destPath) throws IOException {
+    public static final void unzip(File zipFile, File destDir) throws IOException {
         // source zip file
-        File zipFile = new File(zipPath);
-
         FileInputStream fis = new FileInputStream(zipFile);
         ZipInputStream zis = new ZipInputStream(fis);
 
@@ -42,10 +40,10 @@ public class FileUtils {
         while ((zipEntry = zis.getNextEntry()) != null) {
             String name = zipEntry.getName();
             if (zipEntry.isDirectory()) {
-                checkDir(name);
+                prepareDirectory(new File(destDir, name));
             } else {
-                File fileOut = new File(destPath, name);
-                checkDir(fileOut.getParent());
+                File fileOut = new File(destDir, name);
+                prepareDirectory(fileOut.getParentFile());
                 FileOutputStream fout = new FileOutputStream(fileOut);
                 byte[] buffer = new byte[1024];
                 int len1 = 0;
@@ -78,12 +76,10 @@ public class FileUtils {
 
     /**
      * This function helps to create folder in <code>dirPath</code>
-     * 
-     * @param dirPath
+     *
+     * @param dir
      */
-    public static void checkDir(String dirPath) {
-        File dir = new File(dirPath);
-
+    public static void prepareDirectory(File dir) {
         if (!dir.exists()) {
             dir.mkdirs();
         }
@@ -94,34 +90,31 @@ public class FileUtils {
      *
      * @throws IOException
      */
-    public static final void clearDirectory(String dirPath) throws IOException {
-        if (dirPath != null) {
-            File dir = new File(dirPath);
+    public static void clearDirectory(File dir) throws IOException {
             if (!dir.isDirectory()) {
                 return;
             }
             for (File file : dir.listFiles()) {
                 if (file.isDirectory()) {
-                    clearDirectory(file.getPath());
+                    clearDirectory(file.getAbsoluteFile());
                 } else {
                     file.delete();
                 }
             }
             dir.delete();
-        }
     }
 
     /**
      * Copy asset to file.
      * 
      * @param assetName
-     * @param destFileName
+     * @param destFile
      * @throws IOException
      */
-    public static final void copyAsset(Context ctx, String assetName, String destFileName) {
+    public static void copyAsset(Context ctx, String assetName, File destFile) {
         try {
             InputStream in = ctx.getAssets().open(assetName);
-            OutputStream out = new FileOutputStream(new File(destFileName));
+            OutputStream out = new FileOutputStream(destFile);
 
             byte[] buf = new byte[1024];
             int len;
@@ -139,16 +132,15 @@ public class FileUtils {
         }
     }
     
-    public static final void removeFile(String path){
-    	File file = new File(path);
+    public static final void removeFile(File file){
     	if(file.exists()){
     		if(!file.delete()){
-    			Log.e(TAG,"Can't delete file  "+path);
+    			Log.e(TAG,"Can't delete file  "+file);
     		}else{
-    			Log.d(TAG,"File  "+path+" was deleted successfully");
+    			Log.d(TAG,"File  "+file+" was deleted successfully");
     		}
-    	}else{
-    		Log.e(TAG,"File "+path+" doesn't exist");
+    	} else {
+    		Log.e(TAG,"File "+file+" doesn't exist");
     	}
     	
     }
