@@ -82,9 +82,11 @@ public class ApperyActivity extends CordovaActivity {
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         boolean result = super.onKeyUp(keyCode, event);
         // End activity if return to projects list
-        if (result) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Log.d(TAG, "Finish activity");
             finish();
         }
         return result;
     }
+
 }

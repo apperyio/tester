@@ -583,7 +583,10 @@ public class CordovaWebViewImpl implements CordovaWebView {
                             eventName = "menubutton";
                             break;
                         case KeyEvent.KEYCODE_BACK:
-                            eventName = "backbutton";
+                            long btnPressTime = event.getEventTime() - event.getDownTime();
+                            if (btnPressTime < 3000) {
+                                eventName = "backbutton";
+                            }
                             break;
                     }
                     if (eventName != null) {
