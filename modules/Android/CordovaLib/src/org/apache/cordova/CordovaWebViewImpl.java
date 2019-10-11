@@ -555,6 +555,10 @@ public class CordovaWebViewImpl implements CordovaWebView {
         public Boolean onDispatchKeyEvent(KeyEvent event) {
             int keyCode = event.getKeyCode();
             boolean isBackButton = keyCode == KeyEvent.KEYCODE_BACK;
+            long btnPressTime = event.getEventTime() - event.getDownTime();
+            if (btnPressTime >= 2000) {
+                return null;
+            }
             if (event.getAction() == KeyEvent.ACTION_DOWN) {
                 if (isBackButton && mCustomView != null) {
                     return true;
@@ -583,10 +587,7 @@ public class CordovaWebViewImpl implements CordovaWebView {
                             eventName = "menubutton";
                             break;
                         case KeyEvent.KEYCODE_BACK:
-                            long btnPressTime = event.getEventTime() - event.getDownTime();
-                            if (btnPressTime < 3000) {
-                                eventName = "backbutton";
-                            }
+                            eventName = "backbutton";
                             break;
                     }
                     if (eventName != null) {

@@ -10,7 +10,6 @@ import org.apache.cordova.CordovaWebViewEngine;
 import org.apache.cordova.engine.SystemWebViewEngine;
 
 import io.appery.tester.R;
-import io.appery.tester.db.entity.ProjectType;
 import io.appery.tester.utils.CommonUtil;
 
 /**
@@ -24,12 +23,7 @@ public class ApperyActivity extends CordovaActivity {
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         loadUrl(launchUrl);
-        if (this.getIntent().hasExtra("project_type")) {
-            ProjectType projectType = ProjectType.get(this.getIntent().getIntExtra("project_type", ProjectType.JQM.getId()));
-            if (projectType == ProjectType.IONIC4) {
-                CommonUtil.showMessage(this.getBaseContext(), this.getBaseContext().getString(R.string.stop_an_app_toast));
-            }
-        }
+        CommonUtil.showMessage(this.getBaseContext(), this.getBaseContext().getString(R.string.stop_an_app_toast));
     }
 
     @Override
