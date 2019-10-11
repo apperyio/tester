@@ -18,9 +18,9 @@
 */
 package org.apache.cordova.camera;
 
-import java.io.IOException;
-
 import android.media.ExifInterface;
+
+import java.io.IOException;
 
 public class ExifHelper {
     private String aperture = null;

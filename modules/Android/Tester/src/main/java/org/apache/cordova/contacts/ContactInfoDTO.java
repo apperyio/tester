@@ -19,10 +19,10 @@
 
 package org.apache.cordova.contacts;
 
-import java.util.HashMap;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.HashMap;
 
 public class ContactInfoDTO {
 

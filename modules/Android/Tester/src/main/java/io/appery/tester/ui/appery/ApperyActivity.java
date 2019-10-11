@@ -1,8 +1,5 @@
 package io.appery.tester.ui.appery;
 
-import android.app.ActivityManager;
-import android.content.Context;
-import android.content.pm.ConfigurationInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -12,13 +9,9 @@ import org.apache.cordova.CordovaActivity;
 import org.apache.cordova.CordovaWebViewEngine;
 import org.apache.cordova.engine.SystemWebViewEngine;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-
-import io.appery.tester.utils.ProjectStorageManager;
+import io.appery.tester.R;
+import io.appery.tester.db.entity.ProjectType;
+import io.appery.tester.utils.CommonUtil;
 
 /**
  * @author Daniel Lukashevich
@@ -31,7 +24,12 @@ public class ApperyActivity extends CordovaActivity {
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         loadUrl(launchUrl);
-//        loadUrl("file://" + getStartFileName());
+        if (this.getIntent().hasExtra("project_type")) {
+            ProjectType projectType = ProjectType.get(this.getIntent().getIntExtra("project_type", ProjectType.JQM.getId()));
+            if (projectType == ProjectType.IONIC4) {
+                CommonUtil.showMessage(this.getBaseContext(), this.getBaseContext().getString(R.string.stop_an_app_toast));
+            }
+        }
     }
 
     @Override
@@ -49,30 +47,6 @@ public class ApperyActivity extends CordovaActivity {
     @Override
     public void onReceivedError(int errorCode, String description, String failingUrl) {
         Log.e(TAG, "An error received: \"" + description + "\" at '" + failingUrl + "'");
-    }
-
-    private String getStartFileName() {
-        File path = ProjectStorageManager.getWORK_DIRECTORY();
-        String fileName = "index.html";
-
-        File descriptor = new File(path, "descriptor.txt");
-        if (descriptor.exists()) {
-            try {
-                FileInputStream fstream = new FileInputStream(descriptor);
-                // Get the object of DataInputStream
-                DataInputStream in = new DataInputStream(fstream);
-                BufferedReader br = new BufferedReader(new InputStreamReader(in));
-                String strLine = br.readLine();
-                if (strLine != null) {
-                    fileName = strLine.trim();
-                }
-                in.close();
-            } catch (Exception e) {
-                Log.e(TAG, "Can't define start file name", e);
-            }
-        }
-
-        return path + File.separator + fileName;
     }
 
     /* (non-Javadoc)

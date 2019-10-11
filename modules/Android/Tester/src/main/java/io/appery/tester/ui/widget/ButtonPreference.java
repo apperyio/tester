@@ -1,6 +1,5 @@
 package io.appery.tester.ui.widget;
 
-import io.appery.tester.R;
 import android.content.Context;
 import android.preference.Preference;
 import android.util.AttributeSet;
@@ -9,6 +8,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+
+import io.appery.tester.R;
 
 /**
  * Button custom preference.

@@ -20,6 +20,11 @@ package org.apache.cordova.file;
 
 import android.net.Uri;
 
+import org.apache.cordova.CordovaResourceApi;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilterInputStream;
@@ -28,11 +33,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import org.apache.cordova.CordovaResourceApi;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public abstract class Filesystem {
 

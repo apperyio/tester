@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.List;
 
 import io.appery.tester.TesterApplication;
-import retrofit.client.Header;
 
 /**
  * Created by Maxim Balyaba on 14.07.2015.

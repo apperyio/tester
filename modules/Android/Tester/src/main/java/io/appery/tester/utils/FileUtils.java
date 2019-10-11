@@ -1,5 +1,8 @@
 package io.appery.tester.utils;
 
+import android.content.Context;
+import android.util.Log;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,9 +13,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import android.content.Context;
-import android.util.Log;
 
 /**
  * Use this class to work with files, directories and zip files.<BR/>

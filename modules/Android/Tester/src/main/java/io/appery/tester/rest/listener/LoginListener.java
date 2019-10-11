@@ -5,11 +5,11 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.appery.tester.Constants;
 import io.appery.tester.R;
 import io.appery.tester.RestManager;
 import io.appery.tester.TesterApplication;
 import io.appery.tester.ui.login.callback.AuthCallback;
-import io.appery.tester.Constants;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;

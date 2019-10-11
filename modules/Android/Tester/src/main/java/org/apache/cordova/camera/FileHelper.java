@@ -19,7 +19,6 @@ package org.apache.cordova.camera;
 import android.annotation.SuppressLint;
 import android.content.ContentUris;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -29,7 +28,6 @@ import android.provider.MediaStore;
 import android.webkit.MimeTypeMap;
 
 import org.apache.cordova.CordovaInterface;
-import org.apache.cordova.LOG;
 
 import java.io.FileInputStream;
 import java.io.IOException;

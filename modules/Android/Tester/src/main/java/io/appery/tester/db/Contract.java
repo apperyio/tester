@@ -7,7 +7,6 @@ import java.util.Map;
 
 import io.appery.tester.db.entity.Project;
 import io.appery.tester.db.entity.ProjectsCollection;
-import io.appery.tester.db.entity.User;
 
 /**
  * Created by Alexandr.Salin on 12/6/15.

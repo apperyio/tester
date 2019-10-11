@@ -1,14 +1,16 @@
 package io.appery.tester.utils;
 
 import android.content.Context;
-import io.appery.tester.R;
-import io.appery.tester.db.entity.ProjectType;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import io.appery.tester.R;
+import io.appery.tester.db.entity.ProjectType;
 
 public class CordovaUtils {
 

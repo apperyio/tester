@@ -23,7 +23,6 @@ import android.net.Uri;
 
 import org.apache.cordova.CordovaResourceApi;
 import org.apache.cordova.LOG;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 

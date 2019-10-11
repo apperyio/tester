@@ -1,10 +1,5 @@
 package io.appery.tester.ui.preferences;
 
-import android.view.Window;
-
-import io.appery.tester.R;
-import io.appery.tester.ui.widget.ButtonPreference;
-import io.appery.tester.Constants;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -15,6 +10,11 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Window;
+
+import io.appery.tester.Constants;
+import io.appery.tester.R;
+import io.appery.tester.ui.widget.ButtonPreference;
 
 public class PreferencesActivity extends PreferenceActivity implements OnPreferenceChangeListener, OnPreferenceClickListener {
 

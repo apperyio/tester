@@ -10,9 +10,6 @@ import com.octo.android.robospice.request.ProgressByteProcessor;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.octo.android.robospice.request.simple.BinaryRequest;
 
-import io.appery.tester.db.entity.Project;
-import io.appery.tester.db.entity.ProjectType;
-import io.appery.tester.utils.CordovaUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -21,14 +18,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import io.appery.tester.Constants;
 import io.appery.tester.R;
 import io.appery.tester.TesterApplication;
+import io.appery.tester.db.entity.Project;
 import io.appery.tester.ui.appery.ApperyActivity;
 import io.appery.tester.utils.CommonUtil;
+import io.appery.tester.utils.CordovaUtils;
 import io.appery.tester.utils.FileUtils;
 import io.appery.tester.utils.ProjectStorageManager;
 import retrofit.RetrofitError;
@@ -129,6 +126,7 @@ public class ProjectFileRequest extends BinaryRequest implements RequestListener
                     CordovaUtils.prepareCordovaResources(context, cordovaVersion, dirPath);
                 }
                 Intent intent = new Intent(context, ApperyActivity.class);
+                intent.putExtra("project_type", project.getType().getId());
                 context.startActivity(intent);
             } catch (IOException e) {
                 CommonUtil.showToast(context.getString(R.string.preview_error_toast));

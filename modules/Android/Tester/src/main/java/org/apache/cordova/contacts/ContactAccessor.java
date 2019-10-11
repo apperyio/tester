@@ -16,15 +16,13 @@
 
 package org.apache.cordova.contacts;
 
-import java.util.HashMap;
-
-import android.Manifest;
-import android.content.pm.PackageManager;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.LOG;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
 
 /**
  * This abstract class defines SDK-independent API for communication with

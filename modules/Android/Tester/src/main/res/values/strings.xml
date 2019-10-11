@@ -58,6 +58,7 @@
     <string name="preview_error_toast">Not able to open preview. Try again later.</string>
     <string name="preview_by_code_not_found_error_toast">No app is associated with this code.</string>
     <string name="preview_by_code_expired_error_toast">The code you have entered has expired or no longer valid.</string>
+    <string name="stop_an_app_toast">Push Back button for 3 seconds to stop this App.</string>
     
     <!-- PREFERENCES CATEGORIES -->
     <string name="authorization_pc">Authorization</string>
