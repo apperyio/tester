@@ -1,6 +1,7 @@
 package io.appery.tester.utils;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,11 +15,13 @@ import io.appery.tester.db.entity.ProjectType;
 
 public class CordovaUtils {
 
+  private static final String TAG = "CordovaUtils";
   private static final String CORDOVA_4_1_1 = "4.1.1";
   private static final String CORDOVA_5_2_2 = "5.2.2";
   private static final String CORDOVA_7_1_4 = "7.1.4";
+  private static final String CORDOVA_7_1_4_LIBS = "7.1.4-libs";
   private static final String CORDOVA_8_0_0 = "8.0.0";
-  private static final String CORDOVA_8_0_0_IONIC = "8.0.0-ionic";
+  private static final String CORDOVA_8_1_0 = "8.0.0-ionic";
   private static final String CORDOVA_LATEST = CORDOVA_8_0_0;
   private static final Map<ProjectType, Map<String, String>> CORDOVA_VERSIONS;
   private static Map<String, CordovaAssetsData> CORDOVA_ASSETS_META;
@@ -27,7 +30,7 @@ public class CordovaUtils {
     CORDOVA_VERSIONS = new HashMap<>();
 
     Map<String, String> jqm = new HashMap<>();
-    jqm.put("v4.1", CORDOVA_7_1_4);
+    jqm.put("v4.1", CORDOVA_7_1_4_LIBS);
     jqm.put("v5.0", CORDOVA_7_1_4);
     jqm.put("v5.1", CORDOVA_8_0_0);
     CORDOVA_VERSIONS.put(ProjectType.JQM, jqm);
@@ -35,19 +38,19 @@ public class CordovaUtils {
     Map<String, String> angular = new HashMap<>();
     angular.put("v1.1", CORDOVA_4_1_1);
     angular.put("v1.2", CORDOVA_5_2_2);
-    angular.put("v1.3", CORDOVA_7_1_4);
+    angular.put("v1.3", CORDOVA_7_1_4_LIBS);
     angular.put("v2.0", CORDOVA_7_1_4);
     angular.put("v2.1", CORDOVA_8_0_0);
     CORDOVA_VERSIONS.put(ProjectType.ANGULAR, angular);
     CORDOVA_VERSIONS.put(ProjectType.ANGULAR_IONIC, angular);
 
     Map<String, String> ionic3 = new HashMap<>();
-    ionic3.put("v1.0", CORDOVA_8_0_0_IONIC);
+    ionic3.put("v1.0", CORDOVA_8_1_0);
     CORDOVA_VERSIONS.put(ProjectType.IONIC3, ionic3);
 
     Map<String, String> ionic4 = new HashMap<>();
-    ionic4.put("v1.0", CORDOVA_8_0_0_IONIC);
-    ionic4.put("v1.1", CORDOVA_8_0_0_IONIC);
+    ionic4.put("v1.0", CORDOVA_8_1_0);
+    ionic4.put("v1.1", CORDOVA_8_1_0);
     CORDOVA_VERSIONS.put(ProjectType.IONIC4, ionic4);
   }
 
@@ -55,9 +58,12 @@ public class CordovaUtils {
     Map<String, String> versionsMap = CORDOVA_VERSIONS.get(projectType);
     if (versionsMap != null && libVersion != null) {
       if (versionsMap.containsKey(libVersion)) {
-        return versionsMap.get(libVersion);
+        String version = versionsMap.get(libVersion);
+        Log.d(TAG, "Prepare Cordova " + version + " for " + projectType + " project " + libVersion);
+        return version;
       }
     }
+    Log.d(TAG, "Prepare latest Cordova for " + projectType + " project " + libVersion);
     return CORDOVA_LATEST;
   }
 
@@ -93,11 +99,12 @@ public class CordovaUtils {
   static Map<String, CordovaAssetsData> getCordovaAssetsMeta() {
     if (CORDOVA_ASSETS_META == null) {
       CORDOVA_ASSETS_META = new LinkedHashMap<>();
-      CORDOVA_ASSETS_META.put(CORDOVA_4_1_1, new CordovaAssetsData("cordova_resources_4_1_1.zip", "/files/resources/lib/"));
-      CORDOVA_ASSETS_META.put(CORDOVA_5_2_2, new CordovaAssetsData("cordova_resources_5_2_2.zip", "/libs/"));
+      CORDOVA_ASSETS_META.put(CORDOVA_4_1_1, new CordovaAssetsData("cordova_resources_4_1_1.zip", "/libs"));
+      CORDOVA_ASSETS_META.put(CORDOVA_5_2_2, new CordovaAssetsData("cordova_resources_5_2_2.zip", "/libs"));
       CORDOVA_ASSETS_META.put(CORDOVA_7_1_4, new CordovaAssetsData("cordova_resources_7_1_4.zip", "/"));
+      CORDOVA_ASSETS_META.put(CORDOVA_7_1_4_LIBS, new CordovaAssetsData("cordova_resources_7_1_4.zip", "/libs"));
       CORDOVA_ASSETS_META.put(CORDOVA_8_0_0, new CordovaAssetsData("cordova_resources_8_0_0.zip", "/"));
-      CORDOVA_ASSETS_META.put(CORDOVA_8_0_0_IONIC, new CordovaAssetsData("cordova_resources_8_0_0_ionic.zip", "/"));
+      CORDOVA_ASSETS_META.put(CORDOVA_8_1_0, new CordovaAssetsData("cordova_resources_8_1_0.zip", "/"));
     }
     return  CORDOVA_ASSETS_META;
   }
