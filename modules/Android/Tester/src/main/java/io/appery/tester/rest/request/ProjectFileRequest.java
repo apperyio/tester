@@ -50,7 +50,8 @@ public class ProjectFileRequest extends BinaryRequest implements RequestListener
         CORDOVA_RESOURCES = new HashMap<String, String>();
         CORDOVA_RESOURCES.put("cordova_resources.zip", "/files/resources/lib/");
         CORDOVA_RESOURCES.put("cordova_resources_3.0.zip", "/libs/");
-        CORDOVA_RESOURCES.put("cordova_resources_3.1.zip", "/");
+//        CORDOVA_RESOURCES.put("cordova_resources_3.1.zip", "/");
+        CORDOVA_RESOURCES.put("cordova_resources_8.1.zip", "/");
     }
 
     @Override

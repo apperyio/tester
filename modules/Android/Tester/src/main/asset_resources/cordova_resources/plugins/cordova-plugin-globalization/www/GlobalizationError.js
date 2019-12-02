@@ -1,4 +1,5 @@
-cordova.define("cordova-plugin-globalization.GlobalizationError", function(require, exports, module) { /*
+cordova.define("cordova-plugin-globalization.GlobalizationError", function(require, exports, module) {
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,7 +20,6 @@ cordova.define("cordova-plugin-globalization.GlobalizationError", function(requi
  *
 */
 
-
 /**
  * Globalization error object
  *
@@ -27,7 +27,7 @@ cordova.define("cordova-plugin-globalization.GlobalizationError", function(requi
  * @param code
  * @param message
  */
-var GlobalizationError = function(code, message) {
+var GlobalizationError = function (code, message) {
     this.code = code || null;
     this.message = message || '';
 };

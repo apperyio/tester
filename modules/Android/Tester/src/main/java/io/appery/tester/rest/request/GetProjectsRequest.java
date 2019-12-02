@@ -1,5 +1,7 @@
 package io.appery.tester.rest.request;
 
+import android.util.Log;
+
 import io.appery.tester.db.PersistenceFacade;
 import io.appery.tester.db.entity.Project;
 import io.appery.tester.db.entity.ProjectsCollection;
@@ -29,7 +31,8 @@ public class GetProjectsRequest extends BaseRequest<ProjectsCollection, IWebApi>
         try {
             PersistenceFacade.getInstance().cleanTable(Project.class);
             PersistenceFacade.getInstance().cleanTable(ProjectsCollection.class);
-        } catch (Exception ignore) {
+        } catch (Exception e) {
+            Log.e("GetProjectsRequest", "cleanProjects", e);
         }
     }
 }

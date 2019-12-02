@@ -1,7 +1,17 @@
-cordova.define("cordova-plugin-google-analytics.UniversalAnalytics", function(require, exports, module) { function UniversalAnalyticsPlugin() {}
+cordova.define("cordova-plugin-google-analytics.UniversalAnalytics", function(require, exports, module) {
+function UniversalAnalyticsPlugin() {}
 
-UniversalAnalyticsPlugin.prototype.startTrackerWithId = function(id, success, error) {
-  cordova.exec(success, error, 'UniversalAnalytics', 'startTrackerWithId', [id]);
+UniversalAnalyticsPlugin.prototype.startTrackerWithId = function(id, dispatchPeriod, success, error) {
+  if (typeof dispatchPeriod === 'undefined' || dispatchPeriod === null) {
+    dispatchPeriod = 30;
+  } else if (typeof dispatchPeriod === 'function' && typeof error === 'undefined') {
+    // Called without dispatchPeriod but with a callback.
+    // Looks like the original API was used so shift parameters over to remain compatible.
+    error = success;
+    success = dispatchPeriod;
+    dispatchPeriod = 30;
+  }  
+  cordova.exec(success, error, 'UniversalAnalytics', 'startTrackerWithId', [id, dispatchPeriod]);
 };
 
 UniversalAnalyticsPlugin.prototype.setAllowIDFACollection = function(enable, success, error) {
@@ -16,8 +26,24 @@ UniversalAnalyticsPlugin.prototype.setAnonymizeIp = function(anonymize, success,
   cordova.exec(success, error, 'UniversalAnalytics', 'setAnonymizeIp', [anonymize]);
 };
 
+UniversalAnalyticsPlugin.prototype.setOptOut = function(optout, success, error) {
+  cordova.exec(success, error, 'UniversalAnalytics', 'setOptOut', [optout]);
+};
+
 UniversalAnalyticsPlugin.prototype.setAppVersion = function(version, success, error) {
   cordova.exec(success, error, 'UniversalAnalytics', 'setAppVersion', [version]);
+};
+
+UniversalAnalyticsPlugin.prototype.getVar = function(variable, success, error) {
+  cordova.exec(success, error, 'UniversalAnalytics', 'getVar', [variable]);
+};
+
+UniversalAnalyticsPlugin.prototype.setVar = function(variable, value, success, error) {
+  cordova.exec(success, error, 'UniversalAnalytics', 'setVar', [variable, value]);
+};
+
+UniversalAnalyticsPlugin.prototype.dispatch = function(success, error) {
+  cordova.exec(success, error, 'UniversalAnalytics', 'dispatch', []);
 };
 
 /* enables verbose logging */
@@ -26,22 +52,42 @@ UniversalAnalyticsPlugin.prototype.debugMode = function(success, error) {
 };
 
 UniversalAnalyticsPlugin.prototype.trackMetric = function(key, value, success, error) {
-  cordova.exec(success, error, 'UniversalAnalytics', 'trackMetric', [key, value]);
+  // as key was formerly documented to be of type string, 
+  // we need to at least accept string formatted numbers and pass the converted number
+  var numberKey = key;
+  if (typeof key === "string") {
+    numberKey = Number.parseInt(key);
+    if (isNaN(numberKey)) {
+      throw Error("key must be a valid integer or string formatted integer");
+    }
+  }
+
+  // as value was formerly documented to be of type string
+  // and therefore platform implementations expect value parameter of type string,
+  // we need to cast the value parameter to string - although gathered metrics are infact number types.
+  var stringValue = value || "";
+  if (typeof stringValue !== "string") {
+    stringValue = String(value);
+  }
+  cordova.exec(success, error, 'UniversalAnalytics', 'trackMetric', [numberKey, stringValue]);
 };
 
-UniversalAnalyticsPlugin.prototype.trackView = function(screen, campaingUrl, newSession, success, error) {
-  if (typeof campaingUrl === 'undefined' || campaingUrl === null) {
-    campaingUrl = '';
+UniversalAnalyticsPlugin.prototype.trackView = function(screen, campaignUrl, newSession, success, error) {
+  if (typeof campaignUrl === 'undefined' || campaignUrl === null) {
+    campaignUrl = '';
   }
 
   if (typeof newSession === 'undefined' || newSession === null) {
     newSession = false;
   }  
 
-  cordova.exec(success, error, 'UniversalAnalytics', 'trackView', [screen, campaingUrl, newSession]);
+  cordova.exec(success, error, 'UniversalAnalytics', 'trackView', [screen, campaignUrl, newSession]);
 };
 
 UniversalAnalyticsPlugin.prototype.addCustomDimension = function(key, value, success, error) {
+  if (typeof key !== "number") {
+    throw Error("key must be a valid integer not '" + typeof key + "'");
+  }
   cordova.exec(success, error, 'UniversalAnalytics', 'addCustomDimension', [key, value]);
 };
 
