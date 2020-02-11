@@ -32,6 +32,7 @@
 
 extern NSString* const CDVPageDidLoadNotification;
 extern NSString* const CDVPluginHandleOpenURLNotification;
+extern NSString* const CDVPluginHandleOpenURLWithAppSourceAndAnnotationNotification;
 extern NSString* const CDVPluginResetNotification;
 extern NSString* const CDVViewWillAppearNotification;
 extern NSString* const CDVViewDidAppearNotification;
@@ -40,17 +41,6 @@ extern NSString* const CDVViewDidDisappearNotification;
 extern NSString* const CDVViewWillLayoutSubviewsNotification;
 extern NSString* const CDVViewDidLayoutSubviewsNotification;
 extern NSString* const CDVViewWillTransitionToSizeNotification;
-
-/*
- * The local and remote push notification functionality has been removed from the core in cordova-ios 4.x,
- * but these constants have unfortunately have not been removed, but will be removed in 5.x.
- * 
- * To have the same functionality as 3.x, use a third-party plugin or the experimental
- * https://github.com/apache/cordova-plugins/tree/master/notification-rebroadcast
- */
-extern NSString* const CDVLocalNotification CDV_DEPRECATED(4.0, "Functionality removed in 4.0, constant will be removed in 5.0");
-extern NSString* const CDVRemoteNotification CDV_DEPRECATED(4.0, "Functionality removed in 4.0, constant will be removed in 5.0");
-extern NSString* const CDVRemoteNotificationError CDV_DEPRECATED(4.0, "Functionality removed in 4.0, constant will be removed in 5.0");
 
 @interface CDVPlugin : NSObject {}
 
@@ -65,6 +55,7 @@ extern NSString* const CDVRemoteNotificationError CDV_DEPRECATED(4.0, "Functiona
 - (void)pluginInitialize;
 
 - (void)handleOpenURL:(NSNotification*)notification;
+- (void)handleOpenURLWithApplicationSourceAndAnnotation:(NSNotification*)notification;
 - (void)onAppTerminate;
 - (void)onMemoryWarning;
 - (void)onReset;

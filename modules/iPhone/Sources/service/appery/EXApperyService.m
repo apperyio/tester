@@ -197,7 +197,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     
     NSString *loadProjectUrlStr = [[@"https://" stringByAppendingString: self.baseUrl] URLByAddingResourceComponent:[NSString stringWithFormat:PROJECT_PATH_URL_STRING, projectMetadata.guid]];
     NSURLRequest *request = [[AFHTTPRequestSerializer serializer] requestWithMethod:@"GET" URLString:loadProjectUrlStr parameters:nil error:nil];
-    
+
     AFHTTPRequestOperation *projectsOperation = [self.manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation * _Nonnull operation, id _Nonnull responseObject) {
         // Run extraction operation, like synchronous
         NSOperationQueue *operationQueue = [NSOperationQueue new];
@@ -210,7 +210,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     }];
     
     AFHTTPResponseSerializer *serializer = [AFHTTPResponseSerializer serializer];
-    [serializer setAcceptableContentTypes:[NSSet setWithObject:@"application/zip"]];
+    [serializer setAcceptableContentTypes:[NSSet setWithObjects:@"application/zip", @"application/octet-stream", nil]];
     
     [projectsOperation setResponseSerializer:serializer];
     [self.manager.operationQueue addOperation:projectsOperation];
@@ -253,7 +253,7 @@ static NSString * const LOGOUT_PATH_URL_STRING = @"/app/logout?GLO=true";
     }];
     
     AFHTTPResponseSerializer *serializer = [AFHTTPResponseSerializer serializer];
-    [serializer setAcceptableContentTypes:[NSSet setWithObject:@"application/zip"]];
+    [serializer setAcceptableContentTypes:[NSSet setWithObjects:@"application/zip", @"application/octet-stream", nil]];
     
     [projectsOperation setResponseSerializer:serializer];
     [self.manager.operationQueue addOperation:projectsOperation];

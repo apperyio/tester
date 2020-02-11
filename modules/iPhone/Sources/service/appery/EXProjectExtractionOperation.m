@@ -80,11 +80,28 @@ static NSString * const kDefaultStartPageName = @"index.html";
         }
         
         NSString *libsLocation = [NSString pathWithComponents:@[projectLocation, @"libs"]];
+        NSString *injectorName = @"cordova_injector_libs.js";
         
         NSFileManager *fileManager = [NSFileManager defaultManager];
         if (![fileManager fileExistsAtPath:libsLocation]) {
             libsLocation = [NSString pathWithComponents:@[projectLocation, @"files/resources/lib"]];
+            if (![fileManager fileExistsAtPath:libsLocation]) {
+                injectorName = nil;
+                libsLocation = projectLocation;
+            } else {
+                injectorName = @"cordova_injector_files.js";
+            }
         }
+        
+        //TODO: check cordova.js in destination folder - we should copy libs there
+//        if (![fileManager fileExistsAtPath:[NSString pathWithComponents:@[libsLocation, @"cordova.js"]]]) {
+//            //try to search in project location
+//            do {
+//                libsLocation = [libsLocation stringByDeletingLastPathComponent];
+//                if ([fileManager fileExistsAtPath:[NSString pathWithComponents:@[libsLocation, @"cordova.js"]]])
+//                    break;
+//            } while (![libsLocation isEqualToString:projectLocation]);
+//        }
         
         if ([self copyCordovaLibsToLocation: libsLocation error: &processError] == NO) {
             NSDictionary *errInfo = @{NSLocalizedDescriptionKey:NSLocalizedString(@"Failed", nil),
@@ -95,6 +112,14 @@ static NSString * const kDefaultStartPageName = @"index.html";
             
             return;
         }
+        
+        if (injectorName != nil)
+            if ([fileManager fileExistsAtPath:[projectLocation stringByAppendingPathComponent:@"cordova.js"]]) {
+                [self copyCordovaInjector:projectLocation injectorName:injectorName error:nil];
+            }
+        
+        //TODO: copy cordova_injector.js to project root
+        
         
         NSString *projectStartPageName = [self retreiveStartPageNameFromLocation:projectLocation error:&processError];
         
@@ -252,6 +277,28 @@ static NSString * const kDefaultStartPageName = @"index.html";
     return YES;
 }
 
+- (BOOL)copyCordovaInjector:(NSString *)destination injectorName:(NSString*)injectorName error:(NSError **)error {
+    NSLog(@"Coping cordova_inject.js ...");
+    
+    NSString *injectorPath = [[[NSBundle mainBundle] URLForResource:[NSString stringWithFormat: @"www/%@", injectorName] withExtension:@""] path];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    NSString *dst = [destination stringByAppendingPathComponent:@"cordova.js"];
+        //we should not replace index.html
+    if ([fileManager fileExistsAtPath:dst]) {
+        if ([fileManager removeItemAtPath:dst error:error] == NO) {
+            return NO;
+        }
+    }
+        
+    if ([fileManager copyItemAtPath:injectorPath toPath:dst error:error] == NO) {
+        return NO;
+    }
+    
+    return YES;
+}
+
+
 - (BOOL)copyCordovaLibsToLocation:(NSString *)destination error:(NSError **)error
 {
     NSLog(@"Coping www resources...");
@@ -266,6 +313,9 @@ static NSString * const kDefaultStartPageName = @"index.html";
     
     for (NSString *entity in wwwContent) {
         NSString *dst = [destination stringByAppendingPathComponent:entity];
+        //we should not replace index.html
+            if ([entity compare:@"index.html" options:NSCaseInsensitiveSearch] == NSOrderedSame)
+                continue;
         if ([fileManager fileExistsAtPath:dst]) {
             if ([fileManager removeItemAtPath:dst error:error] == NO) {
                 return NO;

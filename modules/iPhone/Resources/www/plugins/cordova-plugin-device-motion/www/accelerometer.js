@@ -1,4 +1,5 @@
-cordova.define("cordova-plugin-device-motion.accelerometer", function(require, exports, module) { /*
+cordova.define("cordova-plugin-device-motion.accelerometer", function(require, exports, module) {
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -39,6 +40,9 @@ var listeners = [];
 
 // Last returned acceleration object from native
 var accel = null;
+
+// Timer used when faking up devicemotion events
+var eventTimerId = null;
 
 // Tells native to start.
 function start() {
@@ -102,6 +106,14 @@ var accelerometer = {
             return;
         }
 
+        if (cordova.platformId === "browser" && !eventTimerId) {
+            // fire devicemotion event once
+            var devicemotionEvent = new Event('devicemotion');
+            window.setTimeout(function() {
+                window.dispatchEvent(devicemotionEvent);
+            }, 200);
+        }
+
         var p;
         var win = function (a) {
             removeListeners(p);
@@ -109,7 +121,9 @@ var accelerometer = {
         };
         var fail = function (e) {
             removeListeners(p);
-            errorCallback && errorCallback(e);
+            if (errorCallback) {
+                errorCallback(e);
+            }
         };
 
         p = createCallbackPair(win, fail);
@@ -138,7 +152,9 @@ var accelerometer = {
 
         var p = createCallbackPair(function () { }, function (e) {
             removeListeners(p);
-            errorCallback && errorCallback(e);
+            if (errorCallback) {
+                errorCallback(e);
+            }
         });
         listeners.push(p);
 
@@ -161,6 +177,14 @@ var accelerometer = {
             start();
         }
 
+        if (cordova.platformId === "browser" && !eventTimerId) {
+            // Start firing devicemotion events if we haven't already
+            var devicemotionEvent = new Event('devicemotion');
+            eventTimerId = window.setInterval(function() {
+                window.dispatchEvent(devicemotionEvent);
+            }, 200);
+        }
+
         return id;
     },
 
@@ -175,6 +199,12 @@ var accelerometer = {
             window.clearInterval(timers[id].timer);
             removeListeners(timers[id].listeners);
             delete timers[id];
+
+            if (eventTimerId && Object.keys(timers).length === 0) {
+                // No more watchers, so stop firing 'devicemotion' events
+                window.clearInterval(eventTimerId);
+                eventTimerId = null;
+            }
         }
     }
 };

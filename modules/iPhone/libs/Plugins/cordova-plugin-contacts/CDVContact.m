@@ -69,6 +69,15 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
     return record;
 }
 
+/* for CoreFoundation types, we need to still manually memory manage under ARC */
+- (void) dealloc
+{
+    if (record != NULL) {
+        CFRelease(record);
+        record = NULL;
+    }
+}
+
 /* Rather than creating getters and setters for each AddressBook (AB) Property, generic methods are used to deal with
  * simple properties,  MultiValue properties( phone numbers and emails) and MultiValueDictionary properties (Ims and addresses).
  * The dictionaries below are used to translate between the W3C identifiers and the AB properties.   Using the dictionaries,
@@ -713,82 +722,80 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
     return bConvert;
 }
 
+/* Return dictionary where key is contact api label, value is iPhone constant
+*/
++ (NSDictionary*) getContactLabels
+{
+    return @{
+             kW3ContactWorkLabel : (NSString*) kABWorkLabel,
+             kW3ContactHomeLabel : (NSString*) kABHomeLabel,
+             kW3ContactOtherLabel: (NSString*) kABOtherLabel,
+             kW3ContactPhoneMobileLabel: (NSString*) kABPersonPhoneMobileLabel,
+             kW3ContactPhonePagerLabel: (NSString*) kABPersonPhonePagerLabel,
+             kW3ContactPhoneWorkFaxLabel: (NSString*) kABPersonPhoneWorkFAXLabel,
+             kW3ContactPhoneHomeFaxLabel: (NSString*) kABPersonPhoneHomeFAXLabel,
+             kW3ContactPhoneIPhoneLabel: (NSString*) kABPersonPhoneIPhoneLabel,
+             kW3ContactPhoneMainLabel: (NSString*) kABPersonPhoneMainLabel,
+             kW3ContactImAIMLabel: (NSString*) kABPersonInstantMessageServiceAIM,
+             kW3ContactImICQLabel: (NSString*) kABPersonInstantMessageServiceICQ,
+             kW3ContactImMSNLabel: (NSString*) kABPersonInstantMessageServiceMSN,
+             kW3ContactImYahooLabel: (NSString*) kABPersonInstantMessageServiceYahoo,
+             kW3ContactImSkypeLabel: (NSString*) kABPersonInstantMessageServiceSkype,
+             kW3ContactImGoogleTalkLabel: (NSString*) kABPersonInstantMessageServiceGoogleTalk,
+             kW3ContactImFacebookMessengerLabel: (NSString*) kABPersonInstantMessageServiceFacebook,
+             kW3ContactImJabberLabel: (NSString*) kABPersonInstantMessageServiceJabber,
+             kW3ContactImQQLabel: (NSString*) kABPersonInstantMessageServiceQQ,
+             kW3ContactImGaduLabel: (NSString*) kABPersonInstantMessageServiceGaduGadu,
+             kW3ContactUrlProfile: (NSString*) kABPersonHomePageLabel
+            };
+}
+
+/* Make case insensitive search in labels dictionary by contact API label
+*/
++ (NSArray *) filterLabels: (NSString *) contactApiLabel
+{
+    NSDictionary *labels = [CDVContact getContactLabels];
+    NSPredicate * labelFilter = [NSPredicate predicateWithFormat:@"SELF LIKE[c] %@", contactApiLabel];
+    NSArray *labelKeys = [labels allKeys];
+    NSArray *result = [labelKeys filteredArrayUsingPredicate: labelFilter];
+    return result;
+}
+
 /* Translation of property type labels  contact API ---> iPhone
  *
- *	phone:  work, home, other, mobile, fax, pager -->
- *		kABWorkLabel, kABHomeLabel, kABOtherLabel, kABPersonPhoneMobileLabel, kABPersonHomeFAXLabel || kABPersonHomeFAXLabel, kABPersonPhonePagerLabel
+ *	phone:  work, home, other, mobile, home fax, work fax, main, iphone, pager -->
+ *		kABWorkLabel, kABHomeLabel, kABOtherLabel, kABPersonPhoneMobileLabel, kABPersonHomeFAXLabel, kABPersonHomeFAXLabel, kABPersonPhonePagerLabel, kABPersonPhoneIPhoneLabel, kABPersonPhoneMainLabel
  *	emails:  work, home, other ---> kABWorkLabel, kABHomeLabel, kABOtherLabel
- *	ims: aim, gtalk, icq, xmpp, msn, skype, qq, yahoo --> kABPersonInstantMessageService + (AIM, ICG, MSN, Yahoo).  No support for gtalk, xmpp, skype, qq
+ *	ims: aim, gtalk, icq, xmpp, msn, skype, qq, yahoo, gadu --> kABPersonInstantMessageService + (AIM, ICG, MSN, Yahoo, Gtalk, Skype, QQ, Gadu).  No support for xmpp
  * addresses: work, home, other --> kABWorkLabel, kABHomeLabel, kABOtherLabel
  *
  *
  */
 + (CFStringRef)convertContactTypeToPropertyLabel:(NSString*)label
 {
-    CFStringRef type;
-
+    CFStringRef type; 
+    NSDictionary *labels = [CDVContact getContactLabels];
     if ([label isKindOfClass:[NSNull class]] || ![label isKindOfClass:[NSString class]]) {
         type = NULL; // no label
-    } else if ([label caseInsensitiveCompare:kW3ContactWorkLabel] == NSOrderedSame) {
-        type = kABWorkLabel;
-    } else if ([label caseInsensitiveCompare:kW3ContactHomeLabel] == NSOrderedSame) {
-        type = kABHomeLabel;
-    } else if ([label caseInsensitiveCompare:kW3ContactOtherLabel] == NSOrderedSame) {
-        type = kABOtherLabel;
-    } else if ([label caseInsensitiveCompare:kW3ContactPhoneMobileLabel] == NSOrderedSame) {
-        type = kABPersonPhoneMobileLabel;
-    } else if ([label caseInsensitiveCompare:kW3ContactPhonePagerLabel] == NSOrderedSame) {
-        type = kABPersonPhonePagerLabel;
-    } else if ([label caseInsensitiveCompare:kW3ContactImAIMLabel] == NSOrderedSame) {
-        type = kABPersonInstantMessageServiceAIM;
-    } else if ([label caseInsensitiveCompare:kW3ContactImICQLabel] == NSOrderedSame) {
-        type = kABPersonInstantMessageServiceICQ;
-    } else if ([label caseInsensitiveCompare:kW3ContactImMSNLabel] == NSOrderedSame) {
-        type = kABPersonInstantMessageServiceMSN;
-    } else if ([label caseInsensitiveCompare:kW3ContactImYahooLabel] == NSOrderedSame) {
-        type = kABPersonInstantMessageServiceYahoo;
-    } else if ([label caseInsensitiveCompare:kW3ContactUrlProfile] == NSOrderedSame) {
-        type = kABPersonHomePageLabel;
-    } else {
-        type = kABOtherLabel;
     }
-
+    else {        
+        NSArray *filteredLabels = [CDVContact filterLabels:label];
+        // CB-3950 If label is not one of kW3*Label constants, threat it as custom label,
+        // otherwise fetching contact and then saving it will break this label in address book.
+        type = (__bridge CFStringRef) ([filteredLabels count] != 0 ? [labels objectForKey:[filteredLabels firstObject]] : label);
+    }
     return type;
 }
 
 + (NSString*)convertPropertyLabelToContactType:(NSString*)label
 {
-    NSString* type = nil;
-
-    if (label != nil) { // improve efficiency......
-        if ([label isEqualToString:(NSString*)kABPersonPhoneMobileLabel]) {
-            type = kW3ContactPhoneMobileLabel;
-        } else if ([label isEqualToString:(NSString*)kABPersonPhoneHomeFAXLabel] ||
-            [label isEqualToString:(NSString*)kABPersonPhoneWorkFAXLabel]) {
-            type = kW3ContactPhoneFaxLabel;
-        } else if ([label isEqualToString:(NSString*)kABPersonPhonePagerLabel]) {
-            type = kW3ContactPhonePagerLabel;
-        } else if ([label isEqualToString:(NSString*)kABHomeLabel]) {
-            type = kW3ContactHomeLabel;
-        } else if ([label isEqualToString:(NSString*)kABWorkLabel]) {
-            type = kW3ContactWorkLabel;
-        } else if ([label isEqualToString:(NSString*)kABOtherLabel]) {
-            type = kW3ContactOtherLabel;
-        } else if ([label isEqualToString:(NSString*)kABPersonInstantMessageServiceAIM]) {
-            type = kW3ContactImAIMLabel;
-        } else if ([label isEqualToString:(NSString*)kABPersonInstantMessageServiceICQ]) {
-            type = kW3ContactImICQLabel;
-        } else if ([label isEqualToString:(NSString*)kABPersonInstantMessageServiceJabber]) {
-            type = kW3ContactOtherLabel;
-        } else if ([label isEqualToString:(NSString*)kABPersonInstantMessageServiceMSN]) {
-            type = kW3ContactImMSNLabel;
-        } else if ([label isEqualToString:(NSString*)kABPersonInstantMessageServiceYahoo]) {
-            type = kW3ContactImYahooLabel;
-        } else if ([label isEqualToString:(NSString*)kABPersonHomePageLabel]) {
-            type = kW3ContactUrlProfile;
-        } else {
-            type = kW3ContactOtherLabel;
-        }
+    NSString* type = nil;  
+    NSDictionary *labels = [CDVContact getContactLabels];
+    if (label != nil) {
+        NSArray *labelKeys = [labels allKeysForObject:label];
+        // CB-3950 If label is not one of kW3*Label constants, threat it as custom label,
+        // otherwise fetching contact and then saving it will break this label in address book.
+        type = [labelKeys count] != 0 ? [labelKeys firstObject] : label;
     }
     return type;
 }
@@ -801,31 +808,11 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
 + (BOOL)isValidW3ContactType:(NSString*)label
 {
     BOOL isValid = NO;
-
     if ([label isKindOfClass:[NSNull class]] || ![label isKindOfClass:[NSString class]]) {
         isValid = NO; // no label
-    } else if ([label caseInsensitiveCompare:kW3ContactWorkLabel] == NSOrderedSame) {
-        isValid = YES;
-    } else if ([label caseInsensitiveCompare:kW3ContactHomeLabel] == NSOrderedSame) {
-        isValid = YES;
-    } else if ([label caseInsensitiveCompare:kW3ContactOtherLabel] == NSOrderedSame) {
-        isValid = YES;
-    } else if ([label caseInsensitiveCompare:kW3ContactPhoneMobileLabel] == NSOrderedSame) {
-        isValid = YES;
-    } else if ([label caseInsensitiveCompare:kW3ContactPhonePagerLabel] == NSOrderedSame) {
-        isValid = YES;
-    } else if ([label caseInsensitiveCompare:kW3ContactImAIMLabel] == NSOrderedSame) {
-        isValid = YES;
-    } else if ([label caseInsensitiveCompare:kW3ContactImICQLabel] == NSOrderedSame) {
-        isValid = YES;
-    } else if ([label caseInsensitiveCompare:kW3ContactImMSNLabel] == NSOrderedSame) {
-        isValid = YES;
-    } else if ([label caseInsensitiveCompare:kW3ContactImYahooLabel] == NSOrderedSame) {
-        isValid = YES;
     } else {
-        isValid = NO;
+        isValid =  [[CDVContact filterLabels:label] count] != 0;
     }
-
     return isValid;
 }
 
@@ -1324,6 +1311,7 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
     NSMutableArray* photos = nil;
 
     if (ABPersonHasImageData(self.record)) {
+        CFIndex photoId = ABRecordGetRecordID(self.record);
         CFDataRef photoData = ABPersonCopyImageData(self.record);
         if (!photoData) {
             return nil;
@@ -1333,17 +1321,10 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
         // write to temp directory and store URI in photos array
         // get the temp directory path
         NSString* docsPath = [NSTemporaryDirectory()stringByStandardizingPath];
-        NSError* err = nil;
-        NSString* filePath = [NSString stringWithFormat:@"%@/photo_XXXXX", docsPath];
-        char template[filePath.length + 1];
-        strcpy(template, [filePath cStringUsingEncoding:NSASCIIStringEncoding]);
-        mkstemp(template);
-        filePath = [[NSFileManager defaultManager]
-            stringWithFileSystemRepresentation:template
-                                        length:strlen(template)];
+        NSString* filePath = [NSString stringWithFormat:@"%@/contact_photo_%ld", docsPath, photoId];
 
         // save file
-        if ([data writeToFile:filePath options:NSAtomicWrite error:&err]) {
+        if ([data writeToFile:filePath atomically:YES]) {
             photos = [NSMutableArray arrayWithCapacity:1];
             NSMutableDictionary* newDict = [NSMutableDictionary dictionaryWithCapacity:2];
             [newDict setObject:filePath forKey:kW3ContactFieldValue];
@@ -1377,6 +1358,10 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
         }
 
         for (id i in fieldsArray) {
+
+            // CB-7906 ignore NULL desired fields to avoid fatal exception
+            if ([i isKindOfClass:[NSNull class]]) continue;
+
             NSMutableArray* keys = nil;
             NSString* fieldStr = nil;
             if ([i isKindOfClass:[NSNumber class]]) {

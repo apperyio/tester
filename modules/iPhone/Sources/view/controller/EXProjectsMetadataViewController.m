@@ -132,14 +132,14 @@ static const NSString * kArrowDownSymbol = @"\u2193";
                                                                 action:@selector(logoutAction:)];
     self.navigationItem.leftBarButtonItem = bbLogout;
     
-    UIBarButtonItem *bbAppCode = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"App code", @"App code")
-                                                                  style:UIBarButtonItemStylePlain
-                                                                 target:self
-                                                                 action:@selector(appCodeAction:)];
-    UIFont *bbFont = [UIFont systemFontOfSize:16];
-    NSDictionary * attributes = @{NSFontAttributeName:bbFont};
-    [bbAppCode setTitleTextAttributes:attributes forState:UIControlStateNormal];
-    self.navigationItem.rightBarButtonItem = bbAppCode;
+//    UIBarButtonItem *bbAppCode = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"App code", @"App code")
+//                                                                  style:UIBarButtonItemStylePlain
+//                                                                 target:self
+//                                                                 action:@selector(appCodeAction:)];
+//    UIFont *bbFont = [UIFont systemFontOfSize:16];
+//    NSDictionary * attributes = @{NSFontAttributeName:bbFont};
+//    [bbAppCode setTitleTextAttributes:attributes forState:UIControlStateNormal];
+//    self.navigationItem.rightBarButtonItem = bbAppCode;
 }
 
 - (void)viewWillAppear:(BOOL)animated

@@ -90,9 +90,17 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
     
     self.svScroll.backgroundColor = [UIColor clearColor];
     self.vContent.backgroundColor = [UIColor colorFromHEXString:@"#FBFBFB"];
-
+    
+    CGFloat topPadding, bottomPadding = 0.0;
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    if ([window respondsToSelector:@selector(safeAreaInsets)]) {
+        UIEdgeInsets safeAreaInsets = [window safeAreaInsets];
+        topPadding = safeAreaInsets.top;
+        bottomPadding = safeAreaInsets.bottom;
+    }
+        
     NSLayoutConstraint *width = [NSLayoutConstraint constraintWithItem:self.vContent attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0];
-    NSLayoutConstraint *height = [NSLayoutConstraint constraintWithItem:self.vContent attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0.0];
+    NSLayoutConstraint *height = [NSLayoutConstraint constraintWithItem:self.vContent attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeHeight multiplier:1.0 constant:- topPadding - bottomPadding];
     height.priority = 250.;
     [self.view addConstraints:@[ width, height ]];
     
@@ -113,11 +121,11 @@ static NSString *const kEXSignInCellIdentifier = @"EXSignInCell";
 //    btn.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:18.];
 //    [btn setTitleColor:[UIColor colorFromHEXString:@"#1E88E5"] forState:UIControlStateNormal];
 	
-//    UILabel *l = self.lCopyright;
-//    l.text = NSLocalizedString(@"© 2016 Appery, LLC. All rights reserved.", @"© 2015 Appery, LLC. All rights reserved.");
-//    l.font = [UIFont fontWithName:@"HelveticaNeue" size:16.];
-//    l.textColor = [UIColor colorFromHEXString:@"#BDBDBD"];
-//    l.textAlignment = NSTextAlignmentCenter;
+    UILabel *l = self.lCopyright;
+    l.text = NSLocalizedString(@"© 2019 Appery. All rights reserved.", @"© 2019 Appery. All rights reserved.");
+    l.font = [UIFont fontWithName:@"HelveticaNeue" size:16.];
+    l.textColor = [UIColor colorFromHEXString:@"#BDBDBD"];
+    l.textAlignment = NSTextAlignmentCenter;
 }
 
 - (void)viewWillAppear:(BOOL)animated

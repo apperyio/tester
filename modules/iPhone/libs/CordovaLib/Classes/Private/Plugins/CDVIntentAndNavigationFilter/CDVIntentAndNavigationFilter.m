@@ -118,7 +118,7 @@
             // only allow-intent if it's a UIWebViewNavigationTypeLinkClicked (anchor tag) OR
             // it's a UIWebViewNavigationTypeOther, and it's an internal link
             if ([[self class] shouldOpenURLRequest:request navigationType:navigationType]){
-                [[UIApplication sharedApplication] openURL:url];
+                [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
             }
             
             // consume the request (i.e. no error) if it wasn't handled above

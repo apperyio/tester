@@ -30,7 +30,6 @@
 {
     CDVPluginResult* result = nil;
 
-    NSLog(@"log1");
     // Source: http://stackoverflow.com/questions/3910244/getting-current-device-language-in-ios
     // (should be OK)
     NSString* language = [[NSLocale preferredLanguages] objectAtIndex:0];
@@ -39,14 +38,17 @@
         //Format to match other devices
         if(language.length <= 2) {
             NSLocale* locale = [NSLocale currentLocale];
-            NSRange underscoreIndex = [[locale localeIdentifier] rangeOfString:@"_" options:NSBackwardsSearch];
-            NSRange atSignIndex = [[locale localeIdentifier] rangeOfString:@"@"];
-            //If localeIdentifier did not contain @, i.e. did not have calendar other than Gregoarian selected
-            if(atSignIndex.length == 0)
-                language = [NSString stringWithFormat:@"%@%@", language, [[locale localeIdentifier] substringFromIndex:underscoreIndex.location]];
-            else {
-                NSRange localeRange = NSMakeRange(underscoreIndex.location, atSignIndex.location-underscoreIndex.location);
-                language = [NSString stringWithFormat:@"%@%@", language, [[locale localeIdentifier] substringWithRange:localeRange]];
+            NSString* localeId = [locale localeIdentifier];
+            NSRange underscoreIndex = [localeId rangeOfString:@"_" options:NSBackwardsSearch];
+            NSRange atSignIndex = [localeId rangeOfString:@"@"];
+            if (underscoreIndex.location != NSNotFound) {
+                //If localeIdentifier did not contain @, i.e. did not have calendar other than Gregoarian selected
+                if(atSignIndex.length == 0)
+                    language = [NSString stringWithFormat:@"%@%@", language, [localeId substringFromIndex:underscoreIndex.location]];
+                else {
+                    NSRange localeRange = NSMakeRange(underscoreIndex.location, atSignIndex.location-underscoreIndex.location);
+                    language = [NSString stringWithFormat:@"%@%@", language, [localeId substringWithRange:localeRange]];
+                }
             }
         }
         
@@ -276,12 +278,12 @@
     if (date != NULL) {
         NSCalendar* calendar = [NSCalendar currentCalendar];
 
-        unsigned unitFlags = NSYearCalendarUnit |
-            NSMonthCalendarUnit |
-            NSDayCalendarUnit |
-            NSHourCalendarUnit |
-            NSMinuteCalendarUnit |
-            NSSecondCalendarUnit;
+        unsigned unitFlags = NSCalendarUnitYear |
+            NSCalendarUnitMonth |
+            NSCalendarUnitDay |
+            NSCalendarUnitHour |
+            NSCalendarUnitMinute |
+            NSCalendarUnitSecond;
 
         comps = [calendar components:unitFlags fromDate:(__bridge NSDate*)date];
         CFRelease(date);
@@ -389,9 +391,10 @@
 
     // put the pattern and time zone information into the dictionary
     if ((datePattern != nil) && (timezone != nil)) {
-        NSArray* keys = [NSArray arrayWithObjects:@"pattern", @"timezone", @"utc_offset", @"dst_offset", nil];
+        NSArray* keys = [NSArray arrayWithObjects:@"pattern", @"timezone", @"iana_timezone", @"utc_offset", @"dst_offset", nil];
         NSArray* values = [NSArray arrayWithObjects:((__bridge NSString*)datePattern),
             [((__bridge NSTimeZone*)timezone)abbreviation],
+            [((__bridge NSTimeZone*)timezone)name],
             [NSNumber numberWithLong:[((__bridge NSTimeZone*)timezone)secondsFromGMT]],
             [NSNumber numberWithDouble:[((__bridge NSTimeZone*)timezone)daylightSavingTimeOffset]],
             nil];
